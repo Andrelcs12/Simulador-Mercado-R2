@@ -11,5 +11,9 @@ export class AppService {
     return "oi teste1 do grba";
   }
 
+  async teste() {
+    return 'sla'
+  }
+
 
 }
