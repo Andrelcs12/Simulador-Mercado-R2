@@ -390,7 +390,8 @@ export const ModelName = {
   Configuration: 'Configuration',
   StockInput: 'StockInput',
   StoreCapex: 'StoreCapex',
-  RoundResult: 'RoundResult'
+  RoundResult: 'RoundResult',
+  DemoFinanceiro: 'DemoFinanceiro'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "categoryMaster" | "capexMaster" | "store" | "configuration" | "stockInput" | "storeCapex" | "roundResult"
+    modelProps: "categoryMaster" | "capexMaster" | "store" | "configuration" | "stockInput" | "storeCapex" | "roundResult" | "demoFinanceiro"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -928,6 +929,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DemoFinanceiro: {
+      payload: Prisma.$DemoFinanceiroPayload<ExtArgs>
+      fields: Prisma.DemoFinanceiroFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DemoFinanceiroFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DemoFinanceiroFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>
+        }
+        findFirst: {
+          args: Prisma.DemoFinanceiroFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DemoFinanceiroFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>
+        }
+        findMany: {
+          args: Prisma.DemoFinanceiroFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>[]
+        }
+        create: {
+          args: Prisma.DemoFinanceiroCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>
+        }
+        createMany: {
+          args: Prisma.DemoFinanceiroCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DemoFinanceiroCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>[]
+        }
+        delete: {
+          args: Prisma.DemoFinanceiroDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>
+        }
+        update: {
+          args: Prisma.DemoFinanceiroUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>
+        }
+        deleteMany: {
+          args: Prisma.DemoFinanceiroDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DemoFinanceiroUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DemoFinanceiroUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>[]
+        }
+        upsert: {
+          args: Prisma.DemoFinanceiroUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DemoFinanceiroPayload>
+        }
+        aggregate: {
+          args: Prisma.DemoFinanceiroAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDemoFinanceiro>
+        }
+        groupBy: {
+          args: Prisma.DemoFinanceiroGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DemoFinanceiroGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DemoFinanceiroCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DemoFinanceiroCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1053,6 +1128,20 @@ export const RoundResultScalarFieldEnum = {
 } as const
 
 export type RoundResultScalarFieldEnum = (typeof RoundResultScalarFieldEnum)[keyof typeof RoundResultScalarFieldEnum]
+
+
+export const DemoFinanceiroScalarFieldEnum = {
+  id: 'id',
+  responsavel: 'responsavel',
+  descricao: 'descricao',
+  saldoAnterior: 'saldoAnterior',
+  valorGasto: 'valorGasto',
+  saldoAtual: 'saldoAtual',
+  csatResult: 'csatResult',
+  createdAt: 'createdAt'
+} as const
+
+export type DemoFinanceiroScalarFieldEnum = (typeof DemoFinanceiroScalarFieldEnum)[keyof typeof DemoFinanceiroScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1249,6 +1338,7 @@ export type GlobalOmitConfig = {
   stockInput?: Prisma.StockInputOmit
   storeCapex?: Prisma.StoreCapexOmit
   roundResult?: Prisma.RoundResultOmit
+  demoFinanceiro?: Prisma.DemoFinanceiroOmit
 }
 
 /* Types for Logging */
