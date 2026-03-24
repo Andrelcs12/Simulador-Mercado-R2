@@ -53,11 +53,6 @@ export type StoreCapex = Prisma.StoreCapexModel
  */
 export type RoundResult = Prisma.RoundResultModel
 /**
- * Model DemoFinanceiro
- * 
- */
-export type DemoFinanceiro = Prisma.DemoFinanceiroModel
-/**
  * Model User
  * 
  */

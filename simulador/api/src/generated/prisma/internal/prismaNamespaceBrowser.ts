@@ -58,7 +58,6 @@ export const ModelName = {
   StockInput: 'StockInput',
   StoreCapex: 'StoreCapex',
   RoundResult: 'RoundResult',
-  DemoFinanceiro: 'DemoFinanceiro',
   User: 'User'
 } as const
 
@@ -164,20 +163,6 @@ export const RoundResultScalarFieldEnum = {
 } as const
 
 export type RoundResultScalarFieldEnum = (typeof RoundResultScalarFieldEnum)[keyof typeof RoundResultScalarFieldEnum]
-
-
-export const DemoFinanceiroScalarFieldEnum = {
-  id: 'id',
-  responsavel: 'responsavel',
-  descricao: 'descricao',
-  saldoAnterior: 'saldoAnterior',
-  valorGasto: 'valorGasto',
-  saldoAtual: 'saldoAtual',
-  csatResult: 'csatResult',
-  createdAt: 'createdAt'
-} as const
-
-export type DemoFinanceiroScalarFieldEnum = (typeof DemoFinanceiroScalarFieldEnum)[keyof typeof DemoFinanceiroScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
