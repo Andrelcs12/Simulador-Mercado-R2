@@ -58,7 +58,8 @@ export const ModelName = {
   StockInput: 'StockInput',
   StoreCapex: 'StoreCapex',
   RoundResult: 'RoundResult',
-  DemoFinanceiro: 'DemoFinanceiro'
+  DemoFinanceiro: 'DemoFinanceiro',
+  User: 'User'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -177,6 +178,16 @@ export const DemoFinanceiroScalarFieldEnum = {
 } as const
 
 export type DemoFinanceiroScalarFieldEnum = (typeof DemoFinanceiroScalarFieldEnum)[keyof typeof DemoFinanceiroScalarFieldEnum]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
 export const SortOrder = {

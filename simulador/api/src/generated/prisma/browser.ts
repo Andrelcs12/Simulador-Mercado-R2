@@ -57,3 +57,8 @@ export type RoundResult = Prisma.RoundResultModel
  * 
  */
 export type DemoFinanceiro = Prisma.DemoFinanceiroModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel

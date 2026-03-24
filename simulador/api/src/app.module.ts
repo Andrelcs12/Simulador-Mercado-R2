@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CapexModule } from './modules/capex/capex.module';
 import { PrismaService } from './prisma.service';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PrismaService } from './prisma.service';
       isGlobal: true,
     }),
     CapexModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
