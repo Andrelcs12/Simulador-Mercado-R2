@@ -21,6 +21,8 @@ const RegistroUsuario = () => {
     e.preventDefault();
     setLoading(true);
 
+    console.log(process.env.NEXT_PUBLIC_API_URL)
+
     try {
       // Chamada para a API do NestJS
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/minigame/register`, {
