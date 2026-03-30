@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 
 const RegistroUsuario = () => {
   const router = useRouter();
+
+  console.log("DEBUG API URL:", process.env.NEXT_PUBLIC_API_URL);
   
   // Estados para o formulário
   const [formData, setFormData] = useState({
