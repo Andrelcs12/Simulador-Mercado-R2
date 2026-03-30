@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { 
-  Play, Users, Radio, Loader2, CheckCircle2, 
-  Settings2, Timer, Trophy, Activity, LayoutDashboard,
+  Play, Users, Radio, CheckCircle2, 
+  Settings2, Trophy, Activity, LayoutDashboard,
   Signal, Wifi, Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,16 +15,14 @@ const AdminMestre = () => {
   const [loading, setLoading] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
   
-  // MUDANÇA: Agora usamos durationMinutes para o input do usuário
   const [config, setConfig] = useState({
     durationMinutes: 45, 
     round: 1,
-    adminName: "Mestre DeDev"
+    adminName: "Facilitador Cencosud"
   });
 
   const socketRef = useRef<Socket | null>(null);
 
-  // Função para formatar segundos em MM:SS (Apenas visual)
   const formatTime = (minutes: number) => {
     const totalSeconds = minutes * 60;
     const m = Math.floor(totalSeconds / 60);
@@ -67,12 +65,11 @@ const AdminMestre = () => {
     return () => { socketRef.current?.disconnect(); };
   }, []);
 
-  // Sincroniza configurações com os players via Socket
   useEffect(() => {
     if (socketRef.current && session) {
       socketRef.current.emit('admin:update_config', {
         sessionId: session.id,
-        duration: config.durationMinutes * 60, // Envia sempre em segundos para o backend
+        duration: config.durationMinutes * 60,
         round: config.round,
         adminName: config.adminName
       });
@@ -100,8 +97,6 @@ const AdminMestre = () => {
 
   const dispararRodada = () => {
     if (!session || players.length < 1) return;
-    
-    // Converte minutos para segundos antes de disparar o evento global
     const durationSeconds = config.durationMinutes * 60;
 
     socketRef.current?.emit('admin:start_round', { 
@@ -119,7 +114,7 @@ const AdminMestre = () => {
         transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
         className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full"
       />
-      <span className="text-white font-black tracking-widest text-xs uppercase italic">Sincronizando Command Center...</span>
+      <span className="text-white font-black tracking-widest text-xs uppercase italic">Sincronizando Centro de Comando...</span>
     </div>
   );
 
@@ -128,19 +123,18 @@ const AdminMestre = () => {
       
       {/* HEADER CORPORATIVO */}
       <header className="w-full bg-[#002350] p-4 md:px-12 flex justify-between items-center shadow-lg z-20 border-b-4 border-orange-500">
-        <div className="flex items-center gap-4">
-          <div className="bg-white p-1.5 rounded-lg shadow-inner">
-              <div className="w-8 h-8 bg-[#002350] rounded flex items-center justify-center font-black text-orange-500">C</div>
-          </div>
+          <div className="flex items-center gap-4">
+          <img src="/imagens/logo.png" alt="Cencosud Logo" className="h-10 object-contain" />
+          <div className="h-6 w-px bg-gray-200 mx-2" />
           <div>
-            <h1 className="text-white text-lg font-black leading-none tracking-tight">CENCOSUD <span className="text-orange-500 italic">SIMULATOR</span></h1>
-            <p className="text-blue-300 text-[9px] font-bold tracking-widest uppercase">Internal Command Management</p>
+            <h1 className="text-white text-lg font-black leading-none tracking-tight italic uppercase">SIMULADOR <span className="text-orange-500">CENCOSUD</span></h1>
+            <p className="text-blue-300 text-[9px] font-black tracking-widest uppercase italic">Painel de Controle Interno</p>
           </div>
         </div>
         
         <div className="flex items-center gap-6">
           <div className="hidden md:flex flex-col items-end">
-            <span className="text-blue-200 text-[10px] font-bold tracking-widest">FACILITADOR ATIVO</span>
+            <span className="text-blue-200 text-[9px] font-black tracking-widest uppercase">Facilitador Ativo</span>
             <span className="text-white text-xs font-black uppercase italic">{config.adminName}</span>
           </div>
           <div className="h-10 w-[1px] bg-white/10 hidden md:block" />
@@ -153,36 +147,36 @@ const AdminMestre = () => {
         {/* COLUNA DE CONTROLE */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* CARD DE SESSÃO */}
+          {/* CÓDIGO DE ACESSO */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-            className="bg-white border border-slate-200 p-8 rounded-3xl shadow-sm relative overflow-hidden group"
+            className="bg-white border border-slate-200 p-8 rounded-[2.5rem] shadow-sm relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity">
                <Wifi size={80} />
             </div>
-            <span className="text-slate-400 font-black tracking-[0.2em] uppercase text-[10px] mb-2 block italic">Access Code</span>
+            <span className="text-slate-400 font-black tracking-[0.2em] uppercase text-[10px] mb-2 block italic">Código de Acesso</span>
             <div className="text-7xl font-black tracking-tighter text-[#002350]">
               {session?.code || '----'}
             </div>
-            <div className="mt-4 flex items-center gap-2 text-emerald-600 font-black text-[10px] italic">
+            <div className="mt-4 flex items-center gap-2 text-emerald-600 font-black text-[10px] italic uppercase tracking-wider">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
-              SALA DISPONÍVEL PARA CONEXÃO
+              Sessão Aberta para Conexão
             </div>
           </motion.div>
 
-          {/* PAINEL DE PARÂMETROS */}
+          {/* PARÂMETROS DA SIMULAÇÃO */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
-            className="bg-[#002350] text-white p-8 rounded-3xl shadow-xl space-y-6 border-b-8 border-orange-500"
+            className="bg-[#002350] text-white p-8 rounded-[2.5rem] shadow-xl space-y-6 border-b-8 border-orange-500"
           >
             <div className="flex items-center gap-2 text-orange-500 font-black text-xs uppercase tracking-widest italic">
-              <Settings2 size={16} /> Configurações de Campo
+              <Settings2 size={16} /> Configuração da Rodada
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-300 uppercase flex items-center gap-2 italic">
+                <label className="text-[10px] font-black text-blue-300 uppercase flex items-center gap-2 italic">
                   <Clock size={12} className="text-orange-500"/> Duração (Min)
                 </label>
                 <input 
@@ -191,18 +185,18 @@ const AdminMestre = () => {
                   onChange={(e) => setConfig({...config, durationMinutes: Number(e.target.value)})}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-lg font-black text-orange-500 outline-none focus:bg-white/10 transition-all shadow-inner"
                 />
-                <p className="text-[9px] text-blue-400 font-bold italic uppercase">Preview: {formatTime(config.durationMinutes)}</p>
+                <p className="text-[9px] text-blue-400 font-black italic uppercase">Total: {formatTime(config.durationMinutes)}</p>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-300 uppercase flex items-center gap-2 italic">
-                  <Trophy size={12} className="text-orange-500"/> Rodada Atual
+                <label className="text-[10px] font-black text-blue-300 uppercase flex items-center gap-2 italic">
+                  <Trophy size={12} className="text-orange-500"/> Fase Atual
                 </label>
                 <select 
                   value={config.round}
                   onChange={(e) => setConfig({...config, round: Number(e.target.value)})}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-lg font-black text-white outline-none cursor-pointer focus:bg-white/10"
                 >
-                  {[1, 2, 3, 4, 5].map(r => <option key={r} value={r} className="bg-[#002350]">Fase {r}</option>)}
+                  {[1, 2, 3, 4, 5].map(r => <option key={r} value={r} className="bg-[#002350]">Rodada {r}</option>)}
                 </select>
               </div>
             </div>
@@ -210,7 +204,7 @@ const AdminMestre = () => {
             <button 
               onClick={dispararRodada}
               disabled={players.length < 1 || gameStarted}
-              className={`w-full py-7 rounded-2xl font-black text-xl flex items-center justify-center gap-4 transition-all shadow-2xl ${
+              className={`w-full py-7 rounded-2xl font-black text-lg flex items-center justify-center gap-4 transition-all shadow-2xl uppercase italic ${
                 gameStarted 
                 ? 'bg-emerald-500 text-white cursor-default' 
                 : players.length < 1
@@ -219,15 +213,15 @@ const AdminMestre = () => {
               }`}
             >
               {gameStarted ? (
-                <>SIMULAÇÃO EM CURSO <Radio size={24} className="animate-pulse" /></>
+                <>Simulação em Curso <Radio size={24} className="animate-pulse" /></>
               ) : (
-                <>INICIAR OPERAÇÃO <Play fill="currentColor" size={24} /></>
+                <>Liberar Operação <Play fill="currentColor" size={24} /></>
               )}
             </button>
           </motion.div>
         </div>
 
-        {/* MONITOR DE SQUAD */}
+        {/* MONITOR DE UNIDADES (SQUADS) */}
         <div className="lg:col-span-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -240,11 +234,11 @@ const AdminMestre = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-[#002350] italic uppercase tracking-tighter">Monitor de Unidades</h3>
-                  <p className="text-[11px] text-slate-400 font-black uppercase tracking-widest">{players.length} Conexões em tempo real</p>
+                  <p className="text-[11px] text-slate-400 font-black uppercase tracking-widest">{players.length} Unidades conectadas agora</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 px-5 py-2.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black border border-emerald-200 shadow-sm">
-                <Signal size={14} className="animate-bounce text-emerald-500" /> LIVE MONITORING
+              <div className="flex items-center gap-3 px-5 py-2.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black border border-emerald-200 shadow-sm uppercase tracking-wider">
+                <Signal size={14} className="animate-bounce text-emerald-500" /> Monitoramento em Tempo Real
               </div>
             </div>
 
@@ -254,7 +248,7 @@ const AdminMestre = () => {
                   {players.length === 0 ? (
                     <div className="col-span-full py-32 text-center opacity-10 flex flex-col items-center">
                       <LayoutDashboard size={100} className="mb-6" />
-                      <p className="font-black uppercase tracking-[0.5em] text-sm">Aguardando Gestores...</p>
+                      <p className="font-black uppercase tracking-[0.5em] text-sm italic">Aguardando Gestores de Loja...</p>
                     </div>
                   ) : (
                     players.map((p) => (
@@ -264,9 +258,9 @@ const AdminMestre = () => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
-                        className={`group relative p-6 rounded-3xl border-2 transition-all duration-500 ${
+                        className={`group relative p-6 rounded-[2.5rem] border-2 transition-all duration-500 ${
                           p.isReady 
-                          ? 'bg-white border-emerald-500 shadow-[0_15px_30px_rgba(16,185,129,0.1)]' 
+                          ? 'bg-white border-emerald-500 shadow-[0_20px_40px_rgba(16,185,129,0.08)]' 
                           : 'bg-white border-slate-100 hover:border-orange-300 shadow-sm'
                         }`}
                       >
@@ -281,13 +275,13 @@ const AdminMestre = () => {
                               </div>
                             ) : (
                               <div className="flex items-center gap-1.5 text-[9px] font-black text-orange-500 animate-pulse bg-orange-50 px-3 py-1 rounded-full border border-orange-100 uppercase">
-                                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full" /> Pendente
+                                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full" /> Aguardando
                               </div>
                             )}
                           </div>
                           
                           <div>
-                            <p className={`font-black text-[11px] uppercase tracking-wider mb-1 ${p.isReady ? 'text-emerald-600' : 'text-[#002350]'}`}>
+                            <p className={`font-black text-[11px] uppercase tracking-wider mb-1 italic ${p.isReady ? 'text-emerald-600' : 'text-[#002350]'}`}>
                               {p.storeName || 'Loja não identificada'}
                             </p>
                             <p className="text-base font-bold text-slate-500 truncate italic">{p.name}</p>
@@ -303,13 +297,13 @@ const AdminMestre = () => {
         </div>
       </main>
 
-      {/* FOOTER */}
+      {/* RODAPÉ TÉCNICO */}
       <footer className="w-full max-w-[1600px] px-10 py-8 mt-auto flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] z-10 border-t border-slate-200/60 italic">
         <div className="flex gap-10">
-          <span className="flex items-center gap-2">Protocolo: <span className="text-[#002350]">DEDEV-SYS-ACTIVE</span></span>
-          <span className="flex items-center gap-2 text-orange-500">AES-256 ENCRYPTED</span>
+          <span className="flex items-center gap-2">Protocolo: <span className="text-[#002350]">CENC-SYS-ATIVO</span></span>
+          <span className="flex items-center gap-2 text-orange-500 underline underline-offset-4">Conexão Segura AES-256</span>
         </div>
-        <div className="font-mono text-slate-300">CORE_ID: {session?.id?.slice(-8).toUpperCase()}</div>
+        <div className="font-mono text-slate-300">ID_SESSAO: {session?.id?.slice(-8).toUpperCase()}</div>
       </footer>
 
       <style jsx global>{`

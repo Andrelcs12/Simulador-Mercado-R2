@@ -88,6 +88,17 @@ const SetupStep = ({ config, setConfig }: SetupProps) => {
         </div>
       </div>
 
+      {/* BOX DE INSIGHT */}
+      <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-4">
+        <div className="bg-white p-3 rounded-xl text-cencosud-blue shadow-sm">
+          <Info size={20} />
+        </div>
+        <p className="text-xs text-blue-800 font-bold leading-relaxed">
+          <span className="text-cencosud-blue font-black uppercase mr-2">Dica:</span> 
+          Lembre-se que cada R$ investido aqui é descontado do seu lucro bruto no final da rodada (EBITDA). Gaste com sabedoria!
+        </p>
+      </div>
+
       {/* GRID DE CARDS */}
       <div className="grid md:grid-cols-2 gap-6">
         {capexItems.map(({ id, label, Icon, desc, color, bg }) => (
@@ -132,16 +143,7 @@ const SetupStep = ({ config, setConfig }: SetupProps) => {
         ))}
       </div>
 
-      {/* BOX DE INSIGHT */}
-      <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-4">
-        <div className="bg-white p-3 rounded-xl text-cencosud-blue shadow-sm">
-          <Info size={20} />
-        </div>
-        <p className="text-xs text-blue-800 font-bold leading-relaxed">
-          <span className="text-cencosud-blue font-black uppercase mr-2">Dica DeDev:</span> 
-          Lembre-se que cada R$ investido aqui é descontado do seu lucro bruto no final da rodada (EBITDA). Gaste com sabedoria!
-        </p>
-      </div>
+      
     </div>
   );
 };

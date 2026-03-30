@@ -43,14 +43,14 @@ const SetupAdmin = () => {
   return (
     <div className="min-h-screen bg-[#002350] flex items-center justify-center p-6 font-sans relative overflow-hidden">
       
-        {/* Efeito de Fundo - Grid Corporativo */}
-<div 
-  className="absolute inset-0 opacity-10 pointer-events-none" 
-  style={{ 
-    backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', 
-    backgroundSize: '40px 40px' 
-  }} 
-/>
+      {/* Efeito de Fundo - Grid Corporativo */}
+      <div 
+        className="absolute inset-0 opacity-10 pointer-events-none" 
+        style={{ 
+          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', 
+          backgroundSize: '40px 40px' 
+        }} 
+      />
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
@@ -69,18 +69,18 @@ const SetupAdmin = () => {
                 <ShieldCheck className="text-orange-500" size={28} />
              </div>
              <h1 className="text-3xl font-black text-[#002350] italic tracking-tighter uppercase leading-none">
-                Master <span className="text-orange-500">Setup</span>
+                Configuração <span className="text-orange-500">Mestra</span>
              </h1>
           </div>
           <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em] ml-1">
-            Cencosud Simulation Protocol v2.0
+            Protocolo de Simulação Cencosud v2.0
           </p>
         </div>
 
         {/* Formulário */}
         <div className="space-y-8">
           <div className="space-y-3">
-            <label className="text-[11px] font-black text-[#002350]/60 uppercase ml-5 flex items-center gap-2">
+            <label className="text-[11px] font-black text-[#002350]/60 uppercase ml-5 flex items-center gap-2 italic">
               <UserCircle2 size={14} className="text-orange-500" /> Identificação do Facilitador
             </label>
             <input 
@@ -101,7 +101,7 @@ const SetupAdmin = () => {
               <Loader2 className="animate-spin text-orange-500" size={32} />
             ) : (
               <>
-                <span className="relative z-10 italic">GERAR AMBIENTE OPERACIONAL</span>
+                <span className="relative z-10 italic uppercase">Gerar Ambiente Operacional</span>
                 <ChevronRight className="relative z-10 group-hover:translate-x-2 transition-transform text-orange-500" size={24} />
               </>
             )}
@@ -112,14 +112,12 @@ const SetupAdmin = () => {
         </div>
 
         {/* Rodapé de Branding */}
-        <div className="mt-14 pt-10 border-t border-slate-100 flex items-center justify-between opacity-60">
+        <div className="mt-14 pt-10 border-t border-slate-100 flex items-center justify-center opacity-60">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span className="text-[9px] font-black text-[#002350] tracking-widest uppercase italic">Sistema Cencosud Online</span>
           </div>
-          <span className="text-[9px] font-black italic text-slate-400 uppercase tracking-widest">
-            DeDev <span className="text-orange-500">Protocol</span>
-          </span>
+          
         </div>
       </motion.div>
     </div>
