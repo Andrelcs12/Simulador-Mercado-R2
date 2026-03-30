@@ -220,8 +220,8 @@ export type StockInputWhereInput = {
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
   appliedMargin?: Prisma.FloatFilter<"StockInput"> | number
-  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
   category?: Prisma.XOR<Prisma.CategoryMasterScalarRelationFilter, Prisma.CategoryMasterWhereInput>
+  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }
 
 export type StockInputOrderByWithRelationInput = {
@@ -230,8 +230,8 @@ export type StockInputOrderByWithRelationInput = {
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
   appliedMargin?: Prisma.SortOrder
-  config?: Prisma.ConfigurationOrderByWithRelationInput
   category?: Prisma.CategoryMasterOrderByWithRelationInput
+  config?: Prisma.ConfigurationOrderByWithRelationInput
 }
 
 export type StockInputWhereUniqueInput = Prisma.AtLeast<{
@@ -243,8 +243,8 @@ export type StockInputWhereUniqueInput = Prisma.AtLeast<{
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
   appliedMargin?: Prisma.FloatFilter<"StockInput"> | number
-  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
   category?: Prisma.XOR<Prisma.CategoryMasterScalarRelationFilter, Prisma.CategoryMasterWhereInput>
+  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }, "id">
 
 export type StockInputOrderByWithAggregationInput = {
@@ -275,8 +275,8 @@ export type StockInputCreateInput = {
   id?: string
   buyQty: number
   appliedMargin: number
-  config: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
   category: Prisma.CategoryMasterCreateNestedOneWithoutStockInputsInput
+  config: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
 }
 
 export type StockInputUncheckedCreateInput = {
@@ -291,8 +291,8 @@ export type StockInputUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  config?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
   category?: Prisma.CategoryMasterUpdateOneRequiredWithoutStockInputsNestedInput
+  config?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
 }
 
 export type StockInputUncheckedUpdateInput = {
@@ -608,8 +608,8 @@ export type StockInputSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   categoryId?: boolean
   buyQty?: boolean
   appliedMargin?: boolean
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -618,8 +618,8 @@ export type StockInputSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   categoryId?: boolean
   buyQty?: boolean
   appliedMargin?: boolean
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -628,8 +628,8 @@ export type StockInputSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   categoryId?: boolean
   buyQty?: boolean
   appliedMargin?: boolean
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectScalar = {
@@ -642,23 +642,23 @@ export type StockInputSelectScalar = {
 
 export type StockInputOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "configId" | "categoryId" | "buyQty" | "appliedMargin", ExtArgs["result"]["stockInput"]>
 export type StockInputInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StockInputIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StockInputIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 
 export type $StockInputPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StockInput"
   objects: {
-    config: Prisma.$ConfigurationPayload<ExtArgs>
     category: Prisma.$CategoryMasterPayload<ExtArgs>
+    config: Prisma.$ConfigurationPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1060,8 +1060,8 @@ readonly fields: StockInputFieldRefs;
  */
 export interface Prisma__StockInputClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  config<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.CategoryMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryMasterClient<runtime.Types.Result.GetResult<Prisma.$CategoryMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  config<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

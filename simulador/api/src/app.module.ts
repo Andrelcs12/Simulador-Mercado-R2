@@ -10,6 +10,7 @@ import { FinanceModule } from './modules/finance/finance.module';
 import { CapexModule } from './modules/capex/capex.module';
 import { HumanResourcesModule } from './modules/human-resources/human-resources.module';
 import { EngineModule } from './modules/engine/engine.module';
+import { MinigameModule } from './modules/minigame/minigame.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EngineModule } from './modules/engine/engine.module';
     CapexModule,
     HumanResourcesModule,
     EngineModule,
+    MinigameModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

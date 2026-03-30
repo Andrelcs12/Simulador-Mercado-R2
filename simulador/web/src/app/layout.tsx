@@ -47,10 +47,7 @@ export default function RootLayout({
           {children}
         </main>
         
-        {/* Exemplo de rodapé simples e fixo de copyright */}
-        <footer className="py-4 text-center text-xs text-gray-400 border-t border-gray-50">
-          Powered by <span className="font-bold text-cencosud-blue text-[10px] uppercase tracking-widest">DeDev Simulator v1.0</span>
-        </footer>
+       
       </body>
     </html>
   );

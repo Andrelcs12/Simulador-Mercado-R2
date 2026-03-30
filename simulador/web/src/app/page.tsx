@@ -122,7 +122,7 @@ const LandingPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-4xl lg:text-5xl font-black mb-20 tracking-tight"
           >
-            A Estrutura do seu <span className="text-cencosud-orange">Board Diretor</span>
+            A Estrutura do seu <span className="text-cencosud-orange">Controle Comercial</span>
           </motion.h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
@@ -141,8 +141,9 @@ const LandingPage = () => {
                 className="group p-8 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cencosud-orange transition-all cursor-default"
               >
                 <div className="text-cencosud-orange mb-6 group-hover:scale-110 transition-transform flex justify-center">
-                  {React.cloneElement(item.icon as React.ReactElement, { size: 36 })}
-                </div>
+  {/* Adicionamos <{ size: number }> para validar a prop */}
+  {React.cloneElement(item.icon as React.ReactElement<{ size: number }>, { size: 36 })}
+</div>
                 <h4 className="text-xl font-black mb-4">{item.role}</h4>
                 <p className="text-sm text-blue-100/70 leading-relaxed font-medium">{item.desc}</p>
               </motion.div>
@@ -226,9 +227,7 @@ const LandingPage = () => {
             <a href="#" className="hover:text-cencosud-orange">Support</a>
           </div>
 
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
-            Developed by <span className="text-cencosud-blue">DeDev.Studio</span> © 2026
-          </p>
+          
         </div>
       </footer>
     </div>

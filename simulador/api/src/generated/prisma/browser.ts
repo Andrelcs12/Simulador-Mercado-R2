@@ -57,3 +57,18 @@ export type RoundResult = Prisma.RoundResultModel
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model GameSession
+ * 
+ */
+export type GameSession = Prisma.GameSessionModel
+/**
+ * Model Player
+ * 
+ */
+export type Player = Prisma.PlayerModel
+/**
+ * Model Score
+ * 
+ */
+export type Score = Prisma.ScoreModel

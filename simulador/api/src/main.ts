@@ -4,6 +4,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -13,6 +14,9 @@ async function bootstrap() {
     }),
   );
 
+  
+  
+
   // Configuração de CORS para permitir o Front-end
   app.enableCors({
     origin: ['http://localhost:3000'], 
@@ -20,6 +24,8 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
+
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   const port = process.env.PORT ?? 4000;
   
