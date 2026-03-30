@@ -45,11 +45,11 @@ const AdminMestre = () => {
       }
 
       try {
-        const res = await fetch(`http://localhost:4000/minigame/session/${sessionId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/minigame/session/${sessionId}`);
         const data = await res.json();
         setSession(data);
         
-        const resPlayers = await fetch(`http://localhost:4000/minigame/players/${sessionId}`);
+        const resPlayers = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/minigame/players/${sessionId}`);
         const playersData = await resPlayers.json();
         setPlayers(playersData.map((p: any) => ({ ...p, isReady: p.isActive })));
 
@@ -77,7 +77,7 @@ const AdminMestre = () => {
   }, [config, session]);
 
   const conectarSocket = (sessionId: string, currentAdminName: string) => {
-    const socket = io('http://localhost:4000/simulation');
+    const socket = io(`${process.env.NEXT_PUBLIC_API_URL}/simulation`);
     socketRef.current = socket;
 
     socket.emit('join_session', { sessionId, name: currentAdminName, isAdmin: true });

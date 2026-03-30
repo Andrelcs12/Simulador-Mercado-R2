@@ -23,7 +23,7 @@ const RegistroUsuario = () => {
 
     try {
       // Chamada para a API do NestJS
-      const response = await fetch('http://localhost:4000/minigame/register', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/minigame/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

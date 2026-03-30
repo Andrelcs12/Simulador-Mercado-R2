@@ -15,7 +15,7 @@ const SetupAdmin = () => {
     setLoading(true);
     try {
       // 1. Criar a sessão no Backend (NestJS)
-      const res = await fetch('http://localhost:4000/minigame/create-session', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/minigame/create-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ adminName: adminName.trim() }) 
