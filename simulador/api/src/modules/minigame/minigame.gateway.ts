@@ -17,29 +17,30 @@ export class MinigameGateway {
 
   constructor(private minigameService: MinigameService) {}
 
-    @SubscribeMessage('join_session')
+
+
+  @SubscribeMessage('join_session')
 async handleJoinSession(
   @ConnectedSocket() client: Socket, 
   @MessageBody() data: { sessionId: string; playerId?: string; name: string; isAdmin?: boolean }
 ) {
-  // 1. TODO MUNDO (Admin e Player) entra na sala da sessão
   client.join(data.sessionId);
   
-  // 2. Se for Player, atualiza o banco
   if (data.playerId) {
-    await this.minigameService.updateSocketId(data.playerId, client.id);
-    
-    // Notifica o lobby que um novo player entrou
-    this.server.to(data.sessionId).emit('lobby:player_entered', {
-      id: data.playerId,
-      name: data.name,
-      joinedAt: new Date()
-    });
+    try {
+      // Busca o player completo para enviar storeName, name, etc.
+      const player = await this.minigameService.getPlayerById(data.playerId); 
+      await this.minigameService.updateSocketId(data.playerId, client.id);
+      
+      // Notifica todos na sala que o objeto player completo entrou
+      this.server.to(data.sessionId).emit('lobby:player_entered', player);
+    } catch (e) {
+      console.error("Erro ao processar join de player:", e.message);
+    }
   }
 
   console.log(`${data.isAdmin ? 'MESTRE' : 'Player'} ${data.name} conectado à sala ${data.sessionId}`);
 }
-
 
 
   @SubscribeMessage('admin:start_round')

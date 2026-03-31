@@ -5,7 +5,9 @@ import { PrismaService } from '@/prisma.service';
 export class MinigameService {
   constructor(private prisma: PrismaService) {}
 
-  // Cria uma nova sessão (GameSession) com código curto (ex: XJ92)
+  /**
+   * Cria uma nova sessão (GameSession) com código curto (ex: XJ92)
+   */
   async createSession() {
     try {
       const code = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -21,7 +23,9 @@ export class MinigameService {
     }
   }
 
-  // Registra o jogador vinculando-o ao código da sessão digitado
+  /**
+   * Registra ou atualiza o jogador vinculando-o ao código da sessão
+   */
   async registerPlayer(data: { name: string; email: string; storeName: string; sessionCode: string }) {
     try {
       // 1. Validar se a sessão com esse código existe
@@ -47,7 +51,7 @@ export class MinigameService {
         throw new ConflictException('Esta unidade de negócio já possui um gestor nesta sala.');
       }
 
-      // 3. Upsert do Jogador (Cria ou atualiza e vincula à sessão encontrada)
+      // 3. Upsert do Jogador
       return await this.prisma.player.upsert({
         where: { email: data.email },
         update: {
@@ -64,7 +68,7 @@ export class MinigameService {
           sessionId: session.id,
           role: 'player',
         },
-        include: { session: true } // Retorna os dados da sessão (incluindo o UUID id)
+        include: { session: true } 
       });
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof ConflictException) throw error;
@@ -73,6 +77,38 @@ export class MinigameService {
     }
   }
 
+  /**
+   * Busca os dados de um player específico pelo ID
+   */
+  async getPlayerById(playerId: string) {
+    const player = await this.prisma.player.findUnique({
+      where: { id: playerId },
+    });
+    if (!player) throw new NotFoundException('Jogador não encontrado.');
+    return player;
+  }
+
+  /**
+   * Busca a sessão e já inclui todos os players ativos nela
+   * Importante para o sincronismo inicial do Lobby
+   */
+  async getSessionById(sessionId: string) {
+    const session = await this.prisma.gameSession.findUnique({
+      where: { id: sessionId },
+      include: { 
+        players: {
+          where: { isActive: true },
+          orderBy: { createdAt: 'asc' }
+        } 
+      },
+    });
+    if (!session) throw new NotFoundException('Sessão não encontrada.');
+    return session;
+  }
+
+  /**
+   * Atualiza o ID do Socket para comunicação em tempo real
+   */
   async updateSocketId(playerId: string, socketId: string) {
     return this.prisma.player.update({
       where: { id: playerId },
@@ -80,6 +116,9 @@ export class MinigameService {
     });
   }
 
+  /**
+   * Busca apenas os players de uma sessão
+   */
   async getPlayersBySession(sessionId: string) {
     return this.prisma.player.findMany({
       where: { sessionId, isActive: true },
@@ -87,20 +126,13 @@ export class MinigameService {
     });
   }
 
-
-  async getSessionById(sessionId: string) {
-  const session = await this.prisma.gameSession.findUnique({
-    where: { id: sessionId },
-  });
-  if (!session) throw new NotFoundException('Sessão não encontrada.');
-  return session;
-}
-
-
-    async setPlayerReady(playerId: string) {
-  return this.prisma.player.update({
-    where: { id: playerId },
-    data: { isActive: true }, // Ou use um campo 'isReady' se tiver no seu schema
-  });
-}
+  /**
+   * Define o status do player como ativo/pronto
+   */
+  async setPlayerReady(playerId: string) {
+    return this.prisma.player.update({
+      where: { id: playerId },
+      data: { isActive: true },
+    });
+  }
 }

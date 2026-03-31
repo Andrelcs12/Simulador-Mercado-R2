@@ -41,68 +41,64 @@ const LobbyPage = () => {
   const [tempoRestante, setTempoRestante] = useState(2700);
 
   useEffect(() => {
-    const savedData = localStorage.getItem('player_data');
-    if (!savedData) {
-      router.push('/pages/registro');
-      return;
-    }
-    const player = JSON.parse(savedData);
-    setMyPlayerData(player);
+  const savedData = localStorage.getItem('player_data');
+  if (!savedData) {
+    router.push('/pages/registro');
+    return;
+  }
+  const player = JSON.parse(savedData);
+  setMyPlayerData(player);
 
-    // Inicialização do Socket
-    socket = io('http://localhost:4000/simulation');
-    const sessionId = player.sessionId;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const sessionId = player.sessionId;
 
-    socket.emit('join_session', { 
-      sessionId, 
-      playerId: player.id, 
-      name: player.name 
+  // Conexão do Socket
+  socket = io(`${API_URL}/simulation`);
+
+  socket.emit('join_session', { 
+    sessionId, 
+    playerId: player.id, 
+    name: player.name 
+  });
+
+  // ESCUTAS
+  socket.on('simulation:config_update', (newConfig) => {
+    setConfig(newConfig);
+    if (!isGameStarted) setTempoRestante(newConfig.duration);
+  });
+
+  socket.on('lobby:player_entered', (newPlayer) => {
+    console.log("Novo player na área:", newPlayer);
+    setPlayers(prev => {
+      // Evita duplicatas pelo ID
+      const exists = prev.find(p => p.id === newPlayer.id);
+      if (exists) return prev;
+      return [...prev, newPlayer];
     });
+  });
 
-    // 1. ESCUTA: Configurações do Mestre em tempo real
-    socket.on('simulation:config_update', (newConfig: GameConfig) => {
-      setConfig(newConfig);
-      // Se o jogo ainda não deu o play, o tempo visual segue a config do mestre
-      if (!isGameStarted) {
-        setTempoRestante(newConfig.duration);
+  socket.on('round:started', (data) => {
+    setIsGameStarted(true);
+    setTempoRestante(data.duration);
+  });
+
+  // SINCRONIZAÇÃO INICIAL (Busca quem já estava lá)
+  fetch(`${API_URL}/minigame/session/${sessionId}`)
+    .then(res => res.json())
+    .then(data => {
+      // Como alteramos o service para 'include: { players: true }', 
+      // a lista vem dentro de data.players
+      if (data.players) {
+        setPlayers(data.players);
       }
-    });
+      if (data.adminName) {
+        setConfig(prev => ({ ...prev, adminName: data.adminName }));
+      }
+    })
+    .catch(err => console.error("Erro ao sincronizar sessão:", err));
 
-    // 2. ESCUTA: Entrada de novos players
-    socket.on('lobby:player_entered', (newPlayer: Player) => {
-      setPlayers(prev => prev.find(p => p.id === newPlayer.id) ? prev : [...prev, newPlayer]);
-    });
-
-    // 3. ESCUTA: Início da rodada (Disparo do mestre)
-    socket.on('round:started', (data) => {
-      setIsGameStarted(true);
-      setTempoRestante(data.duration);
-    });
-
-    // Busca inicial de dados da sessão para sincronização
-    fetch(`http://localhost:4000/minigame/session/${sessionId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.players) setPlayers(data.players);
-        if (data.adminName) {
-          setConfig(prev => ({ ...prev, adminName: data.adminName }));
-        }
-      })
-      .catch(err => console.error("Erro ao sincronizar sessão:", err));
-
-    return () => { socket.disconnect(); };
-  }, [router, isGameStarted]);
-
-  // Cronômetro Ativo (Lógica de contagem regressiva)
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isGameStarted && tempoRestante > 0) {
-      timer = setInterval(() => {
-        setTempoRestante((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [isGameStarted, tempoRestante]);
+  return () => { socket.disconnect(); };
+}, [router, isGameStarted]);
 
   // Função de Formatação Profissional MM:SS
   const formatTime = (seconds: number) => {
