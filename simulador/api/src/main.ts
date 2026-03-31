@@ -45,7 +45,7 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 
   console.log(`
-  🚀 Novely API is standing by!
+  🚀 Simulador EBITDA is standing by!
   🌍 Mode: ${isProd ? 'Production' : 'Development'}
   🔗 URL: http://0.0.0.0:${port}
   `);
