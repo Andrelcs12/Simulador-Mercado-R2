@@ -7,7 +7,8 @@ import {
 } from 'recharts';
 import { 
   ArrowRight, Users, Box, BarChart4, ShieldCheck, Wallet, 
-  Landmark, TrendingUp, Zap, Activity
+  Landmark, TrendingUp, Zap, Activity,
+  Hash
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -195,7 +196,7 @@ const LandingPage = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-end">
           <div className="w-12 h-12 bg-[#002350] rounded-xl flex items-center justify-center">
-            <Hash className="text-orange-500" size={24} />
+            <Hash  className="text-orange-500" size={24} />
           </div>
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Build v2.0.4 - Residencia</span>
         </div>
