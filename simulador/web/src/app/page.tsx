@@ -48,10 +48,7 @@ const LandingPage = () => {
           transition={{ duration: 0.8 }}
           className="flex-1 text-left"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-[10px] font-black uppercase tracking-[0.2em]">
-            <Activity size={14} className="animate-pulse" />
-            Operação em Tempo Real: Ativa
-          </div>
+          
           
           <h1 className="text-6xl lg:text-7xl font-black text-[#002350] leading-[0.95] mb-8 tracking-tighter italic">
             Decisões que <br />
@@ -149,66 +146,96 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* --- SEÇÃO: GESTÃO FINANCEIRA --- */}
-      <section id="capex" className="py-32 px-6 lg:px-10 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
-          
-          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="space-y-12">
-            <div>
-              <span className="text-orange-500 font-black tracking-widest text-[10px] uppercase mb-2 block italic">Protocolo de Capital</span>
-              <h2 className="text-5xl font-black text-[#002350] leading-[0.95] tracking-tighter italic uppercase">
-                Investimento <span className="text-orange-500 not-italic">CAPEX</span> <br/>& Risco Operacional
-              </h2>
-            </div>
-            
-            <div className="space-y-8">
-              {[
-                { icon: Zap, title: "Continuidade de Negócio", desc: "Redundância de sistemas para evitar indisponibilidade em dias de pico." },
-                { icon: TrendingUp, title: "Eficiência de Ativos", desc: "Manutenção de equipamentos críticos como balanças e câmaras frias." }
-              ].map((item, i) => (
-                <div key={i} className="flex gap-6 group">
-                  <div className="w-16 h-16 shrink-0 bg-[#002350] text-white rounded-2xl flex items-center justify-center group-hover:bg-orange-500 transition-colors">
-                    <item.icon size={28} />
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-black text-[#002350] mb-1 uppercase italic tracking-tight">{item.title}</h4>
-                    <p className="text-slate-500 font-bold text-sm leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+      {/* --- SEÇÃO: NÚCLEO DA RESIDÊNCIA TÉCNICA (DEVDERE) --- */}
+<section id="projeto-residencia" className="py-32 px-6 lg:px-10 max-w-7xl mx-auto overflow-hidden">
+  <div className="grid lg:grid-cols-2 gap-20 items-start">
+    
+    <motion.div 
+      initial={{ opacity: 0, x: -30 }} 
+      whileInView={{ opacity: 1, x: 0 }} 
+      viewport={{ once: true }}
+      className="space-y-12"
+    >
+      <header>
+        <span className="text-orange-500 font-black tracking-[0.3em] text-[10px] uppercase mb-2 block italic">
+          Infraestrutura do Projeto
+        </span>
+        <h2 className="text-5xl font-black text-[#002350] leading-[0.95] tracking-tighter italic uppercase">
+          Arquitetura <br/>
+          <span className="text-orange-500 not-italic text-4xl">Sistêmica & Dados</span>
+        </h2>
+        <p className="mt-6 text-slate-500 font-bold text-sm leading-relaxed max-w-lg">
+          Desenvolvimento de um ecossistema full-stack para simulação de cenários de varejo, 
+          utilizando o stack de alta performance focado em escalabilidade e precisão de cálculos de margem.
+        </p>
+      </header>
+      
+      <div className="space-y-8 border-l-2 border-slate-100 pl-8">
+        {[
+          { title: "Motor de Cálculo EBITDA", desc: "Algoritmos em NestJS processando em tempo real a relação entre CMV, Quebras e Despesas Operacionais." },
+          { title: "Sincronização via WebSockets", desc: "Atualização instantânea do Dashboard de indicadores para todos os players conectados na sessão." },
+          { title: "Persistência Relacional", desc: "Modelagem de dados complexa em PostgreSQL via Prisma ORM, garantindo integridade ACID em transações financeiras." }
+        ].map((item, i) => (
+          <div key={i} className="relative group">
+            <div className="absolute -left-[35px] top-1 w-3 h-3 bg-orange-500 rounded-full group-hover:scale-150 transition-transform shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
+            <h4 className="text-lg font-black text-[#002350] mb-1 uppercase italic tracking-tight">{item.title}</h4>
+            <p className="text-slate-500 font-bold text-xs leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </motion.div>
 
-          {/* CARDS INDICADORES */}
-          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="grid grid-cols-2 gap-4">
-            <div className="p-8 rounded-[3rem] bg-slate-50 border border-slate-100 flex flex-col justify-between">
-              <Landmark className="text-red-500 mb-4" size={32} />
-              <div>
-                <h3 className="text-5xl font-black text-[#002350] mb-1 tracking-tighter">12%</h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Juros/mês sobre<br/>Déficit de Caixa</p>
-              </div>
-            </div>
-
-            <div className="p-8 rounded-[3rem] bg-orange-500 text-white flex flex-col justify-between shadow-2xl shadow-orange-200">
-              <Users className="text-white/40 mb-4" size={32} />
-              <div>
-                <h3 className="text-5xl font-black mb-1 tracking-tighter">04</h3>
-                <p className="text-[10px] font-black text-orange-100 uppercase tracking-widest">Lojas em disputa<br/>direta por Market</p>
-              </div>
-            </div>
-
-            <div className="col-span-2 p-10 rounded-[3rem] bg-[#002350] text-white flex justify-between items-center group cursor-pointer border-b-8 border-orange-500">
-              <div className="space-y-1">
-                <h3 className="text-3xl font-black tracking-tighter italic uppercase">SLA & Protocolo CSAT</h3>
-                <p className="text-blue-200 text-[11px] font-black uppercase tracking-widest">A satisfação do cliente dita sua fatia de mercado</p>
-              </div>
-              <div className="bg-orange-500 p-5 rounded-2xl group-hover:translate-x-3 transition-transform">
-                <ArrowRight size={24} strokeWidth={3} />
-              </div>
-            </div>
-          </motion.div>
+    {/* DASHBOARD INDICADOR DE PERFORMANCE TÉCNICA */}
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }} 
+      whileInView={{ opacity: 1, scale: 1 }} 
+      viewport={{ once: true }}
+      className="bg-slate-50 rounded-[3rem] p-10 border border-slate-200 shadow-inner"
+    >
+      <div className="space-y-6">
+        <div className="flex justify-between items-end">
+          <div className="w-12 h-12 bg-[#002350] rounded-xl flex items-center justify-center">
+            <Hash className="text-orange-500" size={24} />
+          </div>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Build v2.0.4 - Residencia</span>
         </div>
-      </section>
+
+        <div className="space-y-4">
+          <h3 className="text-2xl font-black text-[#002350] uppercase italic">Stack Tecnológico</h3>
+          <div className="flex flex-wrap gap-2">
+            {['NestJS', 'Fastify', 'Prisma', 'PostgreSQL', 'Socket.io', 'Tailwind'].map((tech) => (
+              <span key={tech} className="px-4 py-2 bg-white border border-slate-200 rounded-full text-[10px] font-black text-[#002350] uppercase">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 pt-6">
+          <div className="bg-[#002350] p-6 rounded-[2rem] text-white">
+            <p className="text-[9px] font-black uppercase tracking-widest text-orange-400 mb-2">Objetivo do Módulo</p>
+            <p className="text-sm font-bold leading-snug">
+              Simular a operação de uma loja Cencosud, onde cada decisão de investimento (CAPEX) ou corte de custos (OPEX) impacta diretamente o lucro líquido.
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-[2rem] border border-slate-200">
+             <div className="flex justify-between items-center mb-4">
+                <span className="text-[10px] font-black uppercase text-slate-400">Status do Ambiente</span>
+                <span className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" /> Operacional
+                </span>
+             </div>
+             <p className="text-xs font-bold text-[#002350]">
+               Conexão estabelecida com o banco de dados Neon (PostgreSQL) e servidor de sinalização pronto para múltiplas salas.
+             </p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+
+  </div>
+</section>
 
       {/* --- FOOTER --- */}
       <footer className="py-20 px-6 lg:px-10 border-t border-slate-100 bg-slate-50/50">
