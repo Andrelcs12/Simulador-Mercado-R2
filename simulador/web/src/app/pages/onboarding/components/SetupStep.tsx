@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  ShieldAlert, HardDrive, Truck, Megaphone, 
+  ShieldAlert, HardDrive, Truck, Megaphone, Monitor, Wrench, ReceiptText, RefreshCw,
   Info, LucideIcon 
 } from 'lucide-react';
 
@@ -20,6 +20,8 @@ interface CapexItem {
   desc: string;
   color: string;
   bg: string;
+  value: string;
+  insight?: string;
 }
 
 const SetupStep = ({ config, setConfig }: SetupProps) => {
@@ -37,35 +39,63 @@ const SetupStep = ({ config, setConfig }: SetupProps) => {
   const capexItems: CapexItem[] = [
     { 
       id: 'seguranca', 
-      label: 'Cyber Security', 
+      label: 'Segurança', 
       Icon: ShieldAlert, 
-      desc: 'Previne ataques hacker que podem fechar sua loja.',
+      desc: 'Instalar softwares de monitoramento de ataques cibernéticos para prevenir possíveis ataques no ambiente.',
       color: 'text-red-500',
-      bg: 'bg-red-50'
+      bg: 'bg-red-50',
+      value: '50.000',
+      insight: 'Efetuando o CAPEX ocorrerá um incremento de 20% no valor de R$ 500,00 que é pago atualmente referente a licença da plataforma. \n\n2 dias sem vendas caso não ocorra a efetuação desse CAPEX. (Somado ao SLA)',
     },
     { 
-      id: 'ti', 
-      label: 'Infraestrutura TI', 
-      Icon: HardDrive, 
-      desc: 'Garante o uptime dos PDVs e Self-Checkouts.',
+      id: 'equipamentos', 
+      label: 'Equipamentos', 
+      Icon: Wrench, 
+      desc: 'Adquirir novos equipamentos para a troca dos atuais, tendo em vista que estão bem desgastados.',
       color: 'text-blue-500',
-      bg: 'bg-blue-50'
+      bg: 'bg-blue-50',
+      value: '75.000',
+      insight: 'Efetuando o CAPEX não será necessário pagar a taxa de manutenção de R$ 400,00 em equipamentos, pois serão novos em garantia. \n\n1 dia sem vendas caso não ocorra a efetuação desse CAPEX. (Somado ao SLA)',
     },
     { 
-      id: 'logistica', 
-      label: 'Eficiência Logística', 
-      Icon: Truck, 
-      desc: 'Reduz perdas no transporte e acelera o recebimento.',
+      id: 'redes', 
+      label: 'Redes', 
+      Icon: HardDrive, 
+      desc: 'Efetuar a migração da infraestrutura de redes da loja, pois está apresentando oscilação na conexão com os parceiros, inclusive o sistema de cartão que opera no PDV.',
+      color: 'text-blue-500',
+      bg: 'bg-blue-50',
+      value: '80.000',
+      insight: '2 dias sem vendas caso não ocorra a efetuação desse CAPEX. (Somado ao SLA)',
+    },
+    { 
+      id: 'site', 
+      label: 'Site', 
+      Icon: Monitor, 
+      desc: 'Migrar nossa plataforma de vendas no digital para outra mais robusta, estamos tendo reclamações de lentidão no site que afeta a venda no digital.',
+      color: 'text-orange-500',
+      bg: 'bg-orange-50',
+      value: '65.000',
+      insight: 'Efetuando o CAPEX ocorrerá um incremento de 30% no valor de R$ 500,00 que é pago atualmente referente a licença da plataforma. \n\n1 dia sem vendas caso não ocorra a efetuação desse CAPEX. (Somado ao SLA)',
+    },
+    { 
+      id: 'self-checkout', 
+      label: 'Self Checkout', 
+      Icon: ReceiptText, 
+      desc: 'Adquirir self checkouts para a operação da loja.',
+      color: 'text-red-500',
+      bg: 'bg-red-50',
+      value: '80.000',
+      insight: 'A implementação desse CAPEX ajudará no serviço prestado aos clientes dando maior agilidade as filas, isso também acarretará um aumento de custo com o licenciamento, pois para cada self o custo é de R$ 80,00 por mês. \n\n2 dias sem vendas caso não ocorra a efetuação desse CAPEX. (Somado ao SLA)',
+    },
+    { 
+      id: 'melhorias', 
+      label: 'Melhoria Contínua', 
+      Icon: RefreshCw, 
+      desc: 'Efetuar melhorias em relatórios gerenciais que demoram em média duas horas para gerar e automatizar processos manuais.',
       color: 'text-green-500',
-      bg: 'bg-green-50'
-    },
-    { 
-      id: 'marketing', 
-      label: 'Trade Marketing', 
-      Icon: Megaphone, 
-      desc: 'Aumenta o tráfego de clientes na loja física.',
-      color: 'text-cencosud-orange',
-      bg: 'bg-orange-50'
+      bg: 'bg-green-50',
+      value: '45.000',
+      insight: 'Caso não implemente esse CAPEX a loja poderá ter dificuldade em expandir sua operação, pois o time atual não terá braços para novas demandas.',
     },
   ];
 
@@ -99,13 +129,25 @@ const SetupStep = ({ config, setConfig }: SetupProps) => {
         </p>
       </div>
 
+      <p className="text-base text-blue-800 font-bold leading-relaxed">
+          Selecione o CAPEX que deseja escolher:
+      </p>
+
       {/* GRID DE CARDS */}
       <div className="grid md:grid-cols-2 gap-6">
-        {capexItems.map(({ id, label, Icon, desc, color, bg }) => (
+        {capexItems.map(({ id, label, Icon, desc, color, bg, value, insight}) => (
           <motion.div 
             key={id}
             whileHover={{ y: -4 }}
-            className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100"
+            whileTap={{ scale: 0.98 }}
+            onClick={ () => {
+              const numericValue = parseInt(value.replace('.', ''));
+              const newValue = config.capex[id] > 0 ? 0 : numericValue;
+              handleCapexChange(id, newValue);
+            }}
+            className={`cursor-pointer transition-colors duration-300 bg-white p-6 rounded-[2rem] shadow-sm border-2 ${
+                      config.capex[id] > 0 ? 'border-cencosud-orange shadow-md' : 'border-gray-100'
+                      }`}
           >
             <div className="flex items-center gap-4 mb-6">
               <div className={`p-4 rounded-2xl ${bg} ${color}`}>
@@ -124,19 +166,22 @@ const SetupStep = ({ config, setConfig }: SetupProps) => {
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black text-cencosud-blue uppercase">Aporte Financeiro</span>
                   <span className="font-mono font-black text-cencosud-orange bg-orange-50 px-3 py-1 rounded-lg">
-                    R$ {config.capex[id].toLocaleString('pt-BR')}
+                    R$ {value}
                   </span>
                 </div>
+
+                      {/* --- NOVO MINI BOX DE INSIGHT --- */}
+                {insight && (
+                  <div className="mt-4 bg-slate-50 border border-slate-100 p-3 rounded-xl flex items-start gap-3 whitespace-pre-line">
+                    <Info size={16} className="text-cencosud-blue shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                      <span className="text-cencosud-blue font-black uppercase mr-1">Impacto:</span>
+                      {insight}
+                    </p>
+                  </div>
+                )}
+                {/* -------------------------------- */}
                 
-                <input 
-                  type="range"
-                  min="0"
-                  max="200000"
-                  step="5000"
-                  value={config.capex[id]}
-                  onChange={(e) => handleCapexChange(id, parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-cencosud-blue"
-                />
               </div>
             </div>
           </motion.div>

@@ -122,7 +122,7 @@ const OnboardingPage = () => {
         <button 
           onClick={prevStep}
           disabled={step === 1}
-          className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all ${step === 1 ? 'opacity-0 pointer-events-none' : 'text-gray-400 hover:text-cencosud-blue hover:bg-gray-50'}`}
+          className={`cursor-pointer flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all ${step === 1 ? 'opacity-0 pointer-events-none' : 'text-gray-400 hover:text-cencosud-blue hover:bg-gray-50'}`}
         >
           <ArrowLeft size={18} /> Voltar
         </button>
@@ -141,7 +141,7 @@ const OnboardingPage = () => {
         {step < 3 ? (
           <button 
             onClick={nextStep}
-            className="group flex items-center gap-3 bg-cencosud-blue text-white px-8 py-4 rounded-2xl font-black text-sm md:text-base hover:shadow-xl hover:shadow-blue-100 transition-all active:scale-95"
+            className="cursor-pointer group flex items-center gap-3 bg-cencosud-blue text-white px-8 py-4 rounded-2xl font-black text-sm md:text-base hover:shadow-xl hover:shadow-blue-100 transition-all active:scale-95"
           >
             Próximo Passo 
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -149,7 +149,7 @@ const OnboardingPage = () => {
         ) : (
           <button 
             onClick={handleFinalize}
-            className="flex items-center gap-3 bg-green-600 text-white px-8 py-4 rounded-2xl font-black text-sm md:text-base hover:shadow-xl hover:shadow-green-100 transition-all hover:bg-green-700 active:scale-95"
+            className="cursor-pointer flex items-center gap-3 bg-green-600 text-white px-8 py-4 rounded-2xl font-black text-sm md:text-base hover:shadow-xl hover:shadow-green-100 transition-all hover:bg-green-700 active:scale-95"
           >
             Finalizar Planejamento <CheckCircle2 size={20} />
           </button>
