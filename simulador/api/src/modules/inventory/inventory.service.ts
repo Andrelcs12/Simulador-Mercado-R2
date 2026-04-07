@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { CreateStockInputDto } from './dto/create-stock-input.dto';
@@ -39,9 +39,4 @@ export class InventoryService {
     return qtdNaoVendida * input.category.unitCost * input.category.agingPenaltyRate;
   }
 } 
-=======
-import { Injectable } from '@nestjs/common';
 
-@Injectable()
-export class InventoryService {}
->>>>>>> main
