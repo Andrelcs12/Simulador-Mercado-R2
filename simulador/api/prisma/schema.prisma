@@ -42,8 +42,8 @@ model Configuration {
   operatorsQty        Int          @default(0)
   serviceOperatorsQty Int          @default(0)
   quizScore           Float        @default(0.0)
-  totalSpent          Float?
-  interestPaid        Float?
+  totalSpent          Float        @default(0)
+  interestPaid        Float        @default(0)
   finalCSAT           Float?
   finalSLA            Int?
   createdAt           DateTime     @default(now())
