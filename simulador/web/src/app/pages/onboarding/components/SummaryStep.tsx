@@ -79,7 +79,7 @@ const SummaryStep = ({ config }: SummaryProps) => {
               <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
-                  animate={{ width: `${(totalCapex / 700000) * 100}%` }}
+                  animate={{ width: `${(totalCapex / 395000) * 100}%` }}
                   className="h-full bg-cencosud-blue"
                 />
               </div>
