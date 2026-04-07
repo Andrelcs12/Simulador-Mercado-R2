@@ -16,4 +16,4 @@ import { ModeloBaseModule } from './modules/modelo-base/modelo-base.module';
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
-export class AppModule {}
+export class AppModule {} 
