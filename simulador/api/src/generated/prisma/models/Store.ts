@@ -200,16 +200,16 @@ export type StoreWhereInput = {
   id?: Prisma.StringFilter<"Store"> | string
   name?: Prisma.StringFilter<"Store"> | string
   initialCash?: Prisma.FloatFilter<"Store"> | number
-  rounds?: Prisma.RoundResultListRelationFilter
   configurations?: Prisma.ConfigurationListRelationFilter
+  rounds?: Prisma.RoundResultListRelationFilter
 }
 
 export type StoreOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   initialCash?: Prisma.SortOrder
-  rounds?: Prisma.RoundResultOrderByRelationAggregateInput
   configurations?: Prisma.ConfigurationOrderByRelationAggregateInput
+  rounds?: Prisma.RoundResultOrderByRelationAggregateInput
 }
 
 export type StoreWhereUniqueInput = Prisma.AtLeast<{
@@ -219,8 +219,8 @@ export type StoreWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.StoreWhereInput | Prisma.StoreWhereInput[]
   name?: Prisma.StringFilter<"Store"> | string
   initialCash?: Prisma.FloatFilter<"Store"> | number
-  rounds?: Prisma.RoundResultListRelationFilter
   configurations?: Prisma.ConfigurationListRelationFilter
+  rounds?: Prisma.RoundResultListRelationFilter
 }, "id">
 
 export type StoreOrderByWithAggregationInput = {
@@ -247,32 +247,32 @@ export type StoreCreateInput = {
   id?: string
   name: string
   initialCash?: number
-  rounds?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
+  rounds?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateInput = {
   id?: string
   name: string
   initialCash?: number
-  rounds?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
+  rounds?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  rounds?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
+  rounds?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  rounds?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
+  rounds?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateManyInput = {
@@ -446,13 +446,13 @@ export type StoreUncheckedUpdateWithoutRoundsInput = {
  */
 
 export type StoreCountOutputType = {
-  rounds: number
   configurations: number
+  rounds: number
 }
 
 export type StoreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  rounds?: boolean | StoreCountOutputTypeCountRoundsArgs
   configurations?: boolean | StoreCountOutputTypeCountConfigurationsArgs
+  rounds?: boolean | StoreCountOutputTypeCountRoundsArgs
 }
 
 /**
@@ -468,15 +468,15 @@ export type StoreCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * StoreCountOutputType without action
  */
-export type StoreCountOutputTypeCountRoundsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RoundResultWhereInput
+export type StoreCountOutputTypeCountConfigurationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConfigurationWhereInput
 }
 
 /**
  * StoreCountOutputType without action
  */
-export type StoreCountOutputTypeCountConfigurationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ConfigurationWhereInput
+export type StoreCountOutputTypeCountRoundsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RoundResultWhereInput
 }
 
 
@@ -484,8 +484,8 @@ export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   name?: boolean
   initialCash?: boolean
-  rounds?: boolean | Prisma.Store$roundsArgs<ExtArgs>
   configurations?: boolean | Prisma.Store$configurationsArgs<ExtArgs>
+  rounds?: boolean | Prisma.Store$roundsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
@@ -509,8 +509,8 @@ export type StoreSelectScalar = {
 
 export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "initialCash", ExtArgs["result"]["store"]>
 export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  rounds?: boolean | Prisma.Store$roundsArgs<ExtArgs>
   configurations?: boolean | Prisma.Store$configurationsArgs<ExtArgs>
+  rounds?: boolean | Prisma.Store$roundsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -519,8 +519,8 @@ export type StoreIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Store"
   objects: {
-    rounds: Prisma.$RoundResultPayload<ExtArgs>[]
     configurations: Prisma.$ConfigurationPayload<ExtArgs>[]
+    rounds: Prisma.$RoundResultPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -920,8 +920,8 @@ readonly fields: StoreFieldRefs;
  */
 export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  rounds<T extends Prisma.Store$roundsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$roundsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoundResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   configurations<T extends Prisma.Store$configurationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$configurationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rounds<T extends Prisma.Store$roundsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$roundsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoundResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1347,30 +1347,6 @@ export type StoreDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Store.rounds
- */
-export type Store$roundsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RoundResult
-   */
-  select?: Prisma.RoundResultSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RoundResult
-   */
-  omit?: Prisma.RoundResultOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RoundResultInclude<ExtArgs> | null
-  where?: Prisma.RoundResultWhereInput
-  orderBy?: Prisma.RoundResultOrderByWithRelationInput | Prisma.RoundResultOrderByWithRelationInput[]
-  cursor?: Prisma.RoundResultWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RoundResultScalarFieldEnum | Prisma.RoundResultScalarFieldEnum[]
-}
-
-/**
  * Store.configurations
  */
 export type Store$configurationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1392,6 +1368,30 @@ export type Store$configurationsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ConfigurationScalarFieldEnum | Prisma.ConfigurationScalarFieldEnum[]
+}
+
+/**
+ * Store.rounds
+ */
+export type Store$roundsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RoundResult
+   */
+  select?: Prisma.RoundResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RoundResult
+   */
+  omit?: Prisma.RoundResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoundResultInclude<ExtArgs> | null
+  where?: Prisma.RoundResultWhereInput
+  orderBy?: Prisma.RoundResultOrderByWithRelationInput | Prisma.RoundResultOrderByWithRelationInput[]
+  cursor?: Prisma.RoundResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RoundResultScalarFieldEnum | Prisma.RoundResultScalarFieldEnum[]
 }
 
 /**

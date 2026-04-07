@@ -4,6 +4,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma.service';
 import { ModeloBaseModule } from './modules/modelo-base/modelo-base.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { PricingModule } from './modules/pricing/pricing.module';
+import { FinanceModule } from './modules/finance/finance.module';
+import { CapexModule } from './modules/capex/capex.module';
+import { HumanResourcesModule } from './modules/human-resources/human-resources.module';
+import { EngineModule } from './modules/engine/engine.module';
+import { MinigameModule } from './modules/minigame/minigame.module';
 
 @Module({
   imports: [
@@ -12,6 +19,13 @@ import { ModeloBaseModule } from './modules/modelo-base/modelo-base.module';
       isGlobal: true,
     }),
     ModeloBaseModule,
+    InventoryModule,
+    PricingModule,
+    FinanceModule,
+    CapexModule,
+    HumanResourcesModule,
+    EngineModule,
+    MinigameModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

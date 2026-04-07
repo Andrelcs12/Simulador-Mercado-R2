@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,103 +7,128 @@ datasource db {
   provider = "postgresql"
 }
 
-// 1. DADOS MESTRES (O que o Grupo D vai popular via Seed)
 model CategoryMaster {
-  id                String   @id @default(uuid())
-  name              String   // Perecíveis, Mercearia, Eletro, Hipel
-  unitCost          Float    // Ex: 20.00
-  taxRate           Float    // Ex: 0.12 (12%)
-  agingPenaltyRate  Float    // Ex: 0.20 (20%)
-  marketStock       Int      // Qtd total disponível no mercado para todos
-  stockInputs       StockInput[]
+  id               String       @id @default(uuid())
+  name             String
+  unitCost         Float
+  taxRate          Float
+  agingPenaltyRate Float
+  marketStock      Int
+  stockInputs      StockInput[]
 }
 
 model CapexMaster {
-  id            String   @id @default(uuid())
-  name          String   // Segurança, Redes, Site, etc.
+  id            String       @id @default(uuid())
+  name          String
   description   String
-  cost          Float    // Valor do investimento
-  baseLicense   Float    // Valor da licença atual (R$ 500)
-  upgradeImpact Float    // Multiplicador (Ex: 1.20 para 20%)
+  cost          Float
+  baseLicense   Float
+  upgradeImpact Float
   storeCapexs   StoreCapex[]
 }
 
-// 2. ESTRUTURA DAS LOJAS (As competidoras)
 model Store {
-  id            String   @id @default(uuid())
-  name          String   // GBarbosa, Bretas, Perini, Mercado Extra, etc.
-  initialCash   Float    @default(700000.0)
-  rounds        RoundResult[]
+  id             String          @id @default(uuid())
+  name           String
+  initialCash    Float           @default(700000.0)
   configurations Configuration[]
+  rounds         RoundResult[]
 }
 
-// 3. CONFIGURAÇÃO DA RODADA (Inputs de cada grupo)
 model Configuration {
-  id                  String   @id @default(uuid())
+  id                  String       @id @default(uuid())
   storeId             String
-  store               Store    @relation(fields: [storeId], references: [id])
-  roundNumber         Int      // 1, 2 ou 3
-
-  // RH Inputs
-  operatorsQty        Int      @default(0) // Quadro ideal: 10
-  serviceOperatorsQty Int      @default(0) // Influencia SLA
-  quizScore           Float    @default(0.0) // 0 a 1.0 (90% = 0.9)
-
-  // Relacionamentos para inputs detalhados
+  roundNumber         Int
+  operatorsQty        Int          @default(0)
+  serviceOperatorsQty Int          @default(0)
+  quizScore           Float        @default(0.0)
+  totalSpent          Float?
+  interestPaid        Float?
+  finalCSAT           Float?
+  finalSLA            Int?
+  createdAt           DateTime     @default(now())
+  store               Store        @relation(fields: [storeId], references: [id])
   stockInputs         StockInput[]
   capexSelections     StoreCapex[]
-
-  // Logs de cálculo (Para o Dev 2 e Grupo A salvarem o processamento)
-  totalSpent          Float?   // Soma de tudo antes das vendas
-  interestPaid        Float?   // Juros de 12% se estourar 700k
-  finalCSAT           Float?
-  finalSLA            Int?     // Dias de inatividade
-  
-  createdAt           DateTime @default(now())
 }
 
-// Detalhes da Compra de Estoque por Configuração
 model StockInput {
-  id              String         @id @default(uuid())
-  configId        String
-  config          Configuration  @relation(fields: [configId], references: [id])
-  categoryId      String
-  category        CategoryMaster @relation(fields: [categoryId], references: [id])
-  buyQty          Int            // Qtd que a loja decidiu comprar
-  appliedMargin   Float          // Margem decidida pelo Gerente Comercial
+  id            String         @id @default(uuid())
+  configId      String
+  categoryId    String
+  buyQty        Int
+  appliedMargin Float
+  category      CategoryMaster @relation(fields: [categoryId], references: [id])
+  config        Configuration  @relation(fields: [configId], references: [id])
 }
 
-// Seleção de CAPEX por Loja
 model StoreCapex {
   id          String        @id @default(uuid())
   configId    String
-  config      Configuration @relation(fields: [configId], references: [id])
   capexId     String
-  capexMaster CapexMaster   @relation(fields: [capexId], references: [id])
   isApproved  Boolean       @default(false)
+  capexMaster CapexMaster   @relation(fields: [capexId], references: [id])
+  config      Configuration @relation(fields: [configId], references: [id])
 }
 
-// 4. RESULTADOS FINAIS (Output do Grupo A)
 model RoundResult {
-  id              String        @id @default(uuid())
-  storeId         String
-  store           Store         @relation(fields: [storeId], references: [id])
-  roundNumber     Int
-  
-  totalRevenue    Float         // Faturamento Bruto
-  totalCMV        Float         // Custo da mercadoria vendida
-  operatingCosts  Float         // Folha + Licenças + Manutenção
-  agingCosts      Float         // Penalidade por estoque parado
-  ebitdaValue     Float
-  ebitdaMargin    Float         // EBITDA %
-  remainingStock  Int           // Qtd que sobrou para cálculo de Aging
-  marketShare     Float         // % da demanda capturada
+  id             String @id @default(uuid())
+  storeId        String
+  roundNumber    Int
+  totalRevenue   Float
+  totalCMV       Float
+  operatingCosts Float
+  agingCosts     Float
+  ebitdaValue    Float
+  ebitdaMargin   Float
+  remainingStock Int
+  marketShare    Float
+  store          Store  @relation(fields: [storeId], references: [id])
 }
-
 
 model User {
-  id String @id @default(cuid())
-  name String
-  email String @unique
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
   password String
+}
+
+
+
+model GameSession {
+  id           String   @id @default(cuid())
+  // Garantimos que o código seja sempre salvo em maiúsculo no banco via Service
+  code         String   @unique 
+  status       String   @default("LOBBY") // LOBBY, START, FINISHED
+  currentRound Int      @default(1)
+  createdAt    DateTime @default(now())
+  players      Player[]
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  storeName String
+  role      String   @default("player")
+  socketId  String?
+  isActive  Boolean  @default(true)
+  
+  // O sessionId (UUID) é o que faz o relacionamento real no banco
+  sessionId String?
+  session   GameSession? @relation(fields: [sessionId], references: [id])
+  
+  createdAt DateTime @default(now())
+  scores    Score[]
+}
+
+model Score {
+  id        String   @id @default(cuid())
+  round     Int
+  value     Float    @default(0)
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([playerId, round])
 }
