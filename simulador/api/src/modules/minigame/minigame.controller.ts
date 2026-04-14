@@ -27,4 +27,10 @@ async getSession(@Param('id') id: string) {
   async getPlayers(@Param('sessionId') sessionId: string) {
     return this.minigameService.getPlayersBySession(sessionId);
   }
+
+  // fPróxmas funções
+  // 1. Começar rodada
+  // 2. Buscar Se a rodada já começou
+  // 3. Função de tempo ercerrado da rodada
+  
 }
