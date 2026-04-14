@@ -12,6 +12,7 @@ import {
 import SetupStep from './components/SetupStep';
 import ComercialStep from './components/ComercialStep';
 import SummaryStep from './components/SummaryStep';
+import EmployeeStep from './components/EmployeeStep';
 
 // --- INTERFACES PARA TIPAGEM DE ELITE ---
 interface CategoriaConfig {
@@ -49,7 +50,7 @@ const OnboardingPage = () => {
     }
   });
 
-  const nextStep = () => setStep((p) => Math.min(p + 1, 3));
+  const nextStep = () => setStep((p) => Math.min(p + 1, 4));
   const prevStep = () => setStep((p) => Math.max(p - 1, 1));
 
   // FUNÇÃO DE FINALIZAÇÃO
@@ -64,7 +65,8 @@ const OnboardingPage = () => {
   const stepsInfo = [
     { id: 1, label: 'Infraestrutura', icon: <Settings2 size={18} /> },
     { id: 2, label: 'Comercial', icon: <ShoppingCart size={18} /> },
-    { id: 3, label: 'Revisão', icon: <BarChart3 size={18} /> },
+    { id: 3, label: 'Operadores', icon: <ShoppingCart size={18} /> },
+    { id: 4, label: 'Revisão', icon: <BarChart3 size={18} /> },
   ];
 
   return (
@@ -111,7 +113,8 @@ const OnboardingPage = () => {
             >
               {step === 1 && <SetupStep config={config} setConfig={setConfig} />}
               {step === 2 && <ComercialStep config={config} setConfig={setConfig} />}
-              {step === 3 && <SummaryStep config={config} />}
+              {step === 3 && <EmployeeStep config={config} setConfig={setConfig} />}
+              {step === 4 && <SummaryStep config={config} />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -132,13 +135,13 @@ const OnboardingPage = () => {
           <div className="w-32 h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
             <motion.div 
               className="h-full bg-cencosud-orange" 
-              animate={{ width: `${(step / 3) * 100}%` }}
+              animate={{ width: `${(step / 4) * 100}%` }}
               transition={{ type: "spring", stiffness: 100 }}
             />
           </div>
         </div>
 
-        {step < 3 ? (
+        {step < 4 ? (
           <button 
             onClick={nextStep}
             className="cursor-pointer group flex items-center gap-3 bg-cencosud-blue text-white px-8 py-4 rounded-2xl font-black text-sm md:text-base hover:shadow-xl hover:shadow-blue-100 transition-all active:scale-95"

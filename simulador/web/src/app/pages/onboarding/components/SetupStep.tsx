@@ -118,6 +118,10 @@ const SetupStep = ({ config, setConfig }: SetupProps) => {
         </div>
       </div>
 
+      <p className="text-base text-blue-800 font-bold leading-relaxed">
+          Selecione o CAPEX que deseja escolher:
+      </p>
+
       {/* BOX DE INSIGHT */}
       <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-4">
         <div className="bg-white p-3 rounded-xl text-cencosud-blue shadow-sm">
@@ -128,10 +132,6 @@ const SetupStep = ({ config, setConfig }: SetupProps) => {
           Lembre-se que cada R$ investido aqui é descontado do seu lucro bruto no final da rodada (EBITDA). Gaste com sabedoria!
         </p>
       </div>
-
-      <p className="text-base text-blue-800 font-bold leading-relaxed">
-          Selecione o CAPEX que deseja escolher:
-      </p>
 
       {/* GRID DE CARDS */}
       <div className="grid md:grid-cols-2 gap-6">

@@ -54,7 +54,7 @@ const SummaryStep = ({ config }: SummaryProps) => {
         <h2 className="text-4xl font-black text-cencosud-blue tracking-tight uppercase italic">
           Resumo <span className="text-green-500">Executivo</span>
         </h2>
-        <p className="text-gray-500 font-bold text-xs mt-1 italic uppercase">Análise Final de Viabilidade - Rodada 01</p>
+        <p className="text-gray-500 font-bold text-xs mt-1">Sessão de Alocação de Capital - Rodada Final</p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">

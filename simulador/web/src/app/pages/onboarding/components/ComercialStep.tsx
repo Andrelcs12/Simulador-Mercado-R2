@@ -73,6 +73,7 @@ const ComercialStep = ({ config, setConfig }: ComercialProps) => {
           <h2 className="text-4xl font-black text-cencosud-blue tracking-tight uppercase italic">
             Planejamento <span className="text-cencosud-orange">Comercial</span>
           </h2>
+          <p className="text-gray-500 font-bold text-xs mt-1">Sessão de Planejamento Comercial - Rodada 02</p>
         </div>
         
         <div className="bg-white px-6 py-4 rounded-2xl shadow-sm border border-gray-100">
@@ -83,6 +84,9 @@ const ComercialStep = ({ config, setConfig }: ComercialProps) => {
         </div>
       </div>
 
+      <p className="text-base text-blue-800 font-bold leading-relaxed">
+          Informe a quantidade de estoque e a margem desejada para cada categoria:
+      </p>
       
       {/* BOX DE INSIGHT */}
       <div className="bg-blue-50 border border-blue-100 p-6 rounded-[2rem] flex items-center gap-4">
@@ -111,8 +115,12 @@ const ComercialStep = ({ config, setConfig }: ComercialProps) => {
               <span className="text-[9px] font-black text-gray-300 uppercase block mb-2">Compra (Un)</span>
               <input 
                 type="number"
+                min="0"
                 value={config.comercial[id].estoque || ''}
-                onChange={(e) => handleUpdate(id, 'estoque', parseInt(e.target.value) || 0)}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 0
+                  handleUpdate(id, 'estoque', Math.max(0, val))
+                }}
                 className="w-full bg-gray-100 border-2 border-transparent focus:border-cencosud-blue focus:bg-white rounded-xl py-3 text-center font-black text-cencosud-blue outline-none transition-all"
               />
             </div>
@@ -121,8 +129,12 @@ const ComercialStep = ({ config, setConfig }: ComercialProps) => {
               <span className="text-[9px] font-black text-gray-300 uppercase block mb-2">Margem (%)</span>
               <input 
                 type="number"
+                min="0"
                 value={config.comercial[id].margem || ''}
-                onChange={(e) => handleUpdate(id, 'margem', parseInt(e.target.value) || 0)}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 0
+                  handleUpdate(id, 'margem', Math.max(0, val))
+                }}
                 className="w-full bg-gray-100 border-2 border-transparent focus:border-cencosud-orange focus:bg-white rounded-xl py-3 text-center font-black text-cencosud-orange outline-none transition-all"
               />
             </div>
