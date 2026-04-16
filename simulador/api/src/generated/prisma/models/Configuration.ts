@@ -51,6 +51,7 @@ export type ConfigurationSumAggregateOutputType = {
 export type ConfigurationMinAggregateOutputType = {
   id: string | null
   storeId: string | null
+  sessionId: string | null
   roundNumber: number | null
   operatorsQty: number | null
   serviceOperatorsQty: number | null
@@ -65,6 +66,7 @@ export type ConfigurationMinAggregateOutputType = {
 export type ConfigurationMaxAggregateOutputType = {
   id: string | null
   storeId: string | null
+  sessionId: string | null
   roundNumber: number | null
   operatorsQty: number | null
   serviceOperatorsQty: number | null
@@ -79,6 +81,7 @@ export type ConfigurationMaxAggregateOutputType = {
 export type ConfigurationCountAggregateOutputType = {
   id: number
   storeId: number
+  sessionId: number
   roundNumber: number
   operatorsQty: number
   serviceOperatorsQty: number
@@ -117,6 +120,7 @@ export type ConfigurationSumAggregateInputType = {
 export type ConfigurationMinAggregateInputType = {
   id?: true
   storeId?: true
+  sessionId?: true
   roundNumber?: true
   operatorsQty?: true
   serviceOperatorsQty?: true
@@ -131,6 +135,7 @@ export type ConfigurationMinAggregateInputType = {
 export type ConfigurationMaxAggregateInputType = {
   id?: true
   storeId?: true
+  sessionId?: true
   roundNumber?: true
   operatorsQty?: true
   serviceOperatorsQty?: true
@@ -145,6 +150,7 @@ export type ConfigurationMaxAggregateInputType = {
 export type ConfigurationCountAggregateInputType = {
   id?: true
   storeId?: true
+  sessionId?: true
   roundNumber?: true
   operatorsQty?: true
   serviceOperatorsQty?: true
@@ -246,12 +252,13 @@ export type ConfigurationGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 export type ConfigurationGroupByOutputType = {
   id: string
   storeId: string
+  sessionId: string | null
   roundNumber: number
   operatorsQty: number
   serviceOperatorsQty: number
   quizScore: number
-  totalSpent: number | null
-  interestPaid: number | null
+  totalSpent: number
+  interestPaid: number
   finalCSAT: number | null
   finalSLA: number | null
   createdAt: Date
@@ -283,16 +290,18 @@ export type ConfigurationWhereInput = {
   NOT?: Prisma.ConfigurationWhereInput | Prisma.ConfigurationWhereInput[]
   id?: Prisma.StringFilter<"Configuration"> | string
   storeId?: Prisma.StringFilter<"Configuration"> | string
+  sessionId?: Prisma.StringNullableFilter<"Configuration"> | string | null
   roundNumber?: Prisma.IntFilter<"Configuration"> | number
   operatorsQty?: Prisma.IntFilter<"Configuration"> | number
   serviceOperatorsQty?: Prisma.IntFilter<"Configuration"> | number
   quizScore?: Prisma.FloatFilter<"Configuration"> | number
-  totalSpent?: Prisma.FloatNullableFilter<"Configuration"> | number | null
-  interestPaid?: Prisma.FloatNullableFilter<"Configuration"> | number | null
+  totalSpent?: Prisma.FloatFilter<"Configuration"> | number
+  interestPaid?: Prisma.FloatFilter<"Configuration"> | number
   finalCSAT?: Prisma.FloatNullableFilter<"Configuration"> | number | null
   finalSLA?: Prisma.IntNullableFilter<"Configuration"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Configuration"> | Date | string
   store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+  session?: Prisma.XOR<Prisma.GameSessionNullableScalarRelationFilter, Prisma.GameSessionWhereInput> | null
   stockInputs?: Prisma.StockInputListRelationFilter
   capexSelections?: Prisma.StoreCapexListRelationFilter
 }
@@ -300,16 +309,18 @@ export type ConfigurationWhereInput = {
 export type ConfigurationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   operatorsQty?: Prisma.SortOrder
   serviceOperatorsQty?: Prisma.SortOrder
   quizScore?: Prisma.SortOrder
-  totalSpent?: Prisma.SortOrderInput | Prisma.SortOrder
-  interestPaid?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalSpent?: Prisma.SortOrder
+  interestPaid?: Prisma.SortOrder
   finalCSAT?: Prisma.SortOrderInput | Prisma.SortOrder
   finalSLA?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   store?: Prisma.StoreOrderByWithRelationInput
+  session?: Prisma.GameSessionOrderByWithRelationInput
   stockInputs?: Prisma.StockInputOrderByRelationAggregateInput
   capexSelections?: Prisma.StoreCapexOrderByRelationAggregateInput
 }
@@ -320,16 +331,18 @@ export type ConfigurationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ConfigurationWhereInput[]
   NOT?: Prisma.ConfigurationWhereInput | Prisma.ConfigurationWhereInput[]
   storeId?: Prisma.StringFilter<"Configuration"> | string
+  sessionId?: Prisma.StringNullableFilter<"Configuration"> | string | null
   roundNumber?: Prisma.IntFilter<"Configuration"> | number
   operatorsQty?: Prisma.IntFilter<"Configuration"> | number
   serviceOperatorsQty?: Prisma.IntFilter<"Configuration"> | number
   quizScore?: Prisma.FloatFilter<"Configuration"> | number
-  totalSpent?: Prisma.FloatNullableFilter<"Configuration"> | number | null
-  interestPaid?: Prisma.FloatNullableFilter<"Configuration"> | number | null
+  totalSpent?: Prisma.FloatFilter<"Configuration"> | number
+  interestPaid?: Prisma.FloatFilter<"Configuration"> | number
   finalCSAT?: Prisma.FloatNullableFilter<"Configuration"> | number | null
   finalSLA?: Prisma.IntNullableFilter<"Configuration"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Configuration"> | Date | string
   store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+  session?: Prisma.XOR<Prisma.GameSessionNullableScalarRelationFilter, Prisma.GameSessionWhereInput> | null
   stockInputs?: Prisma.StockInputListRelationFilter
   capexSelections?: Prisma.StoreCapexListRelationFilter
 }, "id">
@@ -337,12 +350,13 @@ export type ConfigurationWhereUniqueInput = Prisma.AtLeast<{
 export type ConfigurationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   operatorsQty?: Prisma.SortOrder
   serviceOperatorsQty?: Prisma.SortOrder
   quizScore?: Prisma.SortOrder
-  totalSpent?: Prisma.SortOrderInput | Prisma.SortOrder
-  interestPaid?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalSpent?: Prisma.SortOrder
+  interestPaid?: Prisma.SortOrder
   finalCSAT?: Prisma.SortOrderInput | Prisma.SortOrder
   finalSLA?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -359,12 +373,13 @@ export type ConfigurationScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ConfigurationScalarWhereWithAggregatesInput | Prisma.ConfigurationScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Configuration"> | string
   storeId?: Prisma.StringWithAggregatesFilter<"Configuration"> | string
+  sessionId?: Prisma.StringNullableWithAggregatesFilter<"Configuration"> | string | null
   roundNumber?: Prisma.IntWithAggregatesFilter<"Configuration"> | number
   operatorsQty?: Prisma.IntWithAggregatesFilter<"Configuration"> | number
   serviceOperatorsQty?: Prisma.IntWithAggregatesFilter<"Configuration"> | number
   quizScore?: Prisma.FloatWithAggregatesFilter<"Configuration"> | number
-  totalSpent?: Prisma.FloatNullableWithAggregatesFilter<"Configuration"> | number | null
-  interestPaid?: Prisma.FloatNullableWithAggregatesFilter<"Configuration"> | number | null
+  totalSpent?: Prisma.FloatWithAggregatesFilter<"Configuration"> | number
+  interestPaid?: Prisma.FloatWithAggregatesFilter<"Configuration"> | number
   finalCSAT?: Prisma.FloatNullableWithAggregatesFilter<"Configuration"> | number | null
   finalSLA?: Prisma.IntNullableWithAggregatesFilter<"Configuration"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Configuration"> | Date | string
@@ -376,12 +391,13 @@ export type ConfigurationCreateInput = {
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
   store: Prisma.StoreCreateNestedOneWithoutConfigurationsInput
+  session?: Prisma.GameSessionCreateNestedOneWithoutConfigsInput
   stockInputs?: Prisma.StockInputCreateNestedManyWithoutConfigInput
   capexSelections?: Prisma.StoreCapexCreateNestedManyWithoutConfigInput
 }
@@ -389,12 +405,13 @@ export type ConfigurationCreateInput = {
 export type ConfigurationUncheckedCreateInput = {
   id?: string
   storeId: string
+  sessionId?: string | null
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
@@ -408,12 +425,13 @@ export type ConfigurationUpdateInput = {
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.StoreUpdateOneRequiredWithoutConfigurationsNestedInput
+  session?: Prisma.GameSessionUpdateOneWithoutConfigsNestedInput
   stockInputs?: Prisma.StockInputUpdateManyWithoutConfigNestedInput
   capexSelections?: Prisma.StoreCapexUpdateManyWithoutConfigNestedInput
 }
@@ -421,12 +439,13 @@ export type ConfigurationUpdateInput = {
 export type ConfigurationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -437,12 +456,13 @@ export type ConfigurationUncheckedUpdateInput = {
 export type ConfigurationCreateManyInput = {
   id?: string
   storeId: string
+  sessionId?: string | null
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
@@ -454,8 +474,8 @@ export type ConfigurationUpdateManyMutationInput = {
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -464,12 +484,13 @@ export type ConfigurationUpdateManyMutationInput = {
 export type ConfigurationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -488,6 +509,7 @@ export type ConfigurationOrderByRelationAggregateInput = {
 export type ConfigurationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   operatorsQty?: Prisma.SortOrder
   serviceOperatorsQty?: Prisma.SortOrder
@@ -513,6 +535,7 @@ export type ConfigurationAvgOrderByAggregateInput = {
 export type ConfigurationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   operatorsQty?: Prisma.SortOrder
   serviceOperatorsQty?: Prisma.SortOrder
@@ -527,6 +550,7 @@ export type ConfigurationMaxOrderByAggregateInput = {
 export type ConfigurationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   operatorsQty?: Prisma.SortOrder
   serviceOperatorsQty?: Prisma.SortOrder
@@ -552,6 +576,48 @@ export type ConfigurationSumOrderByAggregateInput = {
 export type ConfigurationScalarRelationFilter = {
   is?: Prisma.ConfigurationWhereInput
   isNot?: Prisma.ConfigurationWhereInput
+}
+
+export type ConfigurationCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.ConfigurationCreateWithoutSessionInput, Prisma.ConfigurationUncheckedCreateWithoutSessionInput> | Prisma.ConfigurationCreateWithoutSessionInput[] | Prisma.ConfigurationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.ConfigurationCreateOrConnectWithoutSessionInput | Prisma.ConfigurationCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.ConfigurationCreateManySessionInputEnvelope
+  connect?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+}
+
+export type ConfigurationUncheckedCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.ConfigurationCreateWithoutSessionInput, Prisma.ConfigurationUncheckedCreateWithoutSessionInput> | Prisma.ConfigurationCreateWithoutSessionInput[] | Prisma.ConfigurationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.ConfigurationCreateOrConnectWithoutSessionInput | Prisma.ConfigurationCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.ConfigurationCreateManySessionInputEnvelope
+  connect?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+}
+
+export type ConfigurationUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.ConfigurationCreateWithoutSessionInput, Prisma.ConfigurationUncheckedCreateWithoutSessionInput> | Prisma.ConfigurationCreateWithoutSessionInput[] | Prisma.ConfigurationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.ConfigurationCreateOrConnectWithoutSessionInput | Prisma.ConfigurationCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.ConfigurationUpsertWithWhereUniqueWithoutSessionInput | Prisma.ConfigurationUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.ConfigurationCreateManySessionInputEnvelope
+  set?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  disconnect?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  delete?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  connect?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  update?: Prisma.ConfigurationUpdateWithWhereUniqueWithoutSessionInput | Prisma.ConfigurationUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.ConfigurationUpdateManyWithWhereWithoutSessionInput | Prisma.ConfigurationUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.ConfigurationScalarWhereInput | Prisma.ConfigurationScalarWhereInput[]
+}
+
+export type ConfigurationUncheckedUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.ConfigurationCreateWithoutSessionInput, Prisma.ConfigurationUncheckedCreateWithoutSessionInput> | Prisma.ConfigurationCreateWithoutSessionInput[] | Prisma.ConfigurationUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.ConfigurationCreateOrConnectWithoutSessionInput | Prisma.ConfigurationCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.ConfigurationUpsertWithWhereUniqueWithoutSessionInput | Prisma.ConfigurationUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.ConfigurationCreateManySessionInputEnvelope
+  set?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  disconnect?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  delete?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  connect?: Prisma.ConfigurationWhereUniqueInput | Prisma.ConfigurationWhereUniqueInput[]
+  update?: Prisma.ConfigurationUpdateWithWhereUniqueWithoutSessionInput | Prisma.ConfigurationUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.ConfigurationUpdateManyWithWhereWithoutSessionInput | Prisma.ConfigurationUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.ConfigurationScalarWhereInput | Prisma.ConfigurationScalarWhereInput[]
 }
 
 export type ConfigurationCreateNestedManyWithoutStoreInput = {
@@ -612,10 +678,6 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type ConfigurationCreateNestedOneWithoutStockInputsInput = {
   create?: Prisma.XOR<Prisma.ConfigurationCreateWithoutStockInputsInput, Prisma.ConfigurationUncheckedCreateWithoutStockInputsInput>
   connectOrCreate?: Prisma.ConfigurationCreateOrConnectWithoutStockInputsInput
@@ -644,29 +706,107 @@ export type ConfigurationUpdateOneRequiredWithoutCapexSelectionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ConfigurationUpdateToOneWithWhereWithoutCapexSelectionsInput, Prisma.ConfigurationUpdateWithoutCapexSelectionsInput>, Prisma.ConfigurationUncheckedUpdateWithoutCapexSelectionsInput>
 }
 
+export type ConfigurationCreateWithoutSessionInput = {
+  id?: string
+  roundNumber: number
+  operatorsQty?: number
+  serviceOperatorsQty?: number
+  quizScore?: number
+  totalSpent?: number
+  interestPaid?: number
+  finalCSAT?: number | null
+  finalSLA?: number | null
+  createdAt?: Date | string
+  store: Prisma.StoreCreateNestedOneWithoutConfigurationsInput
+  stockInputs?: Prisma.StockInputCreateNestedManyWithoutConfigInput
+  capexSelections?: Prisma.StoreCapexCreateNestedManyWithoutConfigInput
+}
+
+export type ConfigurationUncheckedCreateWithoutSessionInput = {
+  id?: string
+  storeId: string
+  roundNumber: number
+  operatorsQty?: number
+  serviceOperatorsQty?: number
+  quizScore?: number
+  totalSpent?: number
+  interestPaid?: number
+  finalCSAT?: number | null
+  finalSLA?: number | null
+  createdAt?: Date | string
+  stockInputs?: Prisma.StockInputUncheckedCreateNestedManyWithoutConfigInput
+  capexSelections?: Prisma.StoreCapexUncheckedCreateNestedManyWithoutConfigInput
+}
+
+export type ConfigurationCreateOrConnectWithoutSessionInput = {
+  where: Prisma.ConfigurationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConfigurationCreateWithoutSessionInput, Prisma.ConfigurationUncheckedCreateWithoutSessionInput>
+}
+
+export type ConfigurationCreateManySessionInputEnvelope = {
+  data: Prisma.ConfigurationCreateManySessionInput | Prisma.ConfigurationCreateManySessionInput[]
+  skipDuplicates?: boolean
+}
+
+export type ConfigurationUpsertWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.ConfigurationWhereUniqueInput
+  update: Prisma.XOR<Prisma.ConfigurationUpdateWithoutSessionInput, Prisma.ConfigurationUncheckedUpdateWithoutSessionInput>
+  create: Prisma.XOR<Prisma.ConfigurationCreateWithoutSessionInput, Prisma.ConfigurationUncheckedCreateWithoutSessionInput>
+}
+
+export type ConfigurationUpdateWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.ConfigurationWhereUniqueInput
+  data: Prisma.XOR<Prisma.ConfigurationUpdateWithoutSessionInput, Prisma.ConfigurationUncheckedUpdateWithoutSessionInput>
+}
+
+export type ConfigurationUpdateManyWithWhereWithoutSessionInput = {
+  where: Prisma.ConfigurationScalarWhereInput
+  data: Prisma.XOR<Prisma.ConfigurationUpdateManyMutationInput, Prisma.ConfigurationUncheckedUpdateManyWithoutSessionInput>
+}
+
+export type ConfigurationScalarWhereInput = {
+  AND?: Prisma.ConfigurationScalarWhereInput | Prisma.ConfigurationScalarWhereInput[]
+  OR?: Prisma.ConfigurationScalarWhereInput[]
+  NOT?: Prisma.ConfigurationScalarWhereInput | Prisma.ConfigurationScalarWhereInput[]
+  id?: Prisma.StringFilter<"Configuration"> | string
+  storeId?: Prisma.StringFilter<"Configuration"> | string
+  sessionId?: Prisma.StringNullableFilter<"Configuration"> | string | null
+  roundNumber?: Prisma.IntFilter<"Configuration"> | number
+  operatorsQty?: Prisma.IntFilter<"Configuration"> | number
+  serviceOperatorsQty?: Prisma.IntFilter<"Configuration"> | number
+  quizScore?: Prisma.FloatFilter<"Configuration"> | number
+  totalSpent?: Prisma.FloatFilter<"Configuration"> | number
+  interestPaid?: Prisma.FloatFilter<"Configuration"> | number
+  finalCSAT?: Prisma.FloatNullableFilter<"Configuration"> | number | null
+  finalSLA?: Prisma.IntNullableFilter<"Configuration"> | number | null
+  createdAt?: Prisma.DateTimeFilter<"Configuration"> | Date | string
+}
+
 export type ConfigurationCreateWithoutStoreInput = {
   id?: string
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
+  session?: Prisma.GameSessionCreateNestedOneWithoutConfigsInput
   stockInputs?: Prisma.StockInputCreateNestedManyWithoutConfigInput
   capexSelections?: Prisma.StoreCapexCreateNestedManyWithoutConfigInput
 }
 
 export type ConfigurationUncheckedCreateWithoutStoreInput = {
   id?: string
+  sessionId?: string | null
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
@@ -700,47 +840,32 @@ export type ConfigurationUpdateManyWithWhereWithoutStoreInput = {
   data: Prisma.XOR<Prisma.ConfigurationUpdateManyMutationInput, Prisma.ConfigurationUncheckedUpdateManyWithoutStoreInput>
 }
 
-export type ConfigurationScalarWhereInput = {
-  AND?: Prisma.ConfigurationScalarWhereInput | Prisma.ConfigurationScalarWhereInput[]
-  OR?: Prisma.ConfigurationScalarWhereInput[]
-  NOT?: Prisma.ConfigurationScalarWhereInput | Prisma.ConfigurationScalarWhereInput[]
-  id?: Prisma.StringFilter<"Configuration"> | string
-  storeId?: Prisma.StringFilter<"Configuration"> | string
-  roundNumber?: Prisma.IntFilter<"Configuration"> | number
-  operatorsQty?: Prisma.IntFilter<"Configuration"> | number
-  serviceOperatorsQty?: Prisma.IntFilter<"Configuration"> | number
-  quizScore?: Prisma.FloatFilter<"Configuration"> | number
-  totalSpent?: Prisma.FloatNullableFilter<"Configuration"> | number | null
-  interestPaid?: Prisma.FloatNullableFilter<"Configuration"> | number | null
-  finalCSAT?: Prisma.FloatNullableFilter<"Configuration"> | number | null
-  finalSLA?: Prisma.IntNullableFilter<"Configuration"> | number | null
-  createdAt?: Prisma.DateTimeFilter<"Configuration"> | Date | string
-}
-
 export type ConfigurationCreateWithoutStockInputsInput = {
   id?: string
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
   store: Prisma.StoreCreateNestedOneWithoutConfigurationsInput
+  session?: Prisma.GameSessionCreateNestedOneWithoutConfigsInput
   capexSelections?: Prisma.StoreCapexCreateNestedManyWithoutConfigInput
 }
 
 export type ConfigurationUncheckedCreateWithoutStockInputsInput = {
   id?: string
   storeId: string
+  sessionId?: string | null
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
@@ -769,24 +894,26 @@ export type ConfigurationUpdateWithoutStockInputsInput = {
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.StoreUpdateOneRequiredWithoutConfigurationsNestedInput
+  session?: Prisma.GameSessionUpdateOneWithoutConfigsNestedInput
   capexSelections?: Prisma.StoreCapexUpdateManyWithoutConfigNestedInput
 }
 
 export type ConfigurationUncheckedUpdateWithoutStockInputsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -799,24 +926,26 @@ export type ConfigurationCreateWithoutCapexSelectionsInput = {
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
   store: Prisma.StoreCreateNestedOneWithoutConfigurationsInput
+  session?: Prisma.GameSessionCreateNestedOneWithoutConfigsInput
   stockInputs?: Prisma.StockInputCreateNestedManyWithoutConfigInput
 }
 
 export type ConfigurationUncheckedCreateWithoutCapexSelectionsInput = {
   id?: string
   storeId: string
+  sessionId?: string | null
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
@@ -845,38 +974,101 @@ export type ConfigurationUpdateWithoutCapexSelectionsInput = {
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.StoreUpdateOneRequiredWithoutConfigurationsNestedInput
+  session?: Prisma.GameSessionUpdateOneWithoutConfigsNestedInput
   stockInputs?: Prisma.StockInputUpdateManyWithoutConfigNestedInput
 }
 
 export type ConfigurationUncheckedUpdateWithoutCapexSelectionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   stockInputs?: Prisma.StockInputUncheckedUpdateManyWithoutConfigNestedInput
 }
 
-export type ConfigurationCreateManyStoreInput = {
+export type ConfigurationCreateManySessionInput = {
   id?: string
+  storeId: string
   roundNumber: number
   operatorsQty?: number
   serviceOperatorsQty?: number
   quizScore?: number
-  totalSpent?: number | null
-  interestPaid?: number | null
+  totalSpent?: number
+  interestPaid?: number
+  finalCSAT?: number | null
+  finalSLA?: number | null
+  createdAt?: Date | string
+}
+
+export type ConfigurationUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
+  finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  store?: Prisma.StoreUpdateOneRequiredWithoutConfigurationsNestedInput
+  stockInputs?: Prisma.StockInputUpdateManyWithoutConfigNestedInput
+  capexSelections?: Prisma.StoreCapexUpdateManyWithoutConfigNestedInput
+}
+
+export type ConfigurationUncheckedUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
+  finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockInputs?: Prisma.StockInputUncheckedUpdateManyWithoutConfigNestedInput
+  capexSelections?: Prisma.StoreCapexUncheckedUpdateManyWithoutConfigNestedInput
+}
+
+export type ConfigurationUncheckedUpdateManyWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
+  finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ConfigurationCreateManyStoreInput = {
+  id?: string
+  sessionId?: string | null
+  roundNumber: number
+  operatorsQty?: number
+  serviceOperatorsQty?: number
+  quizScore?: number
+  totalSpent?: number
+  interestPaid?: number
   finalCSAT?: number | null
   finalSLA?: number | null
   createdAt?: Date | string
@@ -888,23 +1080,25 @@ export type ConfigurationUpdateWithoutStoreInput = {
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  session?: Prisma.GameSessionUpdateOneWithoutConfigsNestedInput
   stockInputs?: Prisma.StockInputUpdateManyWithoutConfigNestedInput
   capexSelections?: Prisma.StoreCapexUpdateManyWithoutConfigNestedInput
 }
 
 export type ConfigurationUncheckedUpdateWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -914,12 +1108,13 @@ export type ConfigurationUncheckedUpdateWithoutStoreInput = {
 
 export type ConfigurationUncheckedUpdateManyWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   operatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   serviceOperatorsQty?: Prisma.IntFieldUpdateOperationsInput | number
   quizScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalSpent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  interestPaid?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalSpent?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestPaid?: Prisma.FloatFieldUpdateOperationsInput | number
   finalCSAT?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   finalSLA?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -968,6 +1163,7 @@ export type ConfigurationCountOutputTypeCountCapexSelectionsArgs<ExtArgs extends
 export type ConfigurationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   operatorsQty?: boolean
   serviceOperatorsQty?: boolean
@@ -978,6 +1174,7 @@ export type ConfigurationSelect<ExtArgs extends runtime.Types.Extensions.Interna
   finalSLA?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Configuration$sessionArgs<ExtArgs>
   stockInputs?: boolean | Prisma.Configuration$stockInputsArgs<ExtArgs>
   capexSelections?: boolean | Prisma.Configuration$capexSelectionsArgs<ExtArgs>
   _count?: boolean | Prisma.ConfigurationCountOutputTypeDefaultArgs<ExtArgs>
@@ -986,6 +1183,7 @@ export type ConfigurationSelect<ExtArgs extends runtime.Types.Extensions.Interna
 export type ConfigurationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   operatorsQty?: boolean
   serviceOperatorsQty?: boolean
@@ -996,11 +1194,13 @@ export type ConfigurationSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   finalSLA?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Configuration$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["configuration"]>
 
 export type ConfigurationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   operatorsQty?: boolean
   serviceOperatorsQty?: boolean
@@ -1011,11 +1211,13 @@ export type ConfigurationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   finalSLA?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Configuration$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["configuration"]>
 
 export type ConfigurationSelectScalar = {
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   operatorsQty?: boolean
   serviceOperatorsQty?: boolean
@@ -1027,36 +1229,41 @@ export type ConfigurationSelectScalar = {
   createdAt?: boolean
 }
 
-export type ConfigurationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "roundNumber" | "operatorsQty" | "serviceOperatorsQty" | "quizScore" | "totalSpent" | "interestPaid" | "finalCSAT" | "finalSLA" | "createdAt", ExtArgs["result"]["configuration"]>
+export type ConfigurationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "sessionId" | "roundNumber" | "operatorsQty" | "serviceOperatorsQty" | "quizScore" | "totalSpent" | "interestPaid" | "finalCSAT" | "finalSLA" | "createdAt", ExtArgs["result"]["configuration"]>
 export type ConfigurationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Configuration$sessionArgs<ExtArgs>
   stockInputs?: boolean | Prisma.Configuration$stockInputsArgs<ExtArgs>
   capexSelections?: boolean | Prisma.Configuration$capexSelectionsArgs<ExtArgs>
   _count?: boolean | Prisma.ConfigurationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConfigurationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Configuration$sessionArgs<ExtArgs>
 }
 export type ConfigurationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Configuration$sessionArgs<ExtArgs>
 }
 
 export type $ConfigurationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Configuration"
   objects: {
     store: Prisma.$StorePayload<ExtArgs>
+    session: Prisma.$GameSessionPayload<ExtArgs> | null
     stockInputs: Prisma.$StockInputPayload<ExtArgs>[]
     capexSelections: Prisma.$StoreCapexPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     storeId: string
+    sessionId: string | null
     roundNumber: number
     operatorsQty: number
     serviceOperatorsQty: number
     quizScore: number
-    totalSpent: number | null
-    interestPaid: number | null
+    totalSpent: number
+    interestPaid: number
     finalCSAT: number | null
     finalSLA: number | null
     createdAt: Date
@@ -1455,6 +1662,7 @@ readonly fields: ConfigurationFieldRefs;
 export interface Prisma__ConfigurationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  session<T extends Prisma.Configuration$sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Configuration$sessionArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   stockInputs<T extends Prisma.Configuration$stockInputsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Configuration$stockInputsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockInputPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   capexSelections<T extends Prisma.Configuration$capexSelectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Configuration$capexSelectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StoreCapexPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1488,6 +1696,7 @@ export interface Prisma__ConfigurationClient<T, Null = never, ExtArgs extends ru
 export interface ConfigurationFieldRefs {
   readonly id: Prisma.FieldRef<"Configuration", 'String'>
   readonly storeId: Prisma.FieldRef<"Configuration", 'String'>
+  readonly sessionId: Prisma.FieldRef<"Configuration", 'String'>
   readonly roundNumber: Prisma.FieldRef<"Configuration", 'Int'>
   readonly operatorsQty: Prisma.FieldRef<"Configuration", 'Int'>
   readonly serviceOperatorsQty: Prisma.FieldRef<"Configuration", 'Int'>
@@ -1895,6 +2104,25 @@ export type ConfigurationDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Configurations to delete.
    */
   limit?: number
+}
+
+/**
+ * Configuration.session
+ */
+export type Configuration$sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GameSession
+   */
+  select?: Prisma.GameSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GameSession
+   */
+  omit?: Prisma.GameSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GameSessionInclude<ExtArgs> | null
+  where?: Prisma.GameSessionWhereInput
 }
 
 /**

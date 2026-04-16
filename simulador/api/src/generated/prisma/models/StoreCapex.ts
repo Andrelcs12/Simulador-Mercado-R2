@@ -381,10 +381,6 @@ export type StoreCapexUncheckedUpdateManyWithoutConfigNestedInput = {
   deleteMany?: Prisma.StoreCapexScalarWhereInput | Prisma.StoreCapexScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type StoreCapexCreateWithoutCapexMasterInput = {
   id?: string
   isApproved?: boolean
