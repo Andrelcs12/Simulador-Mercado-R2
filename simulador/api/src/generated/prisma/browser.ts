@@ -28,6 +28,26 @@ export type CategoryMaster = Prisma.CategoryMasterModel
  */
 export type CapexMaster = Prisma.CapexMasterModel
 /**
+ * Model GameSession
+ * 
+ */
+export type GameSession = Prisma.GameSessionModel
+/**
+ * Model Player
+ * 
+ */
+export type Player = Prisma.PlayerModel
+/**
+ * Model Score
+ * 
+ */
+export type Score = Prisma.ScoreModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
  * Model Store
  * 
  */
@@ -52,23 +72,3 @@ export type StoreCapex = Prisma.StoreCapexModel
  * 
  */
 export type RoundResult = Prisma.RoundResultModel
-/**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
- * Model GameSession
- * 
- */
-export type GameSession = Prisma.GameSessionModel
-/**
- * Model Player
- * 
- */
-export type Player = Prisma.PlayerModel
-/**
- * Model Score
- * 
- */
-export type Score = Prisma.ScoreModel

@@ -7,6 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
+// --- MÓDULO DE DADOS MESTRES ---
 model CategoryMaster {
   id               String       @id @default(uuid())
   name             String
@@ -27,63 +28,48 @@ model CapexMaster {
   storeCapexs   StoreCapex[]
 }
 
-model Store {
-  id             String          @id @default(uuid())
-  name           String
-  initialCash    Float           @default(700000.0)
-  configurations Configuration[]
-  rounds         RoundResult[]
+// --- MÓDULO DE SESSÃO E USUÁRIOS ---
+model GameSession {
+  id           String          @id @default(cuid())
+  code         String          @unique 
+  status       String          @default("LOBBY")
+  currentRound Int             @default(1)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime?        @updatedAt // Adicionado para controle de tempo real
+
+  players      Player[]
+  configs      Configuration[]
+  results      RoundResult[]
 }
 
-model Configuration {
-  id                  String       @id @default(uuid())
-  storeId             String
-  roundNumber         Int
-  operatorsQty        Int          @default(0)
-  serviceOperatorsQty Int          @default(0)
-  quizScore           Float        @default(0.0)
-  totalSpent          Float        @default(0)
-  interestPaid        Float        @default(0)
-  finalCSAT           Float?
-  finalSLA            Int?
-  createdAt           DateTime     @default(now())
-  store               Store        @relation(fields: [storeId], references: [id])
-  stockInputs         StockInput[]
-  capexSelections     StoreCapex[]
+model Player {
+  id        String       @id @default(cuid())
+  name      String
+  email     String       @unique
+  storeName String
+  role      String       @default("player")
+  socketId  String?
+  isActive  Boolean      @default(true)
+  
+  sessionId String?
+  session   GameSession? @relation(fields: [sessionId], references: [id])
+  
+  store     Store?       // Relação 1:1 mantida
+  
+  scores    Score[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime?     @updatedAt
 }
 
-model StockInput {
-  id            String         @id @default(uuid())
-  configId      String
-  categoryId    String
-  buyQty        Int
-  appliedMargin Float
-  category      CategoryMaster @relation(fields: [categoryId], references: [id])
-  config        Configuration  @relation(fields: [configId], references: [id])
-}
+model Score {
+  id        String   @id @default(cuid())
+  round     Int
+  value     Float    @default(0)
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
-model StoreCapex {
-  id          String        @id @default(uuid())
-  configId    String
-  capexId     String
-  isApproved  Boolean       @default(false)
-  capexMaster CapexMaster   @relation(fields: [capexId], references: [id])
-  config      Configuration @relation(fields: [configId], references: [id])
-}
-
-model RoundResult {
-  id             String @id @default(uuid())
-  storeId        String
-  roundNumber    Int
-  totalRevenue   Float
-  totalCMV       Float
-  operatingCosts Float
-  agingCosts     Float
-  ebitdaValue    Float
-  ebitdaMargin   Float
-  remainingStock Int
-  marketShare    Float
-  store          Store  @relation(fields: [storeId], references: [id])
+  @@unique([playerId, round])
 }
 
 model User {
@@ -93,42 +79,78 @@ model User {
   password String
 }
 
+// --- MÓDULO DA OPERAÇÃO ---
+model Store {
+  id             String          @id @default(uuid())
+  name           String
+  initialCash    Float           @default(700000.0)
+  
+  playerId       String?          @unique
+  player         Player?          @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
-
-model GameSession {
-  id           String   @id @default(cuid())
-  // Garantimos que o código seja sempre salvo em maiúsculo no banco via Service
-  code         String   @unique 
-  status       String   @default("LOBBY") // LOBBY, START, FINISHED
-  currentRound Int      @default(1)
-  createdAt    DateTime @default(now())
-  players      Player[]
+  configurations Configuration[]
+  rounds         RoundResult[]
 }
 
-model Player {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  storeName String
-  role      String   @default("player")
-  socketId  String?
-  isActive  Boolean  @default(true)
+model Configuration {
+  id                  String       @id @default(uuid())
+  storeId             String
+  sessionId           String?      // Tornamos opcional (?) para o db push não quebrar dados antigos
+  roundNumber         Int
   
-  // O sessionId (UUID) é o que faz o relacionamento real no banco
-  sessionId String?
-  session   GameSession? @relation(fields: [sessionId], references: [id])
+  operatorsQty        Int          @default(0)
+  serviceOperatorsQty Int          @default(0)
+  quizScore           Float        @default(0.0)
+  totalSpent          Float        @default(0)
+  interestPaid        Float        @default(0)
   
-  createdAt DateTime @default(now())
-  scores    Score[]
+  finalCSAT           Float?
+  finalSLA            Int?
+  
+  createdAt           DateTime     @default(now())
+  
+  store               Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  session             GameSession? @relation(fields: [sessionId], references: [id])
+  stockInputs         StockInput[]
+  capexSelections     StoreCapex[]
 }
 
-model Score {
-  id        String   @id @default(cuid())
-  round     Int
-  value     Float    @default(0)
-  playerId  String
-  player    Player   @relation(fields: [playerId], references: [id])
-  createdAt DateTime @default(now())
+model StockInput {
+  id            String         @id @default(uuid())
+  configId      String
+  categoryId    String
+  buyQty        Int
+  appliedMargin Float 
+  
+  category      CategoryMaster @relation(fields: [categoryId], references: [id])
+  config        Configuration  @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
 
-  @@unique([playerId, round])
+model StoreCapex {
+  id          String        @id @default(uuid())
+  configId    String
+  capexId     String
+  isApproved  Boolean       @default(false)
+  
+  capexMaster CapexMaster   @relation(fields: [capexId], references: [id])
+  config      Configuration @relation(fields: [configId], references: [id], onDelete: Cascade)
+}
+
+model RoundResult {
+  id             String      @id @default(uuid())
+  storeId        String
+  sessionId      String?     // Opcional para migração segura
+  roundNumber    Int
+  
+  totalRevenue   Float
+  totalCMV       Float
+  operatingCosts Float
+  agingCosts     Float
+  ebitdaValue    Float
+  ebitdaMargin   Float
+  remainingStock Int
+  marketShare    Float
+  
+  store          Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  session        GameSession? @relation(fields: [sessionId], references: [id])
 }

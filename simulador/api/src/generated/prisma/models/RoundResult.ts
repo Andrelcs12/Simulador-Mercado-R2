@@ -53,6 +53,7 @@ export type RoundResultSumAggregateOutputType = {
 export type RoundResultMinAggregateOutputType = {
   id: string | null
   storeId: string | null
+  sessionId: string | null
   roundNumber: number | null
   totalRevenue: number | null
   totalCMV: number | null
@@ -67,6 +68,7 @@ export type RoundResultMinAggregateOutputType = {
 export type RoundResultMaxAggregateOutputType = {
   id: string | null
   storeId: string | null
+  sessionId: string | null
   roundNumber: number | null
   totalRevenue: number | null
   totalCMV: number | null
@@ -81,6 +83,7 @@ export type RoundResultMaxAggregateOutputType = {
 export type RoundResultCountAggregateOutputType = {
   id: number
   storeId: number
+  sessionId: number
   roundNumber: number
   totalRevenue: number
   totalCMV: number
@@ -121,6 +124,7 @@ export type RoundResultSumAggregateInputType = {
 export type RoundResultMinAggregateInputType = {
   id?: true
   storeId?: true
+  sessionId?: true
   roundNumber?: true
   totalRevenue?: true
   totalCMV?: true
@@ -135,6 +139,7 @@ export type RoundResultMinAggregateInputType = {
 export type RoundResultMaxAggregateInputType = {
   id?: true
   storeId?: true
+  sessionId?: true
   roundNumber?: true
   totalRevenue?: true
   totalCMV?: true
@@ -149,6 +154,7 @@ export type RoundResultMaxAggregateInputType = {
 export type RoundResultCountAggregateInputType = {
   id?: true
   storeId?: true
+  sessionId?: true
   roundNumber?: true
   totalRevenue?: true
   totalCMV?: true
@@ -250,6 +256,7 @@ export type RoundResultGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 export type RoundResultGroupByOutputType = {
   id: string
   storeId: string
+  sessionId: string | null
   roundNumber: number
   totalRevenue: number
   totalCMV: number
@@ -287,6 +294,7 @@ export type RoundResultWhereInput = {
   NOT?: Prisma.RoundResultWhereInput | Prisma.RoundResultWhereInput[]
   id?: Prisma.StringFilter<"RoundResult"> | string
   storeId?: Prisma.StringFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringNullableFilter<"RoundResult"> | string | null
   roundNumber?: Prisma.IntFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
   totalCMV?: Prisma.FloatFilter<"RoundResult"> | number
@@ -297,11 +305,13 @@ export type RoundResultWhereInput = {
   remainingStock?: Prisma.IntFilter<"RoundResult"> | number
   marketShare?: Prisma.FloatFilter<"RoundResult"> | number
   store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+  session?: Prisma.XOR<Prisma.GameSessionNullableScalarRelationFilter, Prisma.GameSessionWhereInput> | null
 }
 
 export type RoundResultOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
@@ -312,6 +322,7 @@ export type RoundResultOrderByWithRelationInput = {
   remainingStock?: Prisma.SortOrder
   marketShare?: Prisma.SortOrder
   store?: Prisma.StoreOrderByWithRelationInput
+  session?: Prisma.GameSessionOrderByWithRelationInput
 }
 
 export type RoundResultWhereUniqueInput = Prisma.AtLeast<{
@@ -320,6 +331,7 @@ export type RoundResultWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.RoundResultWhereInput[]
   NOT?: Prisma.RoundResultWhereInput | Prisma.RoundResultWhereInput[]
   storeId?: Prisma.StringFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringNullableFilter<"RoundResult"> | string | null
   roundNumber?: Prisma.IntFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
   totalCMV?: Prisma.FloatFilter<"RoundResult"> | number
@@ -330,11 +342,13 @@ export type RoundResultWhereUniqueInput = Prisma.AtLeast<{
   remainingStock?: Prisma.IntFilter<"RoundResult"> | number
   marketShare?: Prisma.FloatFilter<"RoundResult"> | number
   store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+  session?: Prisma.XOR<Prisma.GameSessionNullableScalarRelationFilter, Prisma.GameSessionWhereInput> | null
 }, "id">
 
 export type RoundResultOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
@@ -357,6 +371,7 @@ export type RoundResultScalarWhereWithAggregatesInput = {
   NOT?: Prisma.RoundResultScalarWhereWithAggregatesInput | Prisma.RoundResultScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
   storeId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringNullableWithAggregatesFilter<"RoundResult"> | string | null
   roundNumber?: Prisma.IntWithAggregatesFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   totalCMV?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
@@ -380,11 +395,13 @@ export type RoundResultCreateInput = {
   remainingStock: number
   marketShare: number
   store: Prisma.StoreCreateNestedOneWithoutRoundsInput
+  session?: Prisma.GameSessionCreateNestedOneWithoutResultsInput
 }
 
 export type RoundResultUncheckedCreateInput = {
   id?: string
   storeId: string
+  sessionId?: string | null
   roundNumber: number
   totalRevenue: number
   totalCMV: number
@@ -408,11 +425,13 @@ export type RoundResultUpdateInput = {
   remainingStock?: Prisma.IntFieldUpdateOperationsInput | number
   marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   store?: Prisma.StoreUpdateOneRequiredWithoutRoundsNestedInput
+  session?: Prisma.GameSessionUpdateOneWithoutResultsNestedInput
 }
 
 export type RoundResultUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -427,6 +446,7 @@ export type RoundResultUncheckedUpdateInput = {
 export type RoundResultCreateManyInput = {
   id?: string
   storeId: string
+  sessionId?: string | null
   roundNumber: number
   totalRevenue: number
   totalCMV: number
@@ -454,6 +474,7 @@ export type RoundResultUpdateManyMutationInput = {
 export type RoundResultUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -478,6 +499,7 @@ export type RoundResultOrderByRelationAggregateInput = {
 export type RoundResultCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
@@ -504,6 +526,7 @@ export type RoundResultAvgOrderByAggregateInput = {
 export type RoundResultMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
@@ -518,6 +541,7 @@ export type RoundResultMaxOrderByAggregateInput = {
 export type RoundResultMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   roundNumber?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
@@ -539,6 +563,48 @@ export type RoundResultSumOrderByAggregateInput = {
   ebitdaMargin?: Prisma.SortOrder
   remainingStock?: Prisma.SortOrder
   marketShare?: Prisma.SortOrder
+}
+
+export type RoundResultCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.RoundResultCreateWithoutSessionInput, Prisma.RoundResultUncheckedCreateWithoutSessionInput> | Prisma.RoundResultCreateWithoutSessionInput[] | Prisma.RoundResultUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RoundResultCreateOrConnectWithoutSessionInput | Prisma.RoundResultCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.RoundResultCreateManySessionInputEnvelope
+  connect?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+}
+
+export type RoundResultUncheckedCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.RoundResultCreateWithoutSessionInput, Prisma.RoundResultUncheckedCreateWithoutSessionInput> | Prisma.RoundResultCreateWithoutSessionInput[] | Prisma.RoundResultUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RoundResultCreateOrConnectWithoutSessionInput | Prisma.RoundResultCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.RoundResultCreateManySessionInputEnvelope
+  connect?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+}
+
+export type RoundResultUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.RoundResultCreateWithoutSessionInput, Prisma.RoundResultUncheckedCreateWithoutSessionInput> | Prisma.RoundResultCreateWithoutSessionInput[] | Prisma.RoundResultUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RoundResultCreateOrConnectWithoutSessionInput | Prisma.RoundResultCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.RoundResultUpsertWithWhereUniqueWithoutSessionInput | Prisma.RoundResultUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.RoundResultCreateManySessionInputEnvelope
+  set?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  disconnect?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  delete?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  connect?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  update?: Prisma.RoundResultUpdateWithWhereUniqueWithoutSessionInput | Prisma.RoundResultUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.RoundResultUpdateManyWithWhereWithoutSessionInput | Prisma.RoundResultUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
+}
+
+export type RoundResultUncheckedUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.RoundResultCreateWithoutSessionInput, Prisma.RoundResultUncheckedCreateWithoutSessionInput> | Prisma.RoundResultCreateWithoutSessionInput[] | Prisma.RoundResultUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.RoundResultCreateOrConnectWithoutSessionInput | Prisma.RoundResultCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.RoundResultUpsertWithWhereUniqueWithoutSessionInput | Prisma.RoundResultUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.RoundResultCreateManySessionInputEnvelope
+  set?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  disconnect?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  delete?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  connect?: Prisma.RoundResultWhereUniqueInput | Prisma.RoundResultWhereUniqueInput[]
+  update?: Prisma.RoundResultUpdateWithWhereUniqueWithoutSessionInput | Prisma.RoundResultUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.RoundResultUpdateManyWithWhereWithoutSessionInput | Prisma.RoundResultUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
 }
 
 export type RoundResultCreateNestedManyWithoutStoreInput = {
@@ -583,8 +649,23 @@ export type RoundResultUncheckedUpdateManyWithoutStoreNestedInput = {
   deleteMany?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
 }
 
-export type RoundResultCreateWithoutStoreInput = {
+export type RoundResultCreateWithoutSessionInput = {
   id?: string
+  roundNumber: number
+  totalRevenue: number
+  totalCMV: number
+  operatingCosts: number
+  agingCosts: number
+  ebitdaValue: number
+  ebitdaMargin: number
+  remainingStock: number
+  marketShare: number
+  store: Prisma.StoreCreateNestedOneWithoutRoundsInput
+}
+
+export type RoundResultUncheckedCreateWithoutSessionInput = {
+  id?: string
+  storeId: string
   roundNumber: number
   totalRevenue: number
   totalCMV: number
@@ -596,8 +677,67 @@ export type RoundResultCreateWithoutStoreInput = {
   marketShare: number
 }
 
+export type RoundResultCreateOrConnectWithoutSessionInput = {
+  where: Prisma.RoundResultWhereUniqueInput
+  create: Prisma.XOR<Prisma.RoundResultCreateWithoutSessionInput, Prisma.RoundResultUncheckedCreateWithoutSessionInput>
+}
+
+export type RoundResultCreateManySessionInputEnvelope = {
+  data: Prisma.RoundResultCreateManySessionInput | Prisma.RoundResultCreateManySessionInput[]
+  skipDuplicates?: boolean
+}
+
+export type RoundResultUpsertWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.RoundResultWhereUniqueInput
+  update: Prisma.XOR<Prisma.RoundResultUpdateWithoutSessionInput, Prisma.RoundResultUncheckedUpdateWithoutSessionInput>
+  create: Prisma.XOR<Prisma.RoundResultCreateWithoutSessionInput, Prisma.RoundResultUncheckedCreateWithoutSessionInput>
+}
+
+export type RoundResultUpdateWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.RoundResultWhereUniqueInput
+  data: Prisma.XOR<Prisma.RoundResultUpdateWithoutSessionInput, Prisma.RoundResultUncheckedUpdateWithoutSessionInput>
+}
+
+export type RoundResultUpdateManyWithWhereWithoutSessionInput = {
+  where: Prisma.RoundResultScalarWhereInput
+  data: Prisma.XOR<Prisma.RoundResultUpdateManyMutationInput, Prisma.RoundResultUncheckedUpdateManyWithoutSessionInput>
+}
+
+export type RoundResultScalarWhereInput = {
+  AND?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
+  OR?: Prisma.RoundResultScalarWhereInput[]
+  NOT?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
+  id?: Prisma.StringFilter<"RoundResult"> | string
+  storeId?: Prisma.StringFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringNullableFilter<"RoundResult"> | string | null
+  roundNumber?: Prisma.IntFilter<"RoundResult"> | number
+  totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
+  totalCMV?: Prisma.FloatFilter<"RoundResult"> | number
+  operatingCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  agingCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  ebitdaValue?: Prisma.FloatFilter<"RoundResult"> | number
+  ebitdaMargin?: Prisma.FloatFilter<"RoundResult"> | number
+  remainingStock?: Prisma.IntFilter<"RoundResult"> | number
+  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
+}
+
+export type RoundResultCreateWithoutStoreInput = {
+  id?: string
+  roundNumber: number
+  totalRevenue: number
+  totalCMV: number
+  operatingCosts: number
+  agingCosts: number
+  ebitdaValue: number
+  ebitdaMargin: number
+  remainingStock: number
+  marketShare: number
+  session?: Prisma.GameSessionCreateNestedOneWithoutResultsInput
+}
+
 export type RoundResultUncheckedCreateWithoutStoreInput = {
   id?: string
+  sessionId?: string | null
   roundNumber: number
   totalRevenue: number
   totalCMV: number
@@ -635,25 +775,65 @@ export type RoundResultUpdateManyWithWhereWithoutStoreInput = {
   data: Prisma.XOR<Prisma.RoundResultUpdateManyMutationInput, Prisma.RoundResultUncheckedUpdateManyWithoutStoreInput>
 }
 
-export type RoundResultScalarWhereInput = {
-  AND?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
-  OR?: Prisma.RoundResultScalarWhereInput[]
-  NOT?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
-  id?: Prisma.StringFilter<"RoundResult"> | string
-  storeId?: Prisma.StringFilter<"RoundResult"> | string
-  roundNumber?: Prisma.IntFilter<"RoundResult"> | number
-  totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
-  totalCMV?: Prisma.FloatFilter<"RoundResult"> | number
-  operatingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  agingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  ebitdaValue?: Prisma.FloatFilter<"RoundResult"> | number
-  ebitdaMargin?: Prisma.FloatFilter<"RoundResult"> | number
-  remainingStock?: Prisma.IntFilter<"RoundResult"> | number
-  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
+export type RoundResultCreateManySessionInput = {
+  id?: string
+  storeId: string
+  roundNumber: number
+  totalRevenue: number
+  totalCMV: number
+  operatingCosts: number
+  agingCosts: number
+  ebitdaValue: number
+  ebitdaMargin: number
+  remainingStock: number
+  marketShare: number
+}
+
+export type RoundResultUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
+  operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStock?: Prisma.IntFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  store?: Prisma.StoreUpdateOneRequiredWithoutRoundsNestedInput
+}
+
+export type RoundResultUncheckedUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
+  operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStock?: Prisma.IntFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+}
+
+export type RoundResultUncheckedUpdateManyWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
+  operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStock?: Prisma.IntFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultCreateManyStoreInput = {
   id?: string
+  sessionId?: string | null
   roundNumber: number
   totalRevenue: number
   totalCMV: number
@@ -676,10 +856,12 @@ export type RoundResultUpdateWithoutStoreInput = {
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
   remainingStock?: Prisma.IntFieldUpdateOperationsInput | number
   marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  session?: Prisma.GameSessionUpdateOneWithoutResultsNestedInput
 }
 
 export type RoundResultUncheckedUpdateWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -693,6 +875,7 @@ export type RoundResultUncheckedUpdateWithoutStoreInput = {
 
 export type RoundResultUncheckedUpdateManyWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roundNumber?: Prisma.IntFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -709,6 +892,7 @@ export type RoundResultUncheckedUpdateManyWithoutStoreInput = {
 export type RoundResultSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   totalRevenue?: boolean
   totalCMV?: boolean
@@ -719,11 +903,13 @@ export type RoundResultSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   remainingStock?: boolean
   marketShare?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.RoundResult$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["roundResult"]>
 
 export type RoundResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   totalRevenue?: boolean
   totalCMV?: boolean
@@ -734,11 +920,13 @@ export type RoundResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   remainingStock?: boolean
   marketShare?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.RoundResult$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["roundResult"]>
 
 export type RoundResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   totalRevenue?: boolean
   totalCMV?: boolean
@@ -749,11 +937,13 @@ export type RoundResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   remainingStock?: boolean
   marketShare?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.RoundResult$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["roundResult"]>
 
 export type RoundResultSelectScalar = {
   id?: boolean
   storeId?: boolean
+  sessionId?: boolean
   roundNumber?: boolean
   totalRevenue?: boolean
   totalCMV?: boolean
@@ -765,25 +955,30 @@ export type RoundResultSelectScalar = {
   marketShare?: boolean
 }
 
-export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "roundNumber" | "totalRevenue" | "totalCMV" | "operatingCosts" | "agingCosts" | "ebitdaValue" | "ebitdaMargin" | "remainingStock" | "marketShare", ExtArgs["result"]["roundResult"]>
+export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "sessionId" | "roundNumber" | "totalRevenue" | "totalCMV" | "operatingCosts" | "agingCosts" | "ebitdaValue" | "ebitdaMargin" | "remainingStock" | "marketShare", ExtArgs["result"]["roundResult"]>
 export type RoundResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.RoundResult$sessionArgs<ExtArgs>
 }
 export type RoundResultIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.RoundResult$sessionArgs<ExtArgs>
 }
 export type RoundResultIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.RoundResult$sessionArgs<ExtArgs>
 }
 
 export type $RoundResultPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RoundResult"
   objects: {
     store: Prisma.$StorePayload<ExtArgs>
+    session: Prisma.$GameSessionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     storeId: string
+    sessionId: string | null
     roundNumber: number
     totalRevenue: number
     totalCMV: number
@@ -1188,6 +1383,7 @@ readonly fields: RoundResultFieldRefs;
 export interface Prisma__RoundResultClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  session<T extends Prisma.RoundResult$sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoundResult$sessionArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1219,6 +1415,7 @@ export interface Prisma__RoundResultClient<T, Null = never, ExtArgs extends runt
 export interface RoundResultFieldRefs {
   readonly id: Prisma.FieldRef<"RoundResult", 'String'>
   readonly storeId: Prisma.FieldRef<"RoundResult", 'String'>
+  readonly sessionId: Prisma.FieldRef<"RoundResult", 'String'>
   readonly roundNumber: Prisma.FieldRef<"RoundResult", 'Int'>
   readonly totalRevenue: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly totalCMV: Prisma.FieldRef<"RoundResult", 'Float'>
@@ -1626,6 +1823,25 @@ export type RoundResultDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many RoundResults to delete.
    */
   limit?: number
+}
+
+/**
+ * RoundResult.session
+ */
+export type RoundResult$sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GameSession
+   */
+  select?: Prisma.GameSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GameSession
+   */
+  omit?: Prisma.GameSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GameSessionInclude<ExtArgs> | null
+  where?: Prisma.GameSessionWhereInput
 }
 
 /**

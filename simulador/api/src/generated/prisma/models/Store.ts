@@ -38,18 +38,21 @@ export type StoreMinAggregateOutputType = {
   id: string | null
   name: string | null
   initialCash: number | null
+  playerId: string | null
 }
 
 export type StoreMaxAggregateOutputType = {
   id: string | null
   name: string | null
   initialCash: number | null
+  playerId: string | null
 }
 
 export type StoreCountAggregateOutputType = {
   id: number
   name: number
   initialCash: number
+  playerId: number
   _all: number
 }
 
@@ -66,18 +69,21 @@ export type StoreMinAggregateInputType = {
   id?: true
   name?: true
   initialCash?: true
+  playerId?: true
 }
 
 export type StoreMaxAggregateInputType = {
   id?: true
   name?: true
   initialCash?: true
+  playerId?: true
 }
 
 export type StoreCountAggregateInputType = {
   id?: true
   name?: true
   initialCash?: true
+  playerId?: true
   _all?: true
 }
 
@@ -171,6 +177,7 @@ export type StoreGroupByOutputType = {
   id: string
   name: string
   initialCash: number
+  playerId: string | null
   _count: StoreCountAggregateOutputType | null
   _avg: StoreAvgAggregateOutputType | null
   _sum: StoreSumAggregateOutputType | null
@@ -200,6 +207,8 @@ export type StoreWhereInput = {
   id?: Prisma.StringFilter<"Store"> | string
   name?: Prisma.StringFilter<"Store"> | string
   initialCash?: Prisma.FloatFilter<"Store"> | number
+  playerId?: Prisma.StringNullableFilter<"Store"> | string | null
+  player?: Prisma.XOR<Prisma.PlayerNullableScalarRelationFilter, Prisma.PlayerWhereInput> | null
   configurations?: Prisma.ConfigurationListRelationFilter
   rounds?: Prisma.RoundResultListRelationFilter
 }
@@ -208,25 +217,30 @@ export type StoreOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   initialCash?: Prisma.SortOrder
+  playerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  player?: Prisma.PlayerOrderByWithRelationInput
   configurations?: Prisma.ConfigurationOrderByRelationAggregateInput
   rounds?: Prisma.RoundResultOrderByRelationAggregateInput
 }
 
 export type StoreWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  playerId?: string
   AND?: Prisma.StoreWhereInput | Prisma.StoreWhereInput[]
   OR?: Prisma.StoreWhereInput[]
   NOT?: Prisma.StoreWhereInput | Prisma.StoreWhereInput[]
   name?: Prisma.StringFilter<"Store"> | string
   initialCash?: Prisma.FloatFilter<"Store"> | number
+  player?: Prisma.XOR<Prisma.PlayerNullableScalarRelationFilter, Prisma.PlayerWhereInput> | null
   configurations?: Prisma.ConfigurationListRelationFilter
   rounds?: Prisma.RoundResultListRelationFilter
-}, "id">
+}, "id" | "playerId">
 
 export type StoreOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   initialCash?: Prisma.SortOrder
+  playerId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.StoreCountOrderByAggregateInput
   _avg?: Prisma.StoreAvgOrderByAggregateInput
   _max?: Prisma.StoreMaxOrderByAggregateInput
@@ -241,12 +255,14 @@ export type StoreScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Store"> | string
   name?: Prisma.StringWithAggregatesFilter<"Store"> | string
   initialCash?: Prisma.FloatWithAggregatesFilter<"Store"> | number
+  playerId?: Prisma.StringNullableWithAggregatesFilter<"Store"> | string | null
 }
 
 export type StoreCreateInput = {
   id?: string
   name: string
   initialCash?: number
+  player?: Prisma.PlayerCreateNestedOneWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
   rounds?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
 }
@@ -255,6 +271,7 @@ export type StoreUncheckedCreateInput = {
   id?: string
   name: string
   initialCash?: number
+  playerId?: string | null
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
   rounds?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
 }
@@ -263,6 +280,7 @@ export type StoreUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  player?: Prisma.PlayerUpdateOneWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
   rounds?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
 }
@@ -271,6 +289,7 @@ export type StoreUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  playerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
   rounds?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
 }
@@ -279,6 +298,7 @@ export type StoreCreateManyInput = {
   id?: string
   name: string
   initialCash?: number
+  playerId?: string | null
 }
 
 export type StoreUpdateManyMutationInput = {
@@ -291,12 +311,19 @@ export type StoreUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  playerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type StoreNullableScalarRelationFilter = {
+  is?: Prisma.StoreWhereInput | null
+  isNot?: Prisma.StoreWhereInput | null
 }
 
 export type StoreCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   initialCash?: Prisma.SortOrder
+  playerId?: Prisma.SortOrder
 }
 
 export type StoreAvgOrderByAggregateInput = {
@@ -307,12 +334,14 @@ export type StoreMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   initialCash?: Prisma.SortOrder
+  playerId?: Prisma.SortOrder
 }
 
 export type StoreMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   initialCash?: Prisma.SortOrder
+  playerId?: Prisma.SortOrder
 }
 
 export type StoreSumOrderByAggregateInput = {
@@ -322,6 +351,38 @@ export type StoreSumOrderByAggregateInput = {
 export type StoreScalarRelationFilter = {
   is?: Prisma.StoreWhereInput
   isNot?: Prisma.StoreWhereInput
+}
+
+export type StoreCreateNestedOneWithoutPlayerInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutPlayerInput, Prisma.StoreUncheckedCreateWithoutPlayerInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutPlayerInput
+  connect?: Prisma.StoreWhereUniqueInput
+}
+
+export type StoreUncheckedCreateNestedOneWithoutPlayerInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutPlayerInput, Prisma.StoreUncheckedCreateWithoutPlayerInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutPlayerInput
+  connect?: Prisma.StoreWhereUniqueInput
+}
+
+export type StoreUpdateOneWithoutPlayerNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutPlayerInput, Prisma.StoreUncheckedCreateWithoutPlayerInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutPlayerInput
+  upsert?: Prisma.StoreUpsertWithoutPlayerInput
+  disconnect?: Prisma.StoreWhereInput | boolean
+  delete?: Prisma.StoreWhereInput | boolean
+  connect?: Prisma.StoreWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutPlayerInput, Prisma.StoreUpdateWithoutPlayerInput>, Prisma.StoreUncheckedUpdateWithoutPlayerInput>
+}
+
+export type StoreUncheckedUpdateOneWithoutPlayerNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutPlayerInput, Prisma.StoreUncheckedCreateWithoutPlayerInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutPlayerInput
+  upsert?: Prisma.StoreUpsertWithoutPlayerInput
+  disconnect?: Prisma.StoreWhereInput | boolean
+  delete?: Prisma.StoreWhereInput | boolean
+  connect?: Prisma.StoreWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutPlayerInput, Prisma.StoreUpdateWithoutPlayerInput>, Prisma.StoreUncheckedUpdateWithoutPlayerInput>
 }
 
 export type StoreCreateNestedOneWithoutConfigurationsInput = {
@@ -352,10 +413,59 @@ export type StoreUpdateOneRequiredWithoutRoundsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutRoundsInput, Prisma.StoreUpdateWithoutRoundsInput>, Prisma.StoreUncheckedUpdateWithoutRoundsInput>
 }
 
+export type StoreCreateWithoutPlayerInput = {
+  id?: string
+  name: string
+  initialCash?: number
+  configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
+  rounds?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
+}
+
+export type StoreUncheckedCreateWithoutPlayerInput = {
+  id?: string
+  name: string
+  initialCash?: number
+  configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
+  rounds?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
+}
+
+export type StoreCreateOrConnectWithoutPlayerInput = {
+  where: Prisma.StoreWhereUniqueInput
+  create: Prisma.XOR<Prisma.StoreCreateWithoutPlayerInput, Prisma.StoreUncheckedCreateWithoutPlayerInput>
+}
+
+export type StoreUpsertWithoutPlayerInput = {
+  update: Prisma.XOR<Prisma.StoreUpdateWithoutPlayerInput, Prisma.StoreUncheckedUpdateWithoutPlayerInput>
+  create: Prisma.XOR<Prisma.StoreCreateWithoutPlayerInput, Prisma.StoreUncheckedCreateWithoutPlayerInput>
+  where?: Prisma.StoreWhereInput
+}
+
+export type StoreUpdateToOneWithWhereWithoutPlayerInput = {
+  where?: Prisma.StoreWhereInput
+  data: Prisma.XOR<Prisma.StoreUpdateWithoutPlayerInput, Prisma.StoreUncheckedUpdateWithoutPlayerInput>
+}
+
+export type StoreUpdateWithoutPlayerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
+  rounds?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreUncheckedUpdateWithoutPlayerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
+  rounds?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
+}
+
 export type StoreCreateWithoutConfigurationsInput = {
   id?: string
   name: string
   initialCash?: number
+  player?: Prisma.PlayerCreateNestedOneWithoutStoreInput
   rounds?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
 }
 
@@ -363,6 +473,7 @@ export type StoreUncheckedCreateWithoutConfigurationsInput = {
   id?: string
   name: string
   initialCash?: number
+  playerId?: string | null
   rounds?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
 }
 
@@ -386,6 +497,7 @@ export type StoreUpdateWithoutConfigurationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  player?: Prisma.PlayerUpdateOneWithoutStoreNestedInput
   rounds?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
 }
 
@@ -393,6 +505,7 @@ export type StoreUncheckedUpdateWithoutConfigurationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  playerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rounds?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
 }
 
@@ -400,6 +513,7 @@ export type StoreCreateWithoutRoundsInput = {
   id?: string
   name: string
   initialCash?: number
+  player?: Prisma.PlayerCreateNestedOneWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
 }
 
@@ -407,6 +521,7 @@ export type StoreUncheckedCreateWithoutRoundsInput = {
   id?: string
   name: string
   initialCash?: number
+  playerId?: string | null
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
 }
 
@@ -430,6 +545,7 @@ export type StoreUpdateWithoutRoundsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  player?: Prisma.PlayerUpdateOneWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
 }
 
@@ -437,6 +553,7 @@ export type StoreUncheckedUpdateWithoutRoundsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   initialCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  playerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
 }
 
@@ -484,6 +601,8 @@ export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   name?: boolean
   initialCash?: boolean
+  playerId?: boolean
+  player?: boolean | Prisma.Store$playerArgs<ExtArgs>
   configurations?: boolean | Prisma.Store$configurationsArgs<ExtArgs>
   rounds?: boolean | Prisma.Store$roundsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
@@ -493,32 +612,43 @@ export type StoreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   name?: boolean
   initialCash?: boolean
+  playerId?: boolean
+  player?: boolean | Prisma.Store$playerArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
 export type StoreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   initialCash?: boolean
+  playerId?: boolean
+  player?: boolean | Prisma.Store$playerArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
 export type StoreSelectScalar = {
   id?: boolean
   name?: boolean
   initialCash?: boolean
+  playerId?: boolean
 }
 
-export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "initialCash", ExtArgs["result"]["store"]>
+export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "initialCash" | "playerId", ExtArgs["result"]["store"]>
 export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  player?: boolean | Prisma.Store$playerArgs<ExtArgs>
   configurations?: boolean | Prisma.Store$configurationsArgs<ExtArgs>
   rounds?: boolean | Prisma.Store$roundsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type StoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type StoreIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type StoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  player?: boolean | Prisma.Store$playerArgs<ExtArgs>
+}
+export type StoreIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  player?: boolean | Prisma.Store$playerArgs<ExtArgs>
+}
 
 export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Store"
   objects: {
+    player: Prisma.$PlayerPayload<ExtArgs> | null
     configurations: Prisma.$ConfigurationPayload<ExtArgs>[]
     rounds: Prisma.$RoundResultPayload<ExtArgs>[]
   }
@@ -526,6 +656,7 @@ export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     id: string
     name: string
     initialCash: number
+    playerId: string | null
   }, ExtArgs["result"]["store"]>
   composites: {}
 }
@@ -920,6 +1051,7 @@ readonly fields: StoreFieldRefs;
  */
 export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  player<T extends Prisma.Store$playerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$playerArgs<ExtArgs>>): Prisma.Prisma__PlayerClient<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   configurations<T extends Prisma.Store$configurationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$configurationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rounds<T extends Prisma.Store$roundsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$roundsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoundResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -954,6 +1086,7 @@ export interface StoreFieldRefs {
   readonly id: Prisma.FieldRef<"Store", 'String'>
   readonly name: Prisma.FieldRef<"Store", 'String'>
   readonly initialCash: Prisma.FieldRef<"Store", 'Float'>
+  readonly playerId: Prisma.FieldRef<"Store", 'String'>
 }
     
 
@@ -1208,6 +1341,10 @@ export type StoreCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    */
   data: Prisma.StoreCreateManyInput | Prisma.StoreCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StoreIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1278,6 +1415,10 @@ export type StoreUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many Stores to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StoreIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1344,6 +1485,25 @@ export type StoreDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Stores to delete.
    */
   limit?: number
+}
+
+/**
+ * Store.player
+ */
+export type Store$playerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Player
+   */
+  select?: Prisma.PlayerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Player
+   */
+  omit?: Prisma.PlayerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlayerInclude<ExtArgs> | null
+  where?: Prisma.PlayerWhereInput
 }
 
 /**
