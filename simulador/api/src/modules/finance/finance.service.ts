@@ -1,10 +1,15 @@
 import { PrismaService } from '@/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@/generated/prisma/client';
 import { CheckBudgetDto } from './dto/check-budget.dto';
 
 @Injectable()
 export class FinanceService {
     constructor(private prisma: PrismaService) {}
+
+    private getExecutor(tx?: Prisma.TransactionClient) {
+        return tx ?? this.prisma;
+    }
 
     async processarDadosIniciais(dto: CheckBudgetDto) {
         const LIMITE_CAIXA = 700_000;
@@ -36,5 +41,31 @@ export class FinanceService {
 
     getJurosPagos(interestPaid: number) {
         return interestPaid;
+    }
+
+    async getStoreBalance(storeId: string, tx?: Prisma.TransactionClient) {
+        const prisma = this.getExecutor(tx);
+        const store = await prisma.store.findUnique({
+            where: { id: storeId },
+        });
+
+        if (!store) {
+            throw new NotFoundException('Loja não encontrada.');
+        }
+
+        return store.initialCash;
+    }
+
+    async registerTransaction(storeId: string, amount: number, tx?: Prisma.TransactionClient) {
+        const prisma = this.getExecutor(tx);
+
+        return prisma.store.update({
+            where: { id: storeId },
+            data: {
+                initialCash: {
+                    increment: amount,
+                },
+            },
+        });
     }
 }
