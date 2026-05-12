@@ -25,8 +25,8 @@ interface AppConfig {
   comercial: {
     pereciveis: CategoriaConfig;
     mercearia: CategoriaConfig;
-    higiene: CategoriaConfig;
-    bebidas: CategoriaConfig;
+    eletro: CategoriaConfig;
+    hipel: CategoriaConfig;
   };
   operadores: number;
 }
@@ -46,8 +46,8 @@ const OnboardingPage = () => {
     comercial: {
       pereciveis: { estoque: 0, margem: 0 },
       mercearia: { estoque: 0, margem: 0 },
-      higiene: { estoque: 0, margem: 0 },
-      bebidas: { estoque: 0, margem: 0 }
+      eletro: { estoque: 0, margem: 0 },
+      hipel: { estoque: 0, margem: 0 }
     },
     operadores: 0,
   });

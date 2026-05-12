@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBasket, Package, Droplets, Wine, TrendingUp, Calculator, AlertCircle, LucideIcon, Info } from 'lucide-react';
+import { ShoppingBasket, Package, Droplets, Wine, TrendingUp, Calculator, AlertCircle, LucideIcon, Info, Computer } from 'lucide-react';
 
 // 1. DEFINIÇÃO DAS INTERFACES (O QUE MATA O ERRO)
 interface CategoriaConfig {
@@ -15,8 +15,8 @@ interface AppConfig {
   comercial: {
     pereciveis: CategoriaConfig;
     mercearia: CategoriaConfig;
-    higiene: CategoriaConfig;
-    bebidas: CategoriaConfig;
+    eletro: CategoriaConfig;
+    hipel: CategoriaConfig;
   };
 }
 
@@ -38,8 +38,8 @@ const ComercialStep = ({ config, setConfig }: ComercialProps) => {
   const categorias: CategoriaDisplay[] = [
     { id: 'pereciveis', label: 'Perecíveis', Icon: ShoppingBasket, custoUn: 15.50, cor: 'text-red-500' },
     { id: 'mercearia', label: 'Mercearia', Icon: Package, custoUn: 8.90, cor: 'text-blue-500' },
-    { id: 'higiene', label: 'Higiene & Limpeza', Icon: Droplets, custoUn: 12.40, cor: 'text-green-500' },
-    { id: 'bebidas', label: 'Bebidas', Icon: Wine, custoUn: 6.20, cor: 'text-orange-500' },
+    { id: 'eletro', label: 'Eletrônicos', Icon: Computer, custoUn: 12.40, cor: 'text-green-500' },
+    { id: 'hipel', label: 'Higiene Pessoal e Limpeza', Icon: Droplets, custoUn: 6.20, cor: 'text-orange-500' },
   ];
 
   const handleUpdate = (catId: keyof AppConfig['comercial'], field: keyof CategoriaConfig, value: number) => {

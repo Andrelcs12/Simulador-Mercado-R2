@@ -6,7 +6,8 @@ import {
   BarChart3, PieChart, TrendingUp, AlertTriangle, 
   CheckCircle2, DollarSign, Zap, FileText,
   ShieldAlert, HardDrive, Truck, Megaphone, Monitor, Wrench, ReceiptText, RefreshCw,
-  ShoppingBasket, Package, Droplets, Wine, Users, XCircle, ClipboardList
+  ShoppingBasket, Package, Droplets, Wine, Users, XCircle, ClipboardList,
+  Computer
 } from 'lucide-react';
 
 interface CategoriaConfig {
@@ -19,8 +20,8 @@ interface AppConfig {
   comercial: {
     pereciveis: CategoriaConfig;
     mercearia: CategoriaConfig;
-    higiene: CategoriaConfig;
-    bebidas: CategoriaConfig;
+    eletro: CategoriaConfig;
+    hipel: CategoriaConfig;
   };
   operadores?: number; // <- adicione isso ao estado global
 }
@@ -42,8 +43,8 @@ const capexMeta: Record<string, { label: string; Icon: any; value: number }> = {
 const categoriaMeta = [
   { id: 'pereciveis', label: 'Perecíveis',      Icon: ShoppingBasket, custoUn: 15.50, cor: 'text-red-500',    bg: 'bg-red-50'    },
   { id: 'mercearia',  label: 'Mercearia',       Icon: Package,        custoUn: 8.90,  cor: 'text-blue-500',   bg: 'bg-blue-50'   },
-  { id: 'higiene',    label: 'Higiene & Limpeza',Icon: Droplets,       custoUn: 12.40, cor: 'text-green-500',  bg: 'bg-green-50'  },
-  { id: 'bebidas',    label: 'Bebidas',         Icon: Wine,           custoUn: 6.20,  cor: 'text-orange-500', bg: 'bg-orange-50' },
+  { id: 'eletro',    label: 'Eletrônicos',Icon: Computer,       custoUn: 12.40, cor: 'text-green-500',  bg: 'bg-green-50'  },
+  { id: 'hipel',    label: 'Higiene Pessoal e Limpeza',         Icon: Droplets,           custoUn: 6.20,  cor: 'text-orange-500', bg: 'bg-orange-50' },
 ] as const;
 
 const SummaryStep = ({ config }: SummaryProps) => {
@@ -53,15 +54,15 @@ const SummaryStep = ({ config }: SummaryProps) => {
   const totalEstoque =
     (config.comercial.pereciveis.estoque * custosUnidades.pereciveis) +
     (config.comercial.mercearia.estoque  * custosUnidades.mercearia)  +
-    (config.comercial.higiene.estoque    * custosUnidades.higiene)    +
-    (config.comercial.bebidas.estoque    * custosUnidades.bebidas);
+    (config.comercial.eletro.estoque    * custosUnidades.higiene)    +
+    (config.comercial.hipel.estoque    * custosUnidades.bebidas);
 
   const saldoFinal = 700000 - totalCapex - totalEstoque;
   const markupMedio = (
     config.comercial.pereciveis.margem +
     config.comercial.mercearia.margem  +
-    config.comercial.higiene.margem    +
-    config.comercial.bebidas.margem
+    config.comercial.eletro.margem    +
+    config.comercial.hipel.margem
   ) / 4;
 
   const operadores = config.operadores ?? 0;
