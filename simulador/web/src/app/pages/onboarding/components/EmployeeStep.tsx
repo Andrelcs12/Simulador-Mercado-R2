@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Users, Minus, Plus, Info, Briefcase } from 'lucide-react';
 
 interface AppConfig {
+  operadores: number;
 }
 
 interface EmployeeProps {
@@ -15,7 +16,8 @@ interface EmployeeProps {
 
 const EmployeeStep = ({config, setConfig}: EmployeeProps) => {
 
-    const [valor, setValor] = useState(0);
+    const valor = config.operadores ?? 0;
+    const setValor = (v: number) => setConfig({ ...config, operadores: v });
 
     const taxaSLA = () => (valor < 6 ? 6 - valor : 1);
 

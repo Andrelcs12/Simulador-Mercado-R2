@@ -28,6 +28,7 @@ interface AppConfig {
     higiene: CategoriaConfig;
     bebidas: CategoriaConfig;
   };
+  operadores: number;
 }
 
 const OnboardingPage = () => {
@@ -47,7 +48,8 @@ const OnboardingPage = () => {
       mercearia: { estoque: 0, margem: 0 },
       higiene: { estoque: 0, margem: 0 },
       bebidas: { estoque: 0, margem: 0 }
-    }
+    },
+    operadores: 0,
   });
 
   const nextStep = () => setStep((p) => Math.min(p + 1, 4));
