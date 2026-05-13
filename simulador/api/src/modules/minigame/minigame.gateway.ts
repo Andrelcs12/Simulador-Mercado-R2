@@ -4,146 +4,123 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-} from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { MinigameService } from './minigame.service';
+} from "@nestjs/websockets";
+
+import { Server, Socket } from "socket.io";
+
+import { PlayerGateway } from "./gateways/player.gateway";
+import { RoundGateway } from "./gateways/round.gateway";
+import { AdminGateway } from "./gateways/admin.gateway";
 
 @WebSocketGateway({
-  cors: { origin: '*' },
-  namespace: 'simulation',
+  cors: { origin: "*" },
+  namespace: "simulation",
 })
 export class MinigameGateway {
-  @WebSocketServer() server: Server;
-  private readonly timeoutHandles = new Map<string, NodeJS.Timeout>();
+  @WebSocketServer()
+  server: Server;
 
-  constructor(private minigameService: MinigameService) {}
+  constructor(
+    private readonly playerGateway: PlayerGateway,
+    private readonly roundGateway: RoundGateway,
+    private readonly adminGateway: AdminGateway,
+  ) {}
 
-  private clearRoundTimeout(sessionId: string) {
-    const handle = this.timeoutHandles.get(sessionId);
-    if (handle) {
-      clearTimeout(handle);
-      this.timeoutHandles.delete(sessionId);
-    }
+  // ======================================================
+  // SOCKET LIFECYCLE
+  // ======================================================
+
+  handleConnection(client: Socket) {
+    // opcional: logs, auth handshake etc
   }
 
-  @SubscribeMessage('join_room')
-  @SubscribeMessage('join_session')
-  async handleJoinSession(
+  handleDisconnect(client: Socket) {
+    console.log("Socket disconnected:", client.id);
+  }
+
+  // ======================================================
+  // JOIN SESSION (ENTRY POINT ÚNICO)
+  // ======================================================
+
+  @SubscribeMessage("join_session")
+  async join(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { sessionId: string; playerId?: string; name: string; isAdmin?: boolean },
+    @MessageBody()
+    data: {
+      sessionId: string;
+      playerId?: string;
+      isAdmin?: boolean;
+    },
   ) {
     client.join(data.sessionId);
 
-    if (data.playerId) {
-      try {
-        const player = await this.minigameService.getPlayerById(data.playerId);
-        await this.minigameService.ensureStoreExists(player.id, player.storeName);
-        await this.minigameService.updateSocketId(data.playerId, client.id);
-        this.server.to(data.sessionId).emit('lobby:player_entered', player);
-      } catch (e) {
-        console.error('Erro ao processar join de player:', e.message);
-      }
-    }
-
-    console.log(`${data.isAdmin ? 'MESTRE' : 'Player'} ${data.name} conectado à sala ${data.sessionId}`);
-  }
-
-  @SubscribeMessage('admin:trigger_round')
-  @SubscribeMessage('admin:start_round')
-  async handleStartRound(@MessageBody() data: { sessionId: string; duration: number }) {
-    const roundData = await this.minigameService.startRound(data.sessionId, data.duration);
-    this.clearRoundTimeout(data.sessionId);
-
-    const timeoutMs = Math.max(roundData.endTime.getTime() - Date.now(), 0);
-    const timeout = setTimeout(() => {
-      this.server.to(data.sessionId).emit('round:time_up', {
-        message: 'O tempo acabou! As submissões foram bloqueadas.',
-      });
-      this.timeoutHandles.delete(data.sessionId);
-    }, timeoutMs);
-
-    this.timeoutHandles.set(data.sessionId, timeout);
-
-    this.server.to(data.sessionId).emit('round:started', {
-      roundNumber: roundData.roundNumber,
-      duration: roundData.duration,
-      endTime: roundData.endTime,
+    client.emit("server:time_sync", {
+      serverTime: Date.now(),
     });
+
+    // 👉 delega lógica para PlayerGateway
+    return this.playerGateway.join(client, data);
   }
 
-  @SubscribeMessage('player:ready')
-  async handlePlayerReady(@MessageBody() data: { sessionId: string; playerId: string }) {
-    await this.minigameService.setPlayerReady(data.playerId);
+  // ======================================================
+  // PLAYER EVENTS → DELEGATE
+  // ======================================================
 
-    this.server.to(data.sessionId).emit('lobby:player_ready', {
-      playerId: data.playerId,
-    });
-  }
-
-  @SubscribeMessage('player:submit_config')
-  async handlePlayerSubmit(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
-    try {
-      const result = await this.minigameService.submitConfiguration(data);
-
-      client.emit('player:submit_success', {
-        message: 'Decisões salvas com sucesso!',
-        payload: result,
-      });
-
-      this.server.to(data.sessionId).emit('admin:player_submitted', {
-        playerId: data.playerId,
-        storeName: result?.store?.name ?? data.storeName,
-        timestamp: new Date(),
-      });
-    } catch (error) {
-      client.emit('player:submit_error', {
-        message: error.message,
-      });
-    }
-  }
-
-  @SubscribeMessage('player:submit_confirmation')
-  handlePlayerSubmitConfirmation(
-    @MessageBody() data: { sessionId: string; playerId: string; storeName: string },
-  ) {
-    this.server.to(data.sessionId).emit('admin:player_submitted', {
-      playerId: data.playerId,
-      storeName: data.storeName,
-      timestamp: new Date(),
-    });
-  }
-
-  @SubscribeMessage('admin:finish_session')
-  async handleFinishSession(@MessageBody() data: { sessionId: string }) {
-    this.clearRoundTimeout(data.sessionId);
-    await this.minigameService.finishSession(data.sessionId);
-
-    this.server.to(data.sessionId).emit('simulation:finished', {
-      message: 'Simulação encerrada! Verifiquem os resultados finais.',
-      finishedAt: new Date(),
-    });
-  }
-
-  @SubscribeMessage('admin:force_stop_round')
-  handleForceStop(@MessageBody() data: { sessionId: string }) {
-    this.clearRoundTimeout(data.sessionId);
-    this.server.to(data.sessionId).emit('round:time_up', {
-      message: 'O tempo acabou! As submissões foram bloqueadas.',
-    });
-    console.log(`Rodada interrompida na sessão ${data.sessionId}`);
-  }
-
-  @SubscribeMessage('admin:update_config')
-  handleUpdateConfig(
+  @SubscribeMessage("player:submit_config")
+  async submitConfig(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { sessionId: string; duration: number; round: number; adminName: string },
+    @MessageBody() data: any,
   ) {
-    this.server.to(data.sessionId).emit('simulation:config_update', {
-      duration: data.duration,
-      round: data.round,
-      adminName: data.adminName,
-    });
+    return this.playerGateway.submitConfiguration(client, data);
+  }
 
-    console.log(`Configuração da sessão ${data.sessionId} atualizada pelo mestre.`);
+  @SubscribeMessage("player:ready")
+  async playerReady(@MessageBody() data: any) {
+    return this.playerGateway.ready(data);
+  }
+
+  // ======================================================
+  // ROUND EVENTS → DELEGATE
+  // ======================================================
+
+  @SubscribeMessage("admin:start_round")
+  async startRound(@MessageBody() data: any) {
+    return this.roundGateway.startRound(data);
+  }
+
+  @SubscribeMessage("admin:force_stop_round")
+  async forceStopRound(@MessageBody() data: any) {
+    return this.roundGateway.forceStop(data);
+  }
+
+  @SubscribeMessage("admin:start_next_round")
+  async nextRound(@MessageBody() data: any) {
+    return this.roundGateway.startNextRound(data);
+  }
+
+  // ======================================================
+  // ADMIN EVENTS → DELEGATE
+  // ======================================================
+
+  @SubscribeMessage("admin:finish_session")
+  async finishSession(@MessageBody() data: any) {
+    return this.adminGateway.finishSession(data);
+  }
+
+  @SubscribeMessage("admin:kick_player")
+  async kickPlayer(@MessageBody() data: any) {
+    return this.adminGateway.kickPlayer(data);
+  }
+
+  // ======================================================
+  // STATE (shared)
+  // ======================================================
+
+  @SubscribeMessage("session:get_state")
+  async getState(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: any,
+  ) {
+    return this.playerGateway.getState(client, data);
   }
 }

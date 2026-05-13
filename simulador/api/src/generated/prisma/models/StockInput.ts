@@ -28,72 +28,88 @@ export type AggregateStockInput = {
 
 export type StockInputAvgAggregateOutputType = {
   buyQty: number | null
-  appliedMargin: number | null
+  commercialMargin: number | null
+  expectedSellPrice: number | null
 }
 
 export type StockInputSumAggregateOutputType = {
   buyQty: number | null
-  appliedMargin: number | null
+  commercialMargin: number | null
+  expectedSellPrice: number | null
 }
 
 export type StockInputMinAggregateOutputType = {
   id: string | null
-  configId: string | null
+  configurationId: string | null
   categoryId: string | null
   buyQty: number | null
-  appliedMargin: number | null
+  commercialMargin: number | null
+  expectedSellPrice: number | null
+  createdAt: Date | null
 }
 
 export type StockInputMaxAggregateOutputType = {
   id: string | null
-  configId: string | null
+  configurationId: string | null
   categoryId: string | null
   buyQty: number | null
-  appliedMargin: number | null
+  commercialMargin: number | null
+  expectedSellPrice: number | null
+  createdAt: Date | null
 }
 
 export type StockInputCountAggregateOutputType = {
   id: number
-  configId: number
+  configurationId: number
   categoryId: number
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt: number
   _all: number
 }
 
 
 export type StockInputAvgAggregateInputType = {
   buyQty?: true
-  appliedMargin?: true
+  commercialMargin?: true
+  expectedSellPrice?: true
 }
 
 export type StockInputSumAggregateInputType = {
   buyQty?: true
-  appliedMargin?: true
+  commercialMargin?: true
+  expectedSellPrice?: true
 }
 
 export type StockInputMinAggregateInputType = {
   id?: true
-  configId?: true
+  configurationId?: true
   categoryId?: true
   buyQty?: true
-  appliedMargin?: true
+  commercialMargin?: true
+  expectedSellPrice?: true
+  createdAt?: true
 }
 
 export type StockInputMaxAggregateInputType = {
   id?: true
-  configId?: true
+  configurationId?: true
   categoryId?: true
   buyQty?: true
-  appliedMargin?: true
+  commercialMargin?: true
+  expectedSellPrice?: true
+  createdAt?: true
 }
 
 export type StockInputCountAggregateInputType = {
   id?: true
-  configId?: true
+  configurationId?: true
   categoryId?: true
   buyQty?: true
-  appliedMargin?: true
+  commercialMargin?: true
+  expectedSellPrice?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -185,10 +201,12 @@ export type StockInputGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type StockInputGroupByOutputType = {
   id: string
-  configId: string
+  configurationId: string
   categoryId: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt: Date
   _count: StockInputCountAggregateOutputType | null
   _avg: StockInputAvgAggregateOutputType | null
   _sum: StockInputSumAggregateOutputType | null
@@ -216,22 +234,26 @@ export type StockInputWhereInput = {
   OR?: Prisma.StockInputWhereInput[]
   NOT?: Prisma.StockInputWhereInput | Prisma.StockInputWhereInput[]
   id?: Prisma.StringFilter<"StockInput"> | string
-  configId?: Prisma.StringFilter<"StockInput"> | string
+  configurationId?: Prisma.StringFilter<"StockInput"> | string
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
-  appliedMargin?: Prisma.FloatFilter<"StockInput"> | number
+  commercialMargin?: Prisma.FloatFilter<"StockInput"> | number
+  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
+  createdAt?: Prisma.DateTimeFilter<"StockInput"> | Date | string
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
   category?: Prisma.XOR<Prisma.CategoryMasterScalarRelationFilter, Prisma.CategoryMasterWhereInput>
-  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }
 
 export type StockInputOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
-  appliedMargin?: Prisma.SortOrder
+  commercialMargin?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  configuration?: Prisma.ConfigurationOrderByWithRelationInput
   category?: Prisma.CategoryMasterOrderByWithRelationInput
-  config?: Prisma.ConfigurationOrderByWithRelationInput
 }
 
 export type StockInputWhereUniqueInput = Prisma.AtLeast<{
@@ -239,20 +261,24 @@ export type StockInputWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.StockInputWhereInput | Prisma.StockInputWhereInput[]
   OR?: Prisma.StockInputWhereInput[]
   NOT?: Prisma.StockInputWhereInput | Prisma.StockInputWhereInput[]
-  configId?: Prisma.StringFilter<"StockInput"> | string
+  configurationId?: Prisma.StringFilter<"StockInput"> | string
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
-  appliedMargin?: Prisma.FloatFilter<"StockInput"> | number
+  commercialMargin?: Prisma.FloatFilter<"StockInput"> | number
+  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
+  createdAt?: Prisma.DateTimeFilter<"StockInput"> | Date | string
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
   category?: Prisma.XOR<Prisma.CategoryMasterScalarRelationFilter, Prisma.CategoryMasterWhereInput>
-  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }, "id">
 
 export type StockInputOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
-  appliedMargin?: Prisma.SortOrder
+  commercialMargin?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.StockInputCountOrderByAggregateInput
   _avg?: Prisma.StockInputAvgOrderByAggregateInput
   _max?: Prisma.StockInputMaxOrderByAggregateInput
@@ -265,64 +291,80 @@ export type StockInputScalarWhereWithAggregatesInput = {
   OR?: Prisma.StockInputScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StockInputScalarWhereWithAggregatesInput | Prisma.StockInputScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
-  configId?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
+  configurationId?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
   categoryId?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
   buyQty?: Prisma.IntWithAggregatesFilter<"StockInput"> | number
-  appliedMargin?: Prisma.FloatWithAggregatesFilter<"StockInput"> | number
+  commercialMargin?: Prisma.FloatWithAggregatesFilter<"StockInput"> | number
+  expectedSellPrice?: Prisma.FloatWithAggregatesFilter<"StockInput"> | number
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StockInput"> | Date | string
 }
 
 export type StockInputCreateInput = {
   id?: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
+  configuration: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
   category: Prisma.CategoryMasterCreateNestedOneWithoutStockInputsInput
-  config: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
 }
 
 export type StockInputUncheckedCreateInput = {
   id?: string
-  configId: string
+  configurationId: string
   categoryId: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
 }
 
 export type StockInputUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
   category?: Prisma.CategoryMasterUpdateOneRequiredWithoutStockInputsNestedInput
-  config?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
 }
 
 export type StockInputUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StockInputCreateManyInput = {
   id?: string
-  configId: string
+  configurationId: string
   categoryId: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
 }
 
 export type StockInputUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StockInputUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StockInputListRelationFilter = {
@@ -337,36 +379,44 @@ export type StockInputOrderByRelationAggregateInput = {
 
 export type StockInputCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
-  appliedMargin?: Prisma.SortOrder
+  commercialMargin?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StockInputAvgOrderByAggregateInput = {
   buyQty?: Prisma.SortOrder
-  appliedMargin?: Prisma.SortOrder
+  commercialMargin?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
 }
 
 export type StockInputMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
-  appliedMargin?: Prisma.SortOrder
+  commercialMargin?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StockInputMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
-  appliedMargin?: Prisma.SortOrder
+  commercialMargin?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StockInputSumOrderByAggregateInput = {
   buyQty?: Prisma.SortOrder
-  appliedMargin?: Prisma.SortOrder
+  commercialMargin?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
 }
 
 export type StockInputCreateNestedManyWithoutCategoryInput = {
@@ -411,60 +461,64 @@ export type StockInputUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.StockInputScalarWhereInput | Prisma.StockInputScalarWhereInput[]
 }
 
-export type StockInputCreateNestedManyWithoutConfigInput = {
-  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigInput, Prisma.StockInputUncheckedCreateWithoutConfigInput> | Prisma.StockInputCreateWithoutConfigInput[] | Prisma.StockInputUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigInput | Prisma.StockInputCreateOrConnectWithoutConfigInput[]
-  createMany?: Prisma.StockInputCreateManyConfigInputEnvelope
+export type StockInputCreateNestedManyWithoutConfigurationInput = {
+  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigurationInput, Prisma.StockInputUncheckedCreateWithoutConfigurationInput> | Prisma.StockInputCreateWithoutConfigurationInput[] | Prisma.StockInputUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigurationInput | Prisma.StockInputCreateOrConnectWithoutConfigurationInput[]
+  createMany?: Prisma.StockInputCreateManyConfigurationInputEnvelope
   connect?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
 }
 
-export type StockInputUncheckedCreateNestedManyWithoutConfigInput = {
-  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigInput, Prisma.StockInputUncheckedCreateWithoutConfigInput> | Prisma.StockInputCreateWithoutConfigInput[] | Prisma.StockInputUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigInput | Prisma.StockInputCreateOrConnectWithoutConfigInput[]
-  createMany?: Prisma.StockInputCreateManyConfigInputEnvelope
+export type StockInputUncheckedCreateNestedManyWithoutConfigurationInput = {
+  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigurationInput, Prisma.StockInputUncheckedCreateWithoutConfigurationInput> | Prisma.StockInputCreateWithoutConfigurationInput[] | Prisma.StockInputUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigurationInput | Prisma.StockInputCreateOrConnectWithoutConfigurationInput[]
+  createMany?: Prisma.StockInputCreateManyConfigurationInputEnvelope
   connect?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
 }
 
-export type StockInputUpdateManyWithoutConfigNestedInput = {
-  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigInput, Prisma.StockInputUncheckedCreateWithoutConfigInput> | Prisma.StockInputCreateWithoutConfigInput[] | Prisma.StockInputUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigInput | Prisma.StockInputCreateOrConnectWithoutConfigInput[]
-  upsert?: Prisma.StockInputUpsertWithWhereUniqueWithoutConfigInput | Prisma.StockInputUpsertWithWhereUniqueWithoutConfigInput[]
-  createMany?: Prisma.StockInputCreateManyConfigInputEnvelope
+export type StockInputUpdateManyWithoutConfigurationNestedInput = {
+  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigurationInput, Prisma.StockInputUncheckedCreateWithoutConfigurationInput> | Prisma.StockInputCreateWithoutConfigurationInput[] | Prisma.StockInputUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigurationInput | Prisma.StockInputCreateOrConnectWithoutConfigurationInput[]
+  upsert?: Prisma.StockInputUpsertWithWhereUniqueWithoutConfigurationInput | Prisma.StockInputUpsertWithWhereUniqueWithoutConfigurationInput[]
+  createMany?: Prisma.StockInputCreateManyConfigurationInputEnvelope
   set?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
   disconnect?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
   delete?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
   connect?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
-  update?: Prisma.StockInputUpdateWithWhereUniqueWithoutConfigInput | Prisma.StockInputUpdateWithWhereUniqueWithoutConfigInput[]
-  updateMany?: Prisma.StockInputUpdateManyWithWhereWithoutConfigInput | Prisma.StockInputUpdateManyWithWhereWithoutConfigInput[]
+  update?: Prisma.StockInputUpdateWithWhereUniqueWithoutConfigurationInput | Prisma.StockInputUpdateWithWhereUniqueWithoutConfigurationInput[]
+  updateMany?: Prisma.StockInputUpdateManyWithWhereWithoutConfigurationInput | Prisma.StockInputUpdateManyWithWhereWithoutConfigurationInput[]
   deleteMany?: Prisma.StockInputScalarWhereInput | Prisma.StockInputScalarWhereInput[]
 }
 
-export type StockInputUncheckedUpdateManyWithoutConfigNestedInput = {
-  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigInput, Prisma.StockInputUncheckedCreateWithoutConfigInput> | Prisma.StockInputCreateWithoutConfigInput[] | Prisma.StockInputUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigInput | Prisma.StockInputCreateOrConnectWithoutConfigInput[]
-  upsert?: Prisma.StockInputUpsertWithWhereUniqueWithoutConfigInput | Prisma.StockInputUpsertWithWhereUniqueWithoutConfigInput[]
-  createMany?: Prisma.StockInputCreateManyConfigInputEnvelope
+export type StockInputUncheckedUpdateManyWithoutConfigurationNestedInput = {
+  create?: Prisma.XOR<Prisma.StockInputCreateWithoutConfigurationInput, Prisma.StockInputUncheckedCreateWithoutConfigurationInput> | Prisma.StockInputCreateWithoutConfigurationInput[] | Prisma.StockInputUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StockInputCreateOrConnectWithoutConfigurationInput | Prisma.StockInputCreateOrConnectWithoutConfigurationInput[]
+  upsert?: Prisma.StockInputUpsertWithWhereUniqueWithoutConfigurationInput | Prisma.StockInputUpsertWithWhereUniqueWithoutConfigurationInput[]
+  createMany?: Prisma.StockInputCreateManyConfigurationInputEnvelope
   set?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
   disconnect?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
   delete?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
   connect?: Prisma.StockInputWhereUniqueInput | Prisma.StockInputWhereUniqueInput[]
-  update?: Prisma.StockInputUpdateWithWhereUniqueWithoutConfigInput | Prisma.StockInputUpdateWithWhereUniqueWithoutConfigInput[]
-  updateMany?: Prisma.StockInputUpdateManyWithWhereWithoutConfigInput | Prisma.StockInputUpdateManyWithWhereWithoutConfigInput[]
+  update?: Prisma.StockInputUpdateWithWhereUniqueWithoutConfigurationInput | Prisma.StockInputUpdateWithWhereUniqueWithoutConfigurationInput[]
+  updateMany?: Prisma.StockInputUpdateManyWithWhereWithoutConfigurationInput | Prisma.StockInputUpdateManyWithWhereWithoutConfigurationInput[]
   deleteMany?: Prisma.StockInputScalarWhereInput | Prisma.StockInputScalarWhereInput[]
 }
 
 export type StockInputCreateWithoutCategoryInput = {
   id?: string
   buyQty: number
-  appliedMargin: number
-  config: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
+  configuration: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
 }
 
 export type StockInputUncheckedCreateWithoutCategoryInput = {
   id?: string
-  configId: string
+  configurationId: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
 }
 
 export type StockInputCreateOrConnectWithoutCategoryInput = {
@@ -498,174 +552,206 @@ export type StockInputScalarWhereInput = {
   OR?: Prisma.StockInputScalarWhereInput[]
   NOT?: Prisma.StockInputScalarWhereInput | Prisma.StockInputScalarWhereInput[]
   id?: Prisma.StringFilter<"StockInput"> | string
-  configId?: Prisma.StringFilter<"StockInput"> | string
+  configurationId?: Prisma.StringFilter<"StockInput"> | string
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
-  appliedMargin?: Prisma.FloatFilter<"StockInput"> | number
+  commercialMargin?: Prisma.FloatFilter<"StockInput"> | number
+  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
+  createdAt?: Prisma.DateTimeFilter<"StockInput"> | Date | string
 }
 
-export type StockInputCreateWithoutConfigInput = {
+export type StockInputCreateWithoutConfigurationInput = {
   id?: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
   category: Prisma.CategoryMasterCreateNestedOneWithoutStockInputsInput
 }
 
-export type StockInputUncheckedCreateWithoutConfigInput = {
+export type StockInputUncheckedCreateWithoutConfigurationInput = {
   id?: string
   categoryId: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
 }
 
-export type StockInputCreateOrConnectWithoutConfigInput = {
+export type StockInputCreateOrConnectWithoutConfigurationInput = {
   where: Prisma.StockInputWhereUniqueInput
-  create: Prisma.XOR<Prisma.StockInputCreateWithoutConfigInput, Prisma.StockInputUncheckedCreateWithoutConfigInput>
+  create: Prisma.XOR<Prisma.StockInputCreateWithoutConfigurationInput, Prisma.StockInputUncheckedCreateWithoutConfigurationInput>
 }
 
-export type StockInputCreateManyConfigInputEnvelope = {
-  data: Prisma.StockInputCreateManyConfigInput | Prisma.StockInputCreateManyConfigInput[]
+export type StockInputCreateManyConfigurationInputEnvelope = {
+  data: Prisma.StockInputCreateManyConfigurationInput | Prisma.StockInputCreateManyConfigurationInput[]
   skipDuplicates?: boolean
 }
 
-export type StockInputUpsertWithWhereUniqueWithoutConfigInput = {
+export type StockInputUpsertWithWhereUniqueWithoutConfigurationInput = {
   where: Prisma.StockInputWhereUniqueInput
-  update: Prisma.XOR<Prisma.StockInputUpdateWithoutConfigInput, Prisma.StockInputUncheckedUpdateWithoutConfigInput>
-  create: Prisma.XOR<Prisma.StockInputCreateWithoutConfigInput, Prisma.StockInputUncheckedCreateWithoutConfigInput>
+  update: Prisma.XOR<Prisma.StockInputUpdateWithoutConfigurationInput, Prisma.StockInputUncheckedUpdateWithoutConfigurationInput>
+  create: Prisma.XOR<Prisma.StockInputCreateWithoutConfigurationInput, Prisma.StockInputUncheckedCreateWithoutConfigurationInput>
 }
 
-export type StockInputUpdateWithWhereUniqueWithoutConfigInput = {
+export type StockInputUpdateWithWhereUniqueWithoutConfigurationInput = {
   where: Prisma.StockInputWhereUniqueInput
-  data: Prisma.XOR<Prisma.StockInputUpdateWithoutConfigInput, Prisma.StockInputUncheckedUpdateWithoutConfigInput>
+  data: Prisma.XOR<Prisma.StockInputUpdateWithoutConfigurationInput, Prisma.StockInputUncheckedUpdateWithoutConfigurationInput>
 }
 
-export type StockInputUpdateManyWithWhereWithoutConfigInput = {
+export type StockInputUpdateManyWithWhereWithoutConfigurationInput = {
   where: Prisma.StockInputScalarWhereInput
-  data: Prisma.XOR<Prisma.StockInputUpdateManyMutationInput, Prisma.StockInputUncheckedUpdateManyWithoutConfigInput>
+  data: Prisma.XOR<Prisma.StockInputUpdateManyMutationInput, Prisma.StockInputUncheckedUpdateManyWithoutConfigurationInput>
 }
 
 export type StockInputCreateManyCategoryInput = {
   id?: string
-  configId: string
+  configurationId: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
 }
 
 export type StockInputUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  config?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
 }
 
 export type StockInputUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StockInputUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type StockInputCreateManyConfigInput = {
+export type StockInputCreateManyConfigurationInput = {
   id?: string
   categoryId: string
   buyQty: number
-  appliedMargin: number
+  commercialMargin: number
+  expectedSellPrice: number
+  createdAt?: Date | string
 }
 
-export type StockInputUpdateWithoutConfigInput = {
+export type StockInputUpdateWithoutConfigurationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryMasterUpdateOneRequiredWithoutStockInputsNestedInput
 }
 
-export type StockInputUncheckedUpdateWithoutConfigInput = {
+export type StockInputUncheckedUpdateWithoutConfigurationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type StockInputUncheckedUpdateManyWithoutConfigInput = {
+export type StockInputUncheckedUpdateManyWithoutConfigurationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
-  appliedMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
 
 export type StockInputSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
-  appliedMargin?: boolean
+  commercialMargin?: boolean
+  expectedSellPrice?: boolean
+  createdAt?: boolean
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
-  appliedMargin?: boolean
+  commercialMargin?: boolean
+  expectedSellPrice?: boolean
+  createdAt?: boolean
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
-  appliedMargin?: boolean
+  commercialMargin?: boolean
+  expectedSellPrice?: boolean
+  createdAt?: boolean
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectScalar = {
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
-  appliedMargin?: boolean
+  commercialMargin?: boolean
+  expectedSellPrice?: boolean
+  createdAt?: boolean
 }
 
-export type StockInputOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "configId" | "categoryId" | "buyQty" | "appliedMargin", ExtArgs["result"]["stockInput"]>
+export type StockInputOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "configurationId" | "categoryId" | "buyQty" | "commercialMargin" | "expectedSellPrice" | "createdAt", ExtArgs["result"]["stockInput"]>
 export type StockInputInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StockInputIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StockInputIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 
 export type $StockInputPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StockInput"
   objects: {
+    configuration: Prisma.$ConfigurationPayload<ExtArgs>
     category: Prisma.$CategoryMasterPayload<ExtArgs>
-    config: Prisma.$ConfigurationPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    configId: string
+    configurationId: string
     categoryId: string
     buyQty: number
-    appliedMargin: number
+    commercialMargin: number
+    expectedSellPrice: number
+    createdAt: Date
   }, ExtArgs["result"]["stockInput"]>
   composites: {}
 }
@@ -1060,8 +1146,8 @@ readonly fields: StockInputFieldRefs;
  */
 export interface Prisma__StockInputClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  configuration<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.CategoryMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryMasterClient<runtime.Types.Result.GetResult<Prisma.$CategoryMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  config<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1092,10 +1178,12 @@ export interface Prisma__StockInputClient<T, Null = never, ExtArgs extends runti
  */
 export interface StockInputFieldRefs {
   readonly id: Prisma.FieldRef<"StockInput", 'String'>
-  readonly configId: Prisma.FieldRef<"StockInput", 'String'>
+  readonly configurationId: Prisma.FieldRef<"StockInput", 'String'>
   readonly categoryId: Prisma.FieldRef<"StockInput", 'String'>
   readonly buyQty: Prisma.FieldRef<"StockInput", 'Int'>
-  readonly appliedMargin: Prisma.FieldRef<"StockInput", 'Float'>
+  readonly commercialMargin: Prisma.FieldRef<"StockInput", 'Float'>
+  readonly expectedSellPrice: Prisma.FieldRef<"StockInput", 'Float'>
+  readonly createdAt: Prisma.FieldRef<"StockInput", 'DateTime'>
 }
     
 

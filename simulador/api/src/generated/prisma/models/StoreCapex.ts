@@ -26,46 +26,52 @@ export type AggregateStoreCapex = {
 
 export type StoreCapexMinAggregateOutputType = {
   id: string | null
-  configId: string | null
+  configurationId: string | null
   capexId: string | null
-  isApproved: boolean | null
+  approved: boolean | null
+  createdAt: Date | null
 }
 
 export type StoreCapexMaxAggregateOutputType = {
   id: string | null
-  configId: string | null
+  configurationId: string | null
   capexId: string | null
-  isApproved: boolean | null
+  approved: boolean | null
+  createdAt: Date | null
 }
 
 export type StoreCapexCountAggregateOutputType = {
   id: number
-  configId: number
+  configurationId: number
   capexId: number
-  isApproved: number
+  approved: number
+  createdAt: number
   _all: number
 }
 
 
 export type StoreCapexMinAggregateInputType = {
   id?: true
-  configId?: true
+  configurationId?: true
   capexId?: true
-  isApproved?: true
+  approved?: true
+  createdAt?: true
 }
 
 export type StoreCapexMaxAggregateInputType = {
   id?: true
-  configId?: true
+  configurationId?: true
   capexId?: true
-  isApproved?: true
+  approved?: true
+  createdAt?: true
 }
 
 export type StoreCapexCountAggregateInputType = {
   id?: true
-  configId?: true
+  configurationId?: true
   capexId?: true
-  isApproved?: true
+  approved?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -143,9 +149,10 @@ export type StoreCapexGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type StoreCapexGroupByOutputType = {
   id: string
-  configId: string
+  configurationId: string
   capexId: string
-  isApproved: boolean
+  approved: boolean
+  createdAt: Date
   _count: StoreCapexCountAggregateOutputType | null
   _min: StoreCapexMinAggregateOutputType | null
   _max: StoreCapexMaxAggregateOutputType | null
@@ -171,20 +178,22 @@ export type StoreCapexWhereInput = {
   OR?: Prisma.StoreCapexWhereInput[]
   NOT?: Prisma.StoreCapexWhereInput | Prisma.StoreCapexWhereInput[]
   id?: Prisma.StringFilter<"StoreCapex"> | string
-  configId?: Prisma.StringFilter<"StoreCapex"> | string
+  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   capexId?: Prisma.StringFilter<"StoreCapex"> | string
-  isApproved?: Prisma.BoolFilter<"StoreCapex"> | boolean
-  capexMaster?: Prisma.XOR<Prisma.CapexMasterScalarRelationFilter, Prisma.CapexMasterWhereInput>
-  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
+  approved?: Prisma.BoolFilter<"StoreCapex"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"StoreCapex"> | Date | string
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
+  capex?: Prisma.XOR<Prisma.CapexMasterScalarRelationFilter, Prisma.CapexMasterWhereInput>
 }
 
 export type StoreCapexOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
-  isApproved?: Prisma.SortOrder
-  capexMaster?: Prisma.CapexMasterOrderByWithRelationInput
-  config?: Prisma.ConfigurationOrderByWithRelationInput
+  approved?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  configuration?: Prisma.ConfigurationOrderByWithRelationInput
+  capex?: Prisma.CapexMasterOrderByWithRelationInput
 }
 
 export type StoreCapexWhereUniqueInput = Prisma.AtLeast<{
@@ -192,18 +201,20 @@ export type StoreCapexWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.StoreCapexWhereInput | Prisma.StoreCapexWhereInput[]
   OR?: Prisma.StoreCapexWhereInput[]
   NOT?: Prisma.StoreCapexWhereInput | Prisma.StoreCapexWhereInput[]
-  configId?: Prisma.StringFilter<"StoreCapex"> | string
+  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   capexId?: Prisma.StringFilter<"StoreCapex"> | string
-  isApproved?: Prisma.BoolFilter<"StoreCapex"> | boolean
-  capexMaster?: Prisma.XOR<Prisma.CapexMasterScalarRelationFilter, Prisma.CapexMasterWhereInput>
-  config?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
+  approved?: Prisma.BoolFilter<"StoreCapex"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"StoreCapex"> | Date | string
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
+  capex?: Prisma.XOR<Prisma.CapexMasterScalarRelationFilter, Prisma.CapexMasterWhereInput>
 }, "id">
 
 export type StoreCapexOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
-  isApproved?: Prisma.SortOrder
+  approved?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.StoreCapexCountOrderByAggregateInput
   _max?: Prisma.StoreCapexMaxOrderByAggregateInput
   _min?: Prisma.StoreCapexMinOrderByAggregateInput
@@ -214,56 +225,64 @@ export type StoreCapexScalarWhereWithAggregatesInput = {
   OR?: Prisma.StoreCapexScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StoreCapexScalarWhereWithAggregatesInput | Prisma.StoreCapexScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
-  configId?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
+  configurationId?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
   capexId?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
-  isApproved?: Prisma.BoolWithAggregatesFilter<"StoreCapex"> | boolean
+  approved?: Prisma.BoolWithAggregatesFilter<"StoreCapex"> | boolean
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StoreCapex"> | Date | string
 }
 
 export type StoreCapexCreateInput = {
   id?: string
-  isApproved?: boolean
-  capexMaster: Prisma.CapexMasterCreateNestedOneWithoutStoreCapexsInput
-  config: Prisma.ConfigurationCreateNestedOneWithoutCapexSelectionsInput
+  approved?: boolean
+  createdAt?: Date | string
+  configuration: Prisma.ConfigurationCreateNestedOneWithoutCapexSelectionsInput
+  capex: Prisma.CapexMasterCreateNestedOneWithoutStoreCapexesInput
 }
 
 export type StoreCapexUncheckedCreateInput = {
   id?: string
-  configId: string
+  configurationId: string
   capexId: string
-  isApproved?: boolean
+  approved?: boolean
+  createdAt?: Date | string
 }
 
 export type StoreCapexUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  capexMaster?: Prisma.CapexMasterUpdateOneRequiredWithoutStoreCapexsNestedInput
-  config?: Prisma.ConfigurationUpdateOneRequiredWithoutCapexSelectionsNestedInput
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutCapexSelectionsNestedInput
+  capex?: Prisma.CapexMasterUpdateOneRequiredWithoutStoreCapexesNestedInput
 }
 
 export type StoreCapexUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   capexId?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StoreCapexCreateManyInput = {
   id?: string
-  configId: string
+  configurationId: string
   capexId: string
-  isApproved?: boolean
+  approved?: boolean
+  createdAt?: Date | string
 }
 
 export type StoreCapexUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StoreCapexUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   capexId?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StoreCapexListRelationFilter = {
@@ -278,145 +297,154 @@ export type StoreCapexOrderByRelationAggregateInput = {
 
 export type StoreCapexCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
-  isApproved?: Prisma.SortOrder
+  approved?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StoreCapexMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
-  isApproved?: Prisma.SortOrder
+  approved?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StoreCapexMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configId?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
-  isApproved?: Prisma.SortOrder
+  approved?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
-export type StoreCapexCreateNestedManyWithoutCapexMasterInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput> | Prisma.StoreCapexCreateWithoutCapexMasterInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput | Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput[]
-  createMany?: Prisma.StoreCapexCreateManyCapexMasterInputEnvelope
+export type StoreCapexCreateNestedManyWithoutCapexInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexInput, Prisma.StoreCapexUncheckedCreateWithoutCapexInput> | Prisma.StoreCapexCreateWithoutCapexInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexInput | Prisma.StoreCapexCreateOrConnectWithoutCapexInput[]
+  createMany?: Prisma.StoreCapexCreateManyCapexInputEnvelope
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
 }
 
-export type StoreCapexUncheckedCreateNestedManyWithoutCapexMasterInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput> | Prisma.StoreCapexCreateWithoutCapexMasterInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput | Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput[]
-  createMany?: Prisma.StoreCapexCreateManyCapexMasterInputEnvelope
+export type StoreCapexUncheckedCreateNestedManyWithoutCapexInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexInput, Prisma.StoreCapexUncheckedCreateWithoutCapexInput> | Prisma.StoreCapexCreateWithoutCapexInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexInput | Prisma.StoreCapexCreateOrConnectWithoutCapexInput[]
+  createMany?: Prisma.StoreCapexCreateManyCapexInputEnvelope
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
 }
 
-export type StoreCapexUpdateManyWithoutCapexMasterNestedInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput> | Prisma.StoreCapexCreateWithoutCapexMasterInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput | Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput[]
-  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexMasterInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexMasterInput[]
-  createMany?: Prisma.StoreCapexCreateManyCapexMasterInputEnvelope
+export type StoreCapexUpdateManyWithoutCapexNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexInput, Prisma.StoreCapexUncheckedCreateWithoutCapexInput> | Prisma.StoreCapexCreateWithoutCapexInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexInput | Prisma.StoreCapexCreateOrConnectWithoutCapexInput[]
+  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexInput[]
+  createMany?: Prisma.StoreCapexCreateManyCapexInputEnvelope
   set?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   disconnect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   delete?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
-  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexMasterInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexMasterInput[]
-  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutCapexMasterInput | Prisma.StoreCapexUpdateManyWithWhereWithoutCapexMasterInput[]
+  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexInput[]
+  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutCapexInput | Prisma.StoreCapexUpdateManyWithWhereWithoutCapexInput[]
   deleteMany?: Prisma.StoreCapexScalarWhereInput | Prisma.StoreCapexScalarWhereInput[]
 }
 
-export type StoreCapexUncheckedUpdateManyWithoutCapexMasterNestedInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput> | Prisma.StoreCapexCreateWithoutCapexMasterInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput | Prisma.StoreCapexCreateOrConnectWithoutCapexMasterInput[]
-  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexMasterInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexMasterInput[]
-  createMany?: Prisma.StoreCapexCreateManyCapexMasterInputEnvelope
+export type StoreCapexUncheckedUpdateManyWithoutCapexNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexInput, Prisma.StoreCapexUncheckedCreateWithoutCapexInput> | Prisma.StoreCapexCreateWithoutCapexInput[] | Prisma.StoreCapexUncheckedCreateWithoutCapexInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutCapexInput | Prisma.StoreCapexCreateOrConnectWithoutCapexInput[]
+  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutCapexInput[]
+  createMany?: Prisma.StoreCapexCreateManyCapexInputEnvelope
   set?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   disconnect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   delete?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
-  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexMasterInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexMasterInput[]
-  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutCapexMasterInput | Prisma.StoreCapexUpdateManyWithWhereWithoutCapexMasterInput[]
+  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutCapexInput[]
+  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutCapexInput | Prisma.StoreCapexUpdateManyWithWhereWithoutCapexInput[]
   deleteMany?: Prisma.StoreCapexScalarWhereInput | Prisma.StoreCapexScalarWhereInput[]
 }
 
-export type StoreCapexCreateNestedManyWithoutConfigInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigInput, Prisma.StoreCapexUncheckedCreateWithoutConfigInput> | Prisma.StoreCapexCreateWithoutConfigInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigInput | Prisma.StoreCapexCreateOrConnectWithoutConfigInput[]
-  createMany?: Prisma.StoreCapexCreateManyConfigInputEnvelope
+export type StoreCapexCreateNestedManyWithoutConfigurationInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigurationInput, Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput> | Prisma.StoreCapexCreateWithoutConfigurationInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput | Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput[]
+  createMany?: Prisma.StoreCapexCreateManyConfigurationInputEnvelope
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
 }
 
-export type StoreCapexUncheckedCreateNestedManyWithoutConfigInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigInput, Prisma.StoreCapexUncheckedCreateWithoutConfigInput> | Prisma.StoreCapexCreateWithoutConfigInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigInput | Prisma.StoreCapexCreateOrConnectWithoutConfigInput[]
-  createMany?: Prisma.StoreCapexCreateManyConfigInputEnvelope
+export type StoreCapexUncheckedCreateNestedManyWithoutConfigurationInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigurationInput, Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput> | Prisma.StoreCapexCreateWithoutConfigurationInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput | Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput[]
+  createMany?: Prisma.StoreCapexCreateManyConfigurationInputEnvelope
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
 }
 
-export type StoreCapexUpdateManyWithoutConfigNestedInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigInput, Prisma.StoreCapexUncheckedCreateWithoutConfigInput> | Prisma.StoreCapexCreateWithoutConfigInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigInput | Prisma.StoreCapexCreateOrConnectWithoutConfigInput[]
-  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigInput[]
-  createMany?: Prisma.StoreCapexCreateManyConfigInputEnvelope
+export type StoreCapexUpdateManyWithoutConfigurationNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigurationInput, Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput> | Prisma.StoreCapexCreateWithoutConfigurationInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput | Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput[]
+  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigurationInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigurationInput[]
+  createMany?: Prisma.StoreCapexCreateManyConfigurationInputEnvelope
   set?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   disconnect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   delete?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
-  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigInput[]
-  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutConfigInput | Prisma.StoreCapexUpdateManyWithWhereWithoutConfigInput[]
+  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigurationInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigurationInput[]
+  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutConfigurationInput | Prisma.StoreCapexUpdateManyWithWhereWithoutConfigurationInput[]
   deleteMany?: Prisma.StoreCapexScalarWhereInput | Prisma.StoreCapexScalarWhereInput[]
 }
 
-export type StoreCapexUncheckedUpdateManyWithoutConfigNestedInput = {
-  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigInput, Prisma.StoreCapexUncheckedCreateWithoutConfigInput> | Prisma.StoreCapexCreateWithoutConfigInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigInput[]
-  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigInput | Prisma.StoreCapexCreateOrConnectWithoutConfigInput[]
-  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigInput[]
-  createMany?: Prisma.StoreCapexCreateManyConfigInputEnvelope
+export type StoreCapexUncheckedUpdateManyWithoutConfigurationNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigurationInput, Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput> | Prisma.StoreCapexCreateWithoutConfigurationInput[] | Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput[]
+  connectOrCreate?: Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput | Prisma.StoreCapexCreateOrConnectWithoutConfigurationInput[]
+  upsert?: Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigurationInput | Prisma.StoreCapexUpsertWithWhereUniqueWithoutConfigurationInput[]
+  createMany?: Prisma.StoreCapexCreateManyConfigurationInputEnvelope
   set?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   disconnect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   delete?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
   connect?: Prisma.StoreCapexWhereUniqueInput | Prisma.StoreCapexWhereUniqueInput[]
-  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigInput[]
-  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutConfigInput | Prisma.StoreCapexUpdateManyWithWhereWithoutConfigInput[]
+  update?: Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigurationInput | Prisma.StoreCapexUpdateWithWhereUniqueWithoutConfigurationInput[]
+  updateMany?: Prisma.StoreCapexUpdateManyWithWhereWithoutConfigurationInput | Prisma.StoreCapexUpdateManyWithWhereWithoutConfigurationInput[]
   deleteMany?: Prisma.StoreCapexScalarWhereInput | Prisma.StoreCapexScalarWhereInput[]
 }
 
-export type StoreCapexCreateWithoutCapexMasterInput = {
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type StoreCapexCreateWithoutCapexInput = {
   id?: string
-  isApproved?: boolean
-  config: Prisma.ConfigurationCreateNestedOneWithoutCapexSelectionsInput
+  approved?: boolean
+  createdAt?: Date | string
+  configuration: Prisma.ConfigurationCreateNestedOneWithoutCapexSelectionsInput
 }
 
-export type StoreCapexUncheckedCreateWithoutCapexMasterInput = {
+export type StoreCapexUncheckedCreateWithoutCapexInput = {
   id?: string
-  configId: string
-  isApproved?: boolean
+  configurationId: string
+  approved?: boolean
+  createdAt?: Date | string
 }
 
-export type StoreCapexCreateOrConnectWithoutCapexMasterInput = {
+export type StoreCapexCreateOrConnectWithoutCapexInput = {
   where: Prisma.StoreCapexWhereUniqueInput
-  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput>
+  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexInput, Prisma.StoreCapexUncheckedCreateWithoutCapexInput>
 }
 
-export type StoreCapexCreateManyCapexMasterInputEnvelope = {
-  data: Prisma.StoreCapexCreateManyCapexMasterInput | Prisma.StoreCapexCreateManyCapexMasterInput[]
+export type StoreCapexCreateManyCapexInputEnvelope = {
+  data: Prisma.StoreCapexCreateManyCapexInput | Prisma.StoreCapexCreateManyCapexInput[]
   skipDuplicates?: boolean
 }
 
-export type StoreCapexUpsertWithWhereUniqueWithoutCapexMasterInput = {
+export type StoreCapexUpsertWithWhereUniqueWithoutCapexInput = {
   where: Prisma.StoreCapexWhereUniqueInput
-  update: Prisma.XOR<Prisma.StoreCapexUpdateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedUpdateWithoutCapexMasterInput>
-  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedCreateWithoutCapexMasterInput>
+  update: Prisma.XOR<Prisma.StoreCapexUpdateWithoutCapexInput, Prisma.StoreCapexUncheckedUpdateWithoutCapexInput>
+  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutCapexInput, Prisma.StoreCapexUncheckedCreateWithoutCapexInput>
 }
 
-export type StoreCapexUpdateWithWhereUniqueWithoutCapexMasterInput = {
+export type StoreCapexUpdateWithWhereUniqueWithoutCapexInput = {
   where: Prisma.StoreCapexWhereUniqueInput
-  data: Prisma.XOR<Prisma.StoreCapexUpdateWithoutCapexMasterInput, Prisma.StoreCapexUncheckedUpdateWithoutCapexMasterInput>
+  data: Prisma.XOR<Prisma.StoreCapexUpdateWithoutCapexInput, Prisma.StoreCapexUncheckedUpdateWithoutCapexInput>
 }
 
-export type StoreCapexUpdateManyWithWhereWithoutCapexMasterInput = {
+export type StoreCapexUpdateManyWithWhereWithoutCapexInput = {
   where: Prisma.StoreCapexScalarWhereInput
-  data: Prisma.XOR<Prisma.StoreCapexUpdateManyMutationInput, Prisma.StoreCapexUncheckedUpdateManyWithoutCapexMasterInput>
+  data: Prisma.XOR<Prisma.StoreCapexUpdateManyMutationInput, Prisma.StoreCapexUncheckedUpdateManyWithoutCapexInput>
 }
 
 export type StoreCapexScalarWhereInput = {
@@ -424,158 +452,174 @@ export type StoreCapexScalarWhereInput = {
   OR?: Prisma.StoreCapexScalarWhereInput[]
   NOT?: Prisma.StoreCapexScalarWhereInput | Prisma.StoreCapexScalarWhereInput[]
   id?: Prisma.StringFilter<"StoreCapex"> | string
-  configId?: Prisma.StringFilter<"StoreCapex"> | string
+  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   capexId?: Prisma.StringFilter<"StoreCapex"> | string
-  isApproved?: Prisma.BoolFilter<"StoreCapex"> | boolean
+  approved?: Prisma.BoolFilter<"StoreCapex"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"StoreCapex"> | Date | string
 }
 
-export type StoreCapexCreateWithoutConfigInput = {
+export type StoreCapexCreateWithoutConfigurationInput = {
   id?: string
-  isApproved?: boolean
-  capexMaster: Prisma.CapexMasterCreateNestedOneWithoutStoreCapexsInput
+  approved?: boolean
+  createdAt?: Date | string
+  capex: Prisma.CapexMasterCreateNestedOneWithoutStoreCapexesInput
 }
 
-export type StoreCapexUncheckedCreateWithoutConfigInput = {
+export type StoreCapexUncheckedCreateWithoutConfigurationInput = {
   id?: string
   capexId: string
-  isApproved?: boolean
+  approved?: boolean
+  createdAt?: Date | string
 }
 
-export type StoreCapexCreateOrConnectWithoutConfigInput = {
+export type StoreCapexCreateOrConnectWithoutConfigurationInput = {
   where: Prisma.StoreCapexWhereUniqueInput
-  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigInput, Prisma.StoreCapexUncheckedCreateWithoutConfigInput>
+  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigurationInput, Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput>
 }
 
-export type StoreCapexCreateManyConfigInputEnvelope = {
-  data: Prisma.StoreCapexCreateManyConfigInput | Prisma.StoreCapexCreateManyConfigInput[]
+export type StoreCapexCreateManyConfigurationInputEnvelope = {
+  data: Prisma.StoreCapexCreateManyConfigurationInput | Prisma.StoreCapexCreateManyConfigurationInput[]
   skipDuplicates?: boolean
 }
 
-export type StoreCapexUpsertWithWhereUniqueWithoutConfigInput = {
+export type StoreCapexUpsertWithWhereUniqueWithoutConfigurationInput = {
   where: Prisma.StoreCapexWhereUniqueInput
-  update: Prisma.XOR<Prisma.StoreCapexUpdateWithoutConfigInput, Prisma.StoreCapexUncheckedUpdateWithoutConfigInput>
-  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigInput, Prisma.StoreCapexUncheckedCreateWithoutConfigInput>
+  update: Prisma.XOR<Prisma.StoreCapexUpdateWithoutConfigurationInput, Prisma.StoreCapexUncheckedUpdateWithoutConfigurationInput>
+  create: Prisma.XOR<Prisma.StoreCapexCreateWithoutConfigurationInput, Prisma.StoreCapexUncheckedCreateWithoutConfigurationInput>
 }
 
-export type StoreCapexUpdateWithWhereUniqueWithoutConfigInput = {
+export type StoreCapexUpdateWithWhereUniqueWithoutConfigurationInput = {
   where: Prisma.StoreCapexWhereUniqueInput
-  data: Prisma.XOR<Prisma.StoreCapexUpdateWithoutConfigInput, Prisma.StoreCapexUncheckedUpdateWithoutConfigInput>
+  data: Prisma.XOR<Prisma.StoreCapexUpdateWithoutConfigurationInput, Prisma.StoreCapexUncheckedUpdateWithoutConfigurationInput>
 }
 
-export type StoreCapexUpdateManyWithWhereWithoutConfigInput = {
+export type StoreCapexUpdateManyWithWhereWithoutConfigurationInput = {
   where: Prisma.StoreCapexScalarWhereInput
-  data: Prisma.XOR<Prisma.StoreCapexUpdateManyMutationInput, Prisma.StoreCapexUncheckedUpdateManyWithoutConfigInput>
+  data: Prisma.XOR<Prisma.StoreCapexUpdateManyMutationInput, Prisma.StoreCapexUncheckedUpdateManyWithoutConfigurationInput>
 }
 
-export type StoreCapexCreateManyCapexMasterInput = {
+export type StoreCapexCreateManyCapexInput = {
   id?: string
-  configId: string
-  isApproved?: boolean
+  configurationId: string
+  approved?: boolean
+  createdAt?: Date | string
 }
 
-export type StoreCapexUpdateWithoutCapexMasterInput = {
+export type StoreCapexUpdateWithoutCapexInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  config?: Prisma.ConfigurationUpdateOneRequiredWithoutCapexSelectionsNestedInput
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutCapexSelectionsNestedInput
 }
 
-export type StoreCapexUncheckedUpdateWithoutCapexMasterInput = {
+export type StoreCapexUncheckedUpdateWithoutCapexInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type StoreCapexUncheckedUpdateManyWithoutCapexMasterInput = {
+export type StoreCapexUncheckedUpdateManyWithoutCapexInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configId?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type StoreCapexCreateManyConfigInput = {
+export type StoreCapexCreateManyConfigurationInput = {
   id?: string
   capexId: string
-  isApproved?: boolean
+  approved?: boolean
+  createdAt?: Date | string
 }
 
-export type StoreCapexUpdateWithoutConfigInput = {
+export type StoreCapexUpdateWithoutConfigurationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  capexMaster?: Prisma.CapexMasterUpdateOneRequiredWithoutStoreCapexsNestedInput
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  capex?: Prisma.CapexMasterUpdateOneRequiredWithoutStoreCapexesNestedInput
 }
 
-export type StoreCapexUncheckedUpdateWithoutConfigInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  capexId?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
-}
-
-export type StoreCapexUncheckedUpdateManyWithoutConfigInput = {
+export type StoreCapexUncheckedUpdateWithoutConfigurationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   capexId?: Prisma.StringFieldUpdateOperationsInput | string
-  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StoreCapexUncheckedUpdateManyWithoutConfigurationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  capexId?: Prisma.StringFieldUpdateOperationsInput | string
+  approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
 
 export type StoreCapexSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   capexId?: boolean
-  isApproved?: boolean
-  capexMaster?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  approved?: boolean
+  createdAt?: boolean
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["storeCapex"]>
 
 export type StoreCapexSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   capexId?: boolean
-  isApproved?: boolean
-  capexMaster?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  approved?: boolean
+  createdAt?: boolean
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["storeCapex"]>
 
 export type StoreCapexSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   capexId?: boolean
-  isApproved?: boolean
-  capexMaster?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  approved?: boolean
+  createdAt?: boolean
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["storeCapex"]>
 
 export type StoreCapexSelectScalar = {
   id?: boolean
-  configId?: boolean
+  configurationId?: boolean
   capexId?: boolean
-  isApproved?: boolean
+  approved?: boolean
+  createdAt?: boolean
 }
 
-export type StoreCapexOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "configId" | "capexId" | "isApproved", ExtArgs["result"]["storeCapex"]>
+export type StoreCapexOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "configurationId" | "capexId" | "approved" | "createdAt", ExtArgs["result"]["storeCapex"]>
 export type StoreCapexInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  capexMaster?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
 }
 export type StoreCapexIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  capexMaster?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
 }
 export type StoreCapexIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  capexMaster?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
-  config?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
 }
 
 export type $StoreCapexPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StoreCapex"
   objects: {
-    capexMaster: Prisma.$CapexMasterPayload<ExtArgs>
-    config: Prisma.$ConfigurationPayload<ExtArgs>
+    configuration: Prisma.$ConfigurationPayload<ExtArgs>
+    capex: Prisma.$CapexMasterPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    configId: string
+    configurationId: string
     capexId: string
-    isApproved: boolean
+    approved: boolean
+    createdAt: Date
   }, ExtArgs["result"]["storeCapex"]>
   composites: {}
 }
@@ -970,8 +1014,8 @@ readonly fields: StoreCapexFieldRefs;
  */
 export interface Prisma__StoreCapexClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  capexMaster<T extends Prisma.CapexMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CapexMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__CapexMasterClient<runtime.Types.Result.GetResult<Prisma.$CapexMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  config<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  configuration<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  capex<T extends Prisma.CapexMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CapexMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__CapexMasterClient<runtime.Types.Result.GetResult<Prisma.$CapexMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1002,9 +1046,10 @@ export interface Prisma__StoreCapexClient<T, Null = never, ExtArgs extends runti
  */
 export interface StoreCapexFieldRefs {
   readonly id: Prisma.FieldRef<"StoreCapex", 'String'>
-  readonly configId: Prisma.FieldRef<"StoreCapex", 'String'>
+  readonly configurationId: Prisma.FieldRef<"StoreCapex", 'String'>
   readonly capexId: Prisma.FieldRef<"StoreCapex", 'String'>
-  readonly isApproved: Prisma.FieldRef<"StoreCapex", 'Boolean'>
+  readonly approved: Prisma.FieldRef<"StoreCapex", 'Boolean'>
+  readonly createdAt: Prisma.FieldRef<"StoreCapex", 'DateTime'>
 }
     
 

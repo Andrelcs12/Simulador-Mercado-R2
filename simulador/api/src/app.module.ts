@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config'; // <-- Importe necessário
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma.service';
-import { ModeloBaseModule } from './modules/modelo-base/modelo-base.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { PricingModule } from './modules/pricing/pricing.module';
 import { FinanceModule } from './modules/finance/finance.module';
@@ -18,7 +17,6 @@ import { MinigameModule } from './modules/minigame/minigame.module';
     ConfigModule.forRoot({ 
       isGlobal: true,
     }),
-    ModeloBaseModule,
     InventoryModule,
     PricingModule,
     FinanceModule,

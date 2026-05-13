@@ -9,7 +9,31 @@
 * 🟢 You can import this file directly.
 */
 
+export const GameSessionStatus = {
+  LOBBY: 'LOBBY',
+  IN_PROGRESS: 'IN_PROGRESS',
+  FINISHED: 'FINISHED'
+} as const
+
+export type GameSessionStatus = (typeof GameSessionStatus)[keyof typeof GameSessionStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const GameRoundStatus = {
+  CLOSED: 'CLOSED',
+  OPEN: 'OPEN',
+  PROCESSING: 'PROCESSING',
+  PROCESSED: 'PROCESSED'
+} as const
+
+export type GameRoundStatus = (typeof GameRoundStatus)[keyof typeof GameRoundStatus]
+
+
+export const PlayerRole = {
+  STORE_MANAGER: 'STORE_MANAGER',
+  SERVICE_MANAGER: 'SERVICE_MANAGER',
+  SUPPLY_MANAGER: 'SUPPLY_MANAGER',
+  COMMERCIAL_MANAGER: 'COMMERCIAL_MANAGER',
+  OPERATION_MANAGER: 'OPERATION_MANAGER'
+} as const
+
+export type PlayerRole = (typeof PlayerRole)[keyof typeof PlayerRole]

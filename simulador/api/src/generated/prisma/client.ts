@@ -29,8 +29,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more CategoryMasters
- * const categoryMasters = await prisma.categoryMaster.findMany()
+ * // Fetch zero or more GameSessions
+ * const gameSessions = await prisma.gameSession.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -39,6 +39,26 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model GameSession
+ * 
+ */
+export type GameSession = Prisma.GameSessionModel
+/**
+ * Model GameRound
+ * 
+ */
+export type GameRound = Prisma.GameRoundModel
+/**
+ * Model Player
+ * 
+ */
+export type Player = Prisma.PlayerModel
+/**
+ * Model Store
+ * 
+ */
+export type Store = Prisma.StoreModel
 /**
  * Model CategoryMaster
  * 
@@ -49,31 +69,6 @@ export type CategoryMaster = Prisma.CategoryMasterModel
  * 
  */
 export type CapexMaster = Prisma.CapexMasterModel
-/**
- * Model GameSession
- * 
- */
-export type GameSession = Prisma.GameSessionModel
-/**
- * Model Player
- * 
- */
-export type Player = Prisma.PlayerModel
-/**
- * Model Score
- * 
- */
-export type Score = Prisma.ScoreModel
-/**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
- * Model Store
- * 
- */
-export type Store = Prisma.StoreModel
 /**
  * Model Configuration
  * 
@@ -90,7 +85,17 @@ export type StockInput = Prisma.StockInputModel
  */
 export type StoreCapex = Prisma.StoreCapexModel
 /**
+ * Model RoundRanking
+ * 
+ */
+export type RoundRanking = Prisma.RoundRankingModel
+/**
  * Model RoundResult
  * 
  */
 export type RoundResult = Prisma.RoundResultModel
+/**
+ * Model SessionResult
+ * 
+ */
+export type SessionResult = Prisma.SessionResultModel

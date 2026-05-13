@@ -48,6 +48,7 @@ async function bootstrap() {
   🚀 Simulador EBITDA is standing by!
   🌍 Mode: ${isProd ? 'Production' : 'Development'}
   🔗 URL: http://0.0.0.0:${port}
+    ${process.env.DATABASE_URL}
   `);
 }
 

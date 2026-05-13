@@ -1,21 +1,24 @@
-import { IsUUID, IsNumber, isNumber, IsInt } from "class-validator";
+import { IsUUID, IsNumber, IsInt } from "class-validator";
 
 export class CheckBudgetDto {
-    @IsUUID()
-    configId!: string;
+  @IsUUID()
+  configId!: string;
 
-    @IsUUID()
-    storeId!: string;
+  @IsUUID()
+  storeId!: string;
 
-    @IsInt()
-    roundNumber!: number;
+  @IsUUID()
+  sessionId!: string;
 
-    @IsNumber()
-    totalEstoque!: number;
+  @IsUUID()
+  roundId!: string;
 
-    @IsNumber()
-    totalCapex!: number;
+  @IsNumber()
+  totalEstoque!: number;
 
-    @IsNumber()
-    totalSalarios!: number;
+  @IsNumber()
+  totalCapex!: number;
+
+  @IsNumber()
+  totalSalarios!: number;
 }

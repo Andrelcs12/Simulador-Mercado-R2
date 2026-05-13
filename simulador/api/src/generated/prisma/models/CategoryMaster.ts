@@ -30,14 +30,14 @@ export type CategoryMasterAvgAggregateOutputType = {
   unitCost: number | null
   taxRate: number | null
   agingPenaltyRate: number | null
-  marketStock: number | null
+  totalMarketStock: number | null
 }
 
 export type CategoryMasterSumAggregateOutputType = {
   unitCost: number | null
   taxRate: number | null
   agingPenaltyRate: number | null
-  marketStock: number | null
+  totalMarketStock: number | null
 }
 
 export type CategoryMasterMinAggregateOutputType = {
@@ -46,7 +46,7 @@ export type CategoryMasterMinAggregateOutputType = {
   unitCost: number | null
   taxRate: number | null
   agingPenaltyRate: number | null
-  marketStock: number | null
+  totalMarketStock: number | null
 }
 
 export type CategoryMasterMaxAggregateOutputType = {
@@ -55,7 +55,7 @@ export type CategoryMasterMaxAggregateOutputType = {
   unitCost: number | null
   taxRate: number | null
   agingPenaltyRate: number | null
-  marketStock: number | null
+  totalMarketStock: number | null
 }
 
 export type CategoryMasterCountAggregateOutputType = {
@@ -64,7 +64,7 @@ export type CategoryMasterCountAggregateOutputType = {
   unitCost: number
   taxRate: number
   agingPenaltyRate: number
-  marketStock: number
+  totalMarketStock: number
   _all: number
 }
 
@@ -73,14 +73,14 @@ export type CategoryMasterAvgAggregateInputType = {
   unitCost?: true
   taxRate?: true
   agingPenaltyRate?: true
-  marketStock?: true
+  totalMarketStock?: true
 }
 
 export type CategoryMasterSumAggregateInputType = {
   unitCost?: true
   taxRate?: true
   agingPenaltyRate?: true
-  marketStock?: true
+  totalMarketStock?: true
 }
 
 export type CategoryMasterMinAggregateInputType = {
@@ -89,7 +89,7 @@ export type CategoryMasterMinAggregateInputType = {
   unitCost?: true
   taxRate?: true
   agingPenaltyRate?: true
-  marketStock?: true
+  totalMarketStock?: true
 }
 
 export type CategoryMasterMaxAggregateInputType = {
@@ -98,7 +98,7 @@ export type CategoryMasterMaxAggregateInputType = {
   unitCost?: true
   taxRate?: true
   agingPenaltyRate?: true
-  marketStock?: true
+  totalMarketStock?: true
 }
 
 export type CategoryMasterCountAggregateInputType = {
@@ -107,7 +107,7 @@ export type CategoryMasterCountAggregateInputType = {
   unitCost?: true
   taxRate?: true
   agingPenaltyRate?: true
-  marketStock?: true
+  totalMarketStock?: true
   _all?: true
 }
 
@@ -203,7 +203,7 @@ export type CategoryMasterGroupByOutputType = {
   unitCost: number
   taxRate: number
   agingPenaltyRate: number
-  marketStock: number
+  totalMarketStock: number
   _count: CategoryMasterCountAggregateOutputType | null
   _avg: CategoryMasterAvgAggregateOutputType | null
   _sum: CategoryMasterSumAggregateOutputType | null
@@ -235,7 +235,7 @@ export type CategoryMasterWhereInput = {
   unitCost?: Prisma.FloatFilter<"CategoryMaster"> | number
   taxRate?: Prisma.FloatFilter<"CategoryMaster"> | number
   agingPenaltyRate?: Prisma.FloatFilter<"CategoryMaster"> | number
-  marketStock?: Prisma.IntFilter<"CategoryMaster"> | number
+  totalMarketStock?: Prisma.IntFilter<"CategoryMaster"> | number
   stockInputs?: Prisma.StockInputListRelationFilter
 }
 
@@ -245,7 +245,7 @@ export type CategoryMasterOrderByWithRelationInput = {
   unitCost?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   agingPenaltyRate?: Prisma.SortOrder
-  marketStock?: Prisma.SortOrder
+  totalMarketStock?: Prisma.SortOrder
   stockInputs?: Prisma.StockInputOrderByRelationAggregateInput
 }
 
@@ -258,7 +258,7 @@ export type CategoryMasterWhereUniqueInput = Prisma.AtLeast<{
   unitCost?: Prisma.FloatFilter<"CategoryMaster"> | number
   taxRate?: Prisma.FloatFilter<"CategoryMaster"> | number
   agingPenaltyRate?: Prisma.FloatFilter<"CategoryMaster"> | number
-  marketStock?: Prisma.IntFilter<"CategoryMaster"> | number
+  totalMarketStock?: Prisma.IntFilter<"CategoryMaster"> | number
   stockInputs?: Prisma.StockInputListRelationFilter
 }, "id">
 
@@ -268,7 +268,7 @@ export type CategoryMasterOrderByWithAggregationInput = {
   unitCost?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   agingPenaltyRate?: Prisma.SortOrder
-  marketStock?: Prisma.SortOrder
+  totalMarketStock?: Prisma.SortOrder
   _count?: Prisma.CategoryMasterCountOrderByAggregateInput
   _avg?: Prisma.CategoryMasterAvgOrderByAggregateInput
   _max?: Prisma.CategoryMasterMaxOrderByAggregateInput
@@ -285,7 +285,7 @@ export type CategoryMasterScalarWhereWithAggregatesInput = {
   unitCost?: Prisma.FloatWithAggregatesFilter<"CategoryMaster"> | number
   taxRate?: Prisma.FloatWithAggregatesFilter<"CategoryMaster"> | number
   agingPenaltyRate?: Prisma.FloatWithAggregatesFilter<"CategoryMaster"> | number
-  marketStock?: Prisma.IntWithAggregatesFilter<"CategoryMaster"> | number
+  totalMarketStock?: Prisma.IntWithAggregatesFilter<"CategoryMaster"> | number
 }
 
 export type CategoryMasterCreateInput = {
@@ -294,7 +294,7 @@ export type CategoryMasterCreateInput = {
   unitCost: number
   taxRate: number
   agingPenaltyRate: number
-  marketStock: number
+  totalMarketStock: number
   stockInputs?: Prisma.StockInputCreateNestedManyWithoutCategoryInput
 }
 
@@ -304,7 +304,7 @@ export type CategoryMasterUncheckedCreateInput = {
   unitCost: number
   taxRate: number
   agingPenaltyRate: number
-  marketStock: number
+  totalMarketStock: number
   stockInputs?: Prisma.StockInputUncheckedCreateNestedManyWithoutCategoryInput
 }
 
@@ -314,7 +314,7 @@ export type CategoryMasterUpdateInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   agingPenaltyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  marketStock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalMarketStock?: Prisma.IntFieldUpdateOperationsInput | number
   stockInputs?: Prisma.StockInputUpdateManyWithoutCategoryNestedInput
 }
 
@@ -324,7 +324,7 @@ export type CategoryMasterUncheckedUpdateInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   agingPenaltyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  marketStock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalMarketStock?: Prisma.IntFieldUpdateOperationsInput | number
   stockInputs?: Prisma.StockInputUncheckedUpdateManyWithoutCategoryNestedInput
 }
 
@@ -334,7 +334,7 @@ export type CategoryMasterCreateManyInput = {
   unitCost: number
   taxRate: number
   agingPenaltyRate: number
-  marketStock: number
+  totalMarketStock: number
 }
 
 export type CategoryMasterUpdateManyMutationInput = {
@@ -343,7 +343,7 @@ export type CategoryMasterUpdateManyMutationInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   agingPenaltyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  marketStock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalMarketStock?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CategoryMasterUncheckedUpdateManyInput = {
@@ -352,7 +352,7 @@ export type CategoryMasterUncheckedUpdateManyInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   agingPenaltyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  marketStock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalMarketStock?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CategoryMasterCountOrderByAggregateInput = {
@@ -361,14 +361,14 @@ export type CategoryMasterCountOrderByAggregateInput = {
   unitCost?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   agingPenaltyRate?: Prisma.SortOrder
-  marketStock?: Prisma.SortOrder
+  totalMarketStock?: Prisma.SortOrder
 }
 
 export type CategoryMasterAvgOrderByAggregateInput = {
   unitCost?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   agingPenaltyRate?: Prisma.SortOrder
-  marketStock?: Prisma.SortOrder
+  totalMarketStock?: Prisma.SortOrder
 }
 
 export type CategoryMasterMaxOrderByAggregateInput = {
@@ -377,7 +377,7 @@ export type CategoryMasterMaxOrderByAggregateInput = {
   unitCost?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   agingPenaltyRate?: Prisma.SortOrder
-  marketStock?: Prisma.SortOrder
+  totalMarketStock?: Prisma.SortOrder
 }
 
 export type CategoryMasterMinOrderByAggregateInput = {
@@ -386,39 +386,19 @@ export type CategoryMasterMinOrderByAggregateInput = {
   unitCost?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   agingPenaltyRate?: Prisma.SortOrder
-  marketStock?: Prisma.SortOrder
+  totalMarketStock?: Prisma.SortOrder
 }
 
 export type CategoryMasterSumOrderByAggregateInput = {
   unitCost?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   agingPenaltyRate?: Prisma.SortOrder
-  marketStock?: Prisma.SortOrder
+  totalMarketStock?: Prisma.SortOrder
 }
 
 export type CategoryMasterScalarRelationFilter = {
   is?: Prisma.CategoryMasterWhereInput
   isNot?: Prisma.CategoryMasterWhereInput
-}
-
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type CategoryMasterCreateNestedOneWithoutStockInputsInput = {
@@ -441,7 +421,7 @@ export type CategoryMasterCreateWithoutStockInputsInput = {
   unitCost: number
   taxRate: number
   agingPenaltyRate: number
-  marketStock: number
+  totalMarketStock: number
 }
 
 export type CategoryMasterUncheckedCreateWithoutStockInputsInput = {
@@ -450,7 +430,7 @@ export type CategoryMasterUncheckedCreateWithoutStockInputsInput = {
   unitCost: number
   taxRate: number
   agingPenaltyRate: number
-  marketStock: number
+  totalMarketStock: number
 }
 
 export type CategoryMasterCreateOrConnectWithoutStockInputsInput = {
@@ -475,7 +455,7 @@ export type CategoryMasterUpdateWithoutStockInputsInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   agingPenaltyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  marketStock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalMarketStock?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CategoryMasterUncheckedUpdateWithoutStockInputsInput = {
@@ -484,7 +464,7 @@ export type CategoryMasterUncheckedUpdateWithoutStockInputsInput = {
   unitCost?: Prisma.FloatFieldUpdateOperationsInput | number
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   agingPenaltyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  marketStock?: Prisma.IntFieldUpdateOperationsInput | number
+  totalMarketStock?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -524,7 +504,7 @@ export type CategoryMasterSelect<ExtArgs extends runtime.Types.Extensions.Intern
   unitCost?: boolean
   taxRate?: boolean
   agingPenaltyRate?: boolean
-  marketStock?: boolean
+  totalMarketStock?: boolean
   stockInputs?: boolean | Prisma.CategoryMaster$stockInputsArgs<ExtArgs>
   _count?: boolean | Prisma.CategoryMasterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["categoryMaster"]>
@@ -535,7 +515,7 @@ export type CategoryMasterSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   unitCost?: boolean
   taxRate?: boolean
   agingPenaltyRate?: boolean
-  marketStock?: boolean
+  totalMarketStock?: boolean
 }, ExtArgs["result"]["categoryMaster"]>
 
 export type CategoryMasterSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -544,7 +524,7 @@ export type CategoryMasterSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   unitCost?: boolean
   taxRate?: boolean
   agingPenaltyRate?: boolean
-  marketStock?: boolean
+  totalMarketStock?: boolean
 }, ExtArgs["result"]["categoryMaster"]>
 
 export type CategoryMasterSelectScalar = {
@@ -553,10 +533,10 @@ export type CategoryMasterSelectScalar = {
   unitCost?: boolean
   taxRate?: boolean
   agingPenaltyRate?: boolean
-  marketStock?: boolean
+  totalMarketStock?: boolean
 }
 
-export type CategoryMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unitCost" | "taxRate" | "agingPenaltyRate" | "marketStock", ExtArgs["result"]["categoryMaster"]>
+export type CategoryMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unitCost" | "taxRate" | "agingPenaltyRate" | "totalMarketStock", ExtArgs["result"]["categoryMaster"]>
 export type CategoryMasterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stockInputs?: boolean | Prisma.CategoryMaster$stockInputsArgs<ExtArgs>
   _count?: boolean | Prisma.CategoryMasterCountOutputTypeDefaultArgs<ExtArgs>
@@ -575,7 +555,7 @@ export type $CategoryMasterPayload<ExtArgs extends runtime.Types.Extensions.Inte
     unitCost: number
     taxRate: number
     agingPenaltyRate: number
-    marketStock: number
+    totalMarketStock: number
   }, ExtArgs["result"]["categoryMaster"]>
   composites: {}
 }
@@ -1005,7 +985,7 @@ export interface CategoryMasterFieldRefs {
   readonly unitCost: Prisma.FieldRef<"CategoryMaster", 'Float'>
   readonly taxRate: Prisma.FieldRef<"CategoryMaster", 'Float'>
   readonly agingPenaltyRate: Prisma.FieldRef<"CategoryMaster", 'Float'>
-  readonly marketStock: Prisma.FieldRef<"CategoryMaster", 'Int'>
+  readonly totalMarketStock: Prisma.FieldRef<"CategoryMaster", 'Int'>
 }
     
 

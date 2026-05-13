@@ -18,6 +18,26 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+ * Model GameSession
+ * 
+ */
+export type GameSession = Prisma.GameSessionModel
+/**
+ * Model GameRound
+ * 
+ */
+export type GameRound = Prisma.GameRoundModel
+/**
+ * Model Player
+ * 
+ */
+export type Player = Prisma.PlayerModel
+/**
+ * Model Store
+ * 
+ */
+export type Store = Prisma.StoreModel
+/**
  * Model CategoryMaster
  * 
  */
@@ -27,31 +47,6 @@ export type CategoryMaster = Prisma.CategoryMasterModel
  * 
  */
 export type CapexMaster = Prisma.CapexMasterModel
-/**
- * Model GameSession
- * 
- */
-export type GameSession = Prisma.GameSessionModel
-/**
- * Model Player
- * 
- */
-export type Player = Prisma.PlayerModel
-/**
- * Model Score
- * 
- */
-export type Score = Prisma.ScoreModel
-/**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
- * Model Store
- * 
- */
-export type Store = Prisma.StoreModel
 /**
  * Model Configuration
  * 
@@ -68,7 +63,17 @@ export type StockInput = Prisma.StockInputModel
  */
 export type StoreCapex = Prisma.StoreCapexModel
 /**
+ * Model RoundRanking
+ * 
+ */
+export type RoundRanking = Prisma.RoundRankingModel
+/**
  * Model RoundResult
  * 
  */
 export type RoundResult = Prisma.RoundResultModel
+/**
+ * Model SessionResult
+ * 
+ */
+export type SessionResult = Prisma.SessionResultModel

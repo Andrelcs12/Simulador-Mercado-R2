@@ -51,17 +51,18 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  GameSession: 'GameSession',
+  GameRound: 'GameRound',
+  Player: 'Player',
+  Store: 'Store',
   CategoryMaster: 'CategoryMaster',
   CapexMaster: 'CapexMaster',
-  GameSession: 'GameSession',
-  Player: 'Player',
-  Score: 'Score',
-  User: 'User',
-  Store: 'Store',
   Configuration: 'Configuration',
   StockInput: 'StockInput',
   StoreCapex: 'StoreCapex',
-  RoundResult: 'RoundResult'
+  RoundRanking: 'RoundRanking',
+  RoundResult: 'RoundResult',
+  SessionResult: 'SessionResult'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -80,13 +81,69 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const GameSessionScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  status: 'status',
+  totalRounds: 'totalRounds',
+  currentRound: 'currentRound',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GameSessionScalarFieldEnum = (typeof GameSessionScalarFieldEnum)[keyof typeof GameSessionScalarFieldEnum]
+
+
+export const GameRoundScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  roundNumber: 'roundNumber',
+  status: 'status',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  createdAt: 'createdAt'
+} as const
+
+export type GameRoundScalarFieldEnum = (typeof GameRoundScalarFieldEnum)[keyof typeof GameRoundScalarFieldEnum]
+
+
+export const PlayerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  role: 'role',
+  socketId: 'socketId',
+  sessionId: 'sessionId',
+  storeId: 'storeId',
+  createdAt: 'createdAt'
+} as const
+
+export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof PlayerScalarFieldEnum]
+
+
+export const StoreScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sessionId: 'sessionId',
+  cashBalance: 'cashBalance',
+  accumulatedRevenue: 'accumulatedRevenue',
+  accumulatedProfit: 'accumulatedProfit',
+  accumulatedEbitda: 'accumulatedEbitda',
+  currentCSAT: 'currentCSAT',
+  currentSLA: 'currentSLA',
+  createdAt: 'createdAt'
+} as const
+
+export type StoreScalarFieldEnum = (typeof StoreScalarFieldEnum)[keyof typeof StoreScalarFieldEnum]
+
+
 export const CategoryMasterScalarFieldEnum = {
   id: 'id',
   name: 'name',
   unitCost: 'unitCost',
   taxRate: 'taxRate',
   agingPenaltyRate: 'agingPenaltyRate',
-  marketStock: 'marketStock'
+  totalMarketStock: 'totalMarketStock'
 } as const
 
 export type CategoryMasterScalarFieldEnum = (typeof CategoryMasterScalarFieldEnum)[keyof typeof CategoryMasterScalarFieldEnum]
@@ -97,84 +154,27 @@ export const CapexMasterScalarFieldEnum = {
   name: 'name',
   description: 'description',
   cost: 'cost',
-  baseLicense: 'baseLicense',
-  upgradeImpact: 'upgradeImpact'
+  recurringLicenseCost: 'recurringLicenseCost',
+  slaImpact: 'slaImpact',
+  csatImpact: 'csatImpact',
+  productivityImpact: 'productivityImpact'
 } as const
 
 export type CapexMasterScalarFieldEnum = (typeof CapexMasterScalarFieldEnum)[keyof typeof CapexMasterScalarFieldEnum]
 
 
-export const GameSessionScalarFieldEnum = {
-  id: 'id',
-  code: 'code',
-  status: 'status',
-  currentRound: 'currentRound',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type GameSessionScalarFieldEnum = (typeof GameSessionScalarFieldEnum)[keyof typeof GameSessionScalarFieldEnum]
-
-
-export const PlayerScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  storeName: 'storeName',
-  role: 'role',
-  socketId: 'socketId',
-  isActive: 'isActive',
-  sessionId: 'sessionId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof PlayerScalarFieldEnum]
-
-
-export const ScoreScalarFieldEnum = {
-  id: 'id',
-  round: 'round',
-  value: 'value',
-  playerId: 'playerId',
-  createdAt: 'createdAt'
-} as const
-
-export type ScoreScalarFieldEnum = (typeof ScoreScalarFieldEnum)[keyof typeof ScoreScalarFieldEnum]
-
-
-export const UserScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  password: 'password'
-} as const
-
-export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const StoreScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  initialCash: 'initialCash',
-  playerId: 'playerId'
-} as const
-
-export type StoreScalarFieldEnum = (typeof StoreScalarFieldEnum)[keyof typeof StoreScalarFieldEnum]
-
-
 export const ConfigurationScalarFieldEnum = {
   id: 'id',
-  storeId: 'storeId',
   sessionId: 'sessionId',
-  roundNumber: 'roundNumber',
+  roundId: 'roundId',
+  storeId: 'storeId',
   operatorsQty: 'operatorsQty',
   serviceOperatorsQty: 'serviceOperatorsQty',
   quizScore: 'quizScore',
-  totalSpent: 'totalSpent',
-  interestPaid: 'interestPaid',
-  finalCSAT: 'finalCSAT',
-  finalSLA: 'finalSLA',
+  calculatedCSAT: 'calculatedCSAT',
+  calculatedSLA: 'calculatedSLA',
+  totalInvestment: 'totalInvestment',
+  submittedAt: 'submittedAt',
   createdAt: 'createdAt'
 } as const
 
@@ -183,10 +183,12 @@ export type ConfigurationScalarFieldEnum = (typeof ConfigurationScalarFieldEnum)
 
 export const StockInputScalarFieldEnum = {
   id: 'id',
-  configId: 'configId',
+  configurationId: 'configurationId',
   categoryId: 'categoryId',
   buyQty: 'buyQty',
-  appliedMargin: 'appliedMargin'
+  commercialMargin: 'commercialMargin',
+  expectedSellPrice: 'expectedSellPrice',
+  createdAt: 'createdAt'
 } as const
 
 export type StockInputScalarFieldEnum = (typeof StockInputScalarFieldEnum)[keyof typeof StockInputScalarFieldEnum]
@@ -194,30 +196,75 @@ export type StockInputScalarFieldEnum = (typeof StockInputScalarFieldEnum)[keyof
 
 export const StoreCapexScalarFieldEnum = {
   id: 'id',
-  configId: 'configId',
+  configurationId: 'configurationId',
   capexId: 'capexId',
-  isApproved: 'isApproved'
+  approved: 'approved',
+  createdAt: 'createdAt'
 } as const
 
 export type StoreCapexScalarFieldEnum = (typeof StoreCapexScalarFieldEnum)[keyof typeof StoreCapexScalarFieldEnum]
 
 
+export const RoundRankingScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  roundId: 'roundId',
+  storeId: 'storeId',
+  priceScore: 'priceScore',
+  availabilityScore: 'availabilityScore',
+  csatScore: 'csatScore',
+  finalScore: 'finalScore',
+  demandShare: 'demandShare',
+  position: 'position',
+  createdAt: 'createdAt'
+} as const
+
+export type RoundRankingScalarFieldEnum = (typeof RoundRankingScalarFieldEnum)[keyof typeof RoundRankingScalarFieldEnum]
+
+
 export const RoundResultScalarFieldEnum = {
   id: 'id',
-  storeId: 'storeId',
   sessionId: 'sessionId',
-  roundNumber: 'roundNumber',
+  roundId: 'roundId',
+  storeId: 'storeId',
+  customersReceived: 'customersReceived',
   totalRevenue: 'totalRevenue',
+  totalTaxes: 'totalTaxes',
   totalCMV: 'totalCMV',
   operatingCosts: 'operatingCosts',
+  capexCosts: 'capexCosts',
+  licensingCosts: 'licensingCosts',
   agingCosts: 'agingCosts',
+  interestCosts: 'interestCosts',
+  totalExpenses: 'totalExpenses',
   ebitdaValue: 'ebitdaValue',
   ebitdaMargin: 'ebitdaMargin',
-  remainingStock: 'remainingStock',
-  marketShare: 'marketShare'
+  finalCash: 'finalCash',
+  remainingStockValue: 'remainingStockValue',
+  stockBreakLoss: 'stockBreakLoss',
+  csat: 'csat',
+  sla: 'sla',
+  createdAt: 'createdAt'
 } as const
 
 export type RoundResultScalarFieldEnum = (typeof RoundResultScalarFieldEnum)[keyof typeof RoundResultScalarFieldEnum]
+
+
+export const SessionResultScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  storeId: 'storeId',
+  totalRevenue: 'totalRevenue',
+  totalExpenses: 'totalExpenses',
+  finalEbitda: 'finalEbitda',
+  finalEbitdaMargin: 'finalEbitdaMargin',
+  finalCash: 'finalCash',
+  finalScore: 'finalScore',
+  position: 'position',
+  createdAt: 'createdAt'
+} as const
+
+export type SessionResultScalarFieldEnum = (typeof SessionResultScalarFieldEnum)[keyof typeof SessionResultScalarFieldEnum]
 
 
 export const SortOrder = {
