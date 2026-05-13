@@ -45,7 +45,7 @@ const RegistroUsuario = () => {
           body: JSON.stringify({
             ...formData,
             sessionCode: formData.sessionCode.toUpperCase(),
-            role: "MANAGER",
+            role: "STORE_MANAGER",
           }),
         }
       );

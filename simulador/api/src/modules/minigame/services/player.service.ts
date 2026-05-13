@@ -7,26 +7,52 @@ export class PlayerService {
   constructor(private prisma: PrismaService) {}
 
   async registerPlayer(data: {
-    name: string;
-    email: string;
-    sessionId: string;
-    role: PlayerRole;
-  }) {
-    return this.prisma.player.upsert({
-      where: { email: data.email },
-      update: {
-        name: data.name,
-        role: data.role,
-        sessionId: data.sessionId,
-      },
-      create: {
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        sessionId: data.sessionId,
-      },
-    });
+  name: string;
+  email: string;
+  sessionCode: string;
+  role: PlayerRole;
+  storeName: string;
+}) {
+  const session = await this.prisma.gameSession.findUnique({
+    where: {
+      code: data.sessionCode,
+    },
+  });
+
+  if (!session) {
+    throw new Error("Sessão não encontrada");
   }
+
+  // cria loja
+  const store = await this.prisma.store.create({
+    data: {
+      name: data.storeName,
+      sessionId: session.id,
+    },
+  });
+
+  // cria player
+  return this.prisma.player.upsert({
+    where: {
+      email: data.email,
+    },
+
+    update: {
+      name: data.name,
+      role: data.role,
+      sessionId: session.id,
+      storeId: store.id,
+    },
+
+    create: {
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      sessionId: session.id,
+      storeId: store.id,
+    },
+  });
+}
 
   async getPlayerById(playerId: string) {
     const player = await this.prisma.player.findUnique({

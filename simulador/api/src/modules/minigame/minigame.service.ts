@@ -37,13 +37,14 @@ export class MinigameService {
   // ======================================================
 
   registerPlayer(data: {
-    name: string;
-    email: string;
-    sessionId: string;
-    role: PlayerRole;
-  }) {
-    return this.playerService.registerPlayer(data);
-  }
+  name: string;
+  email: string;
+  sessionCode: string;
+  role: PlayerRole;
+  storeName: string;
+}) {
+  return this.playerService.registerPlayer(data);
+}
 
   getPlayersBySession(sessionId: string) {
     return this.playerService.getPlayersBySession(sessionId);

@@ -7,10 +7,20 @@ export class SessionService {
   constructor(private prisma: PrismaService) {}
 
   // =========================
+  // CODE GENERATOR (sem libs externas)
+  // =========================
+  private generateCode(): string {
+    return Math.random()
+      .toString(36)
+      .substring(2, 6)
+      .toUpperCase();
+  }
+
+  // =========================
   // CREATE SESSION
   // =========================
   async createSession(totalRounds = 5) {
-    const code = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const code = this.generateCode();
 
     const session = await this.prisma.gameSession.create({
       data: {
@@ -27,17 +37,17 @@ export class SessionService {
   }
 
   // =========================
-  // CREATE ROUNDS (internal)
+  // CREATE ROUNDS (placeholder se já existir)
   // =========================
-  private async createRounds(sessionId: string, totalRounds: number) {
-    await this.prisma.gameRound.createMany({
-      data: Array.from({ length: totalRounds }).map((_, i) => ({
-        sessionId,
-        roundNumber: i + 1,
-        status: GameRoundStatus.CLOSED,
-        startsAt: null,
-        endsAt: null,
-      })),
+  async createRounds(sessionId: string, totalRounds: number) {
+    const rounds = Array.from({ length: totalRounds }).map((_, index) => ({
+      sessionId,
+      roundNumber: index + 1,
+      status: GameRoundStatus.CLOSED,
+    }));
+
+    return this.prisma.gameRound.createMany({
+      data: rounds,
     });
   }
 

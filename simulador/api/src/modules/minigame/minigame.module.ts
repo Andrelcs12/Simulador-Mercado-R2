@@ -1,17 +1,45 @@
-import { Module } from '@nestjs/common';
-import { MinigameService } from './minigame.service';
-import { MinigameController } from './minigame.controller';
-import { MinigameGateway } from './minigame.gateway';
-import { PrismaService } from '@/prisma.service';
-import { FinanceModule } from '../finance/finance.module';
-import { InventoryModule } from '../inventory/inventory.module';
-import { PricingModule } from '../pricing/pricing.module';
-import { CapexModule } from '../capex/capex.module';
+import { Module } from "@nestjs/common";
+import { MinigameService } from "./minigame.service";
+import { MinigameController } from "./minigame.controller";
+import { MinigameGateway } from "./minigame.gateway";
 
+import { PrismaService } from "@/prisma.service";
+
+// services internos
+import { SessionService } from "./services/session.service";
+import { RoundService } from "./services/round.service";
+import { PlayerService } from "./services/player.service";
+import { SubmissionService } from "./services/submission.service";
+import { SimulationService } from "./simulation.service";
+
+// gateways delegados
+import { PlayerGateway } from "./gateways/player.gateway";
+import { RoundGateway } from "./gateways/round.gateway";
+import { AdminGateway } from "./gateways/admin.gateway";
 
 @Module({
-  imports: [FinanceModule, InventoryModule, PricingModule, CapexModule],
+  imports: [],
   controllers: [MinigameController],
-  providers: [MinigameService, MinigameGateway, PrismaService], // Adicione o Gateway e o Prisma
+
+  providers: [
+    // core service
+    MinigameService,
+
+    // gateways
+    MinigameGateway,
+    PlayerGateway,
+    RoundGateway,
+    AdminGateway,
+
+    // domain services (ESSENCIAL)
+    SessionService,
+    RoundService,
+    PlayerService,
+    SubmissionService,
+    SimulationService,
+
+    // infra
+    PrismaService,
+  ],
 })
 export class MinigameModule {}

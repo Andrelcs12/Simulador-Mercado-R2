@@ -1,50 +1,194 @@
-import { PrismaClient } from '../src/generated/prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log('🚀 Iniciando Seed...');
+  console.log("🚀 Iniciando Seed...");
 
-  // Limpeza na ordem correta para evitar erros de FK
+  // ===============================
+  // CLEANUP (ordem correta FK)
+  // ===============================
   await prisma.stockInput.deleteMany();
   await prisma.storeCapex.deleteMany();
   await prisma.configuration.deleteMany();
-  await prisma.categoryMaster.deleteMany();
-  await prisma.capexMaster.deleteMany();
   await prisma.roundResult.deleteMany();
   await prisma.sessionResult.deleteMany();
+  await prisma.roundRanking.deleteMany();
+
   await prisma.store.deleteMany();
   await prisma.player.deleteMany();
+  await prisma.gameRound.deleteMany();
+  await prisma.gameSession.deleteMany();
 
-  // 1. Criar Jogador para as lojas
-  const adminPlayer = await prisma.player.create({
+  await prisma.categoryMaster.deleteMany();
+  await prisma.capexMaster.deleteMany();
+
+  // ===============================
+  // SESSION BASE
+  // ===============================
+  const session = await prisma.gameSession.create({
     data: {
-      name: 'Sistema',
-      email: 'admin@sistema.com',
-      storeName: 'Nossa Loja (Cencosud)',
+      code: "SIM-001",
+      totalRounds: 3,
+      currentRound: 0,
+      status: "LOBBY",
     },
   });
 
-  // 2. Popular Categorias
+  // ===============================
+  // CATEGORIES (DADOS DO JOGO)
+  // ===============================
   await prisma.categoryMaster.createMany({
     data: [
-      { name: 'Perecíveis', unitCost: 20.0, taxRate: 0.12, agingPenaltyRate: 0.2, marketStock: 1000 },
-      { name: 'Mercearia', unitCost: 30.0, taxRate: 0.07, agingPenaltyRate: 0.05, marketStock: 1500 },
-      { name: 'Eletro', unitCost: 500.0, taxRate: 0.25, agingPenaltyRate: 0.03, marketStock: 200 },
-      { name: 'Hipel', unitCost: 45.0, taxRate: 0.17, agingPenaltyRate: 0.05, marketStock: 800 },
+      {
+        name: "Perecíveis",
+        unitCost: 20,
+        taxRate: 0.12,
+        agingPenaltyRate: 0.2,
+        totalMarketStock: 1000,
+      },
+      {
+        name: "Mercearia",
+        unitCost: 30,
+        taxRate: 0.07,
+        agingPenaltyRate: 0.05,
+        totalMarketStock: 1500,
+      },
+      {
+        name: "Eletro",
+        unitCost: 500,
+        taxRate: 0.25,
+        agingPenaltyRate: 0.03,
+        totalMarketStock: 200,
+      },
+      {
+        name: "Higiene",
+        unitCost: 45,
+        taxRate: 0.17,
+        agingPenaltyRate: 0.05,
+        totalMarketStock: 800,
+      },
     ],
   });
 
-  // 3. Criar Lojas (Usando cashBalance em vez de initialCash)
-  await prisma.store.create({
-    data: { name: 'Nossa Loja (Cencosud)', cashBalance: 700000, playerId: adminPlayer.id },
+  // ===============================
+  // CAPEX (DINÂMICA DO JOGO)
+  // ===============================
+  await prisma.capexMaster.createMany({
+    data: [
+      {
+        name: "CAPEX Segurança",
+        description: "Proteção contra ataques e downtime",
+        cost: 500,
+        recurringLicenseCost: 500,
+        csatImpact: 0,
+        slaImpact: 0,
+        productivityImpact: 0,
+      },
+      {
+        name: "CAPEX Balança/Freezer",
+        description: "Equipamentos de perecíveis",
+        cost: 400,
+        recurringLicenseCost: 0,
+        csatImpact: 2,
+        slaImpact: 0,
+        productivityImpact: 0,
+      },
+      {
+        name: "CAPEX Redes",
+        description: "Infraestrutura de rede",
+        cost: 600,
+        recurringLicenseCost: 0,
+        csatImpact: 0,
+        slaImpact: 3,
+        productivityImpact: 0,
+      },
+      {
+        name: "CAPEX Self Checkout",
+        description: "Redução de filas",
+        cost: 800,
+        recurringLicenseCost: 80,
+        csatImpact: 3,
+        slaImpact: 0,
+        productivityImpact: 0,
+      },
+      {
+        name: "CAPEX Melhorias Site",
+        description: "Plataforma digital",
+        cost: 500,
+        recurringLicenseCost: 500,
+        csatImpact: 0,
+        slaImpact: 0,
+        productivityImpact: 2,
+      },
+      {
+        name: "CAPEX Melhoria Contínua",
+        description: "Automação e BI",
+        cost: 300,
+        recurringLicenseCost: 0,
+        csatImpact: 2,
+        slaImpact: 2,
+        productivityImpact: 3,
+      },
+    ],
   });
 
-  console.log('✅ Seed finalizado!');
+  // ===============================
+  // STORES (4 lojas do jogo)
+  // ===============================
+  const storeNames = [
+    "Loja Alpha",
+    "Loja Beta",
+    "Loja Gamma",
+    "Loja Delta",
+  ];
+
+  const stores = [];
+
+  for (const name of storeNames) {
+    const store = await prisma.store.create({
+      data: {
+        name,
+        sessionId: session.id,
+        cashBalance: 700000,
+      },
+    });
+
+    stores.push(store);
+  }
+
+  // ===============================
+  // PLAYERS (5 por loja = 20 total)
+  // ===============================
+  const roles = [
+    "STORE_MANAGER",
+    "SERVICE_MANAGER",
+    "SUPPLY_MANAGER",
+    "COMMERCIAL_MANAGER",
+    "OPERATION_MANAGER",
+  ] as const;
+
+  for (const store of stores) {
+    for (const role of roles) {
+      await prisma.player.create({
+        data: {
+          name: `${role}-${store.name}`,
+          email: `${role.toLowerCase()}-${store.name.toLowerCase().replace(/\s/g, "")}@game.com`,
+          role,
+          sessionId: session.id,
+          storeId: store.id,
+        },
+      });
+    }
+  }
+
+  console.log("✅ Seed finalizado com sucesso!");
 }
 
-main().catch(console.error).finally(() => prisma.$disconnect());
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());
