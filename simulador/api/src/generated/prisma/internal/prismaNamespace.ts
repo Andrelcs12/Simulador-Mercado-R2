@@ -1371,7 +1371,6 @@ export type GameRoundScalarFieldEnum = (typeof GameRoundScalarFieldEnum)[keyof t
 export const PlayerScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  email: 'email',
   role: 'role',
   socketId: 'socketId',
   sessionId: 'sessionId',

@@ -1,28 +1,16 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-} from "@nestjs/websockets";
-
+import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
 import { MinigameService } from "../minigame.service";
 
+@Injectable()
 export class AdminGateway {
-  constructor(private readonly minigameService: MinigameService) {}
+  constructor(
+    private readonly minigameService: MinigameService,
+  ) {}
 
   server: Server;
 
-  // ======================================================
-  // FORCE STOP ROUND
-  // ======================================================
-
-  @SubscribeMessage("admin:force_stop_round")
-  async forceStopRound(
-    @MessageBody()
-    data: {
-      sessionId: string;
-    },
-  ) {
+  async forceStopRound(data: { sessionId: string }) {
     const result = await this.minigameService.finishRound(
       data.sessionId,
       "ADMIN_STOP",
@@ -34,37 +22,20 @@ export class AdminGateway {
     return result;
   }
 
-  // ======================================================
-  // NEXT ROUND
-  // ======================================================
-
-  @SubscribeMessage("admin:start_next_round")
-  async startNextRound(
-    @MessageBody()
-    data: {
-      sessionId: string;
-    },
-  ) {
+  async startNextRound(data: { sessionId: string }) {
     const result = await this.minigameService.startNextRound(
       data.sessionId,
     );
 
-    this.server.to(data.sessionId).emit("round:next_started", result);
+    this.server.to(data.sessionId).emit(
+      "round:next_started",
+      result,
+    );
 
     return result;
   }
 
-  // ======================================================
-  // FINISH SESSION
-  // ======================================================
-
-  @SubscribeMessage("admin:finish_session")
-  async finishSession(
-    @MessageBody()
-    data: {
-      sessionId: string;
-    },
-  ) {
+  async finishSession(data: { sessionId: string }) {
     await this.minigameService.finishRound(
       data.sessionId,
       "MANUAL",
@@ -83,21 +54,9 @@ export class AdminGateway {
     return session;
   }
 
-  // ======================================================
-  // KICK PLAYER
-  // ======================================================
-
-  @SubscribeMessage("admin:kick_player")
-  async kickPlayer(
-    @MessageBody()
-    data: {
-      sessionId: string;
-      playerId: string;
-    },
-  ) {
+  async kickPlayer(data: { sessionId: string; playerId: string }) {
     const result = await this.minigameService.kickPlayer(
-      data.sessionId,
-      data.playerId,
+      data.playerId, // ✅ CORREÇÃO: assinatura correta
     );
 
     this.server.to(data.sessionId).emit("player:kicked", result);
@@ -106,23 +65,15 @@ export class AdminGateway {
       data.sessionId,
     );
 
-    this.server.to(data.sessionId).emit("session:players_updated", players);
+    this.server.to(data.sessionId).emit(
+      "session:players_updated",
+      players,
+    );
 
     return result;
   }
 
-  // ======================================================
-  // SESSION STATE (ADMIN VIEW)
-  // ======================================================
-
-  @SubscribeMessage("session:get_state")
-  async getState(
-    @ConnectedSocket() client: any,
-    @MessageBody()
-    data: {
-      sessionId: string;
-    },
-  ) {
+  async getState(client: any, data: { sessionId: string }) {
     const session = await this.minigameService.getSessionById(
       data.sessionId,
     );

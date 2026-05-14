@@ -1,26 +1,17 @@
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-} from "@nestjs/websockets";
-
+import { Injectable } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
 import { MinigameService } from "../minigame.service";
 
+@Injectable()
 export class PlayerGateway {
-  constructor(private readonly minigameService: MinigameService) {}
+  constructor(
+    private readonly minigameService: MinigameService,
+  ) {}
 
-  // será injetado pelo gateway principal
   server: Server;
 
-  // ======================================================
-  // JOIN SESSION (PLAYER FLOW)
-  // ======================================================
-
-  @SubscribeMessage("join_session")
   async join(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
+    client: Socket,
     data: {
       sessionId: string;
       playerId?: string;
@@ -33,137 +24,152 @@ export class PlayerGateway {
       serverTime: Date.now(),
     });
 
+    // ADMIN
     if (data.isAdmin) {
       client.emit("session:joined", {
         sessionId: data.sessionId,
         role: "ADMIN",
       });
-      return;
+
+      return { success: true, admin: true };
     }
 
+    // VALIDATION
     if (!data.playerId) {
       client.emit("join:error", {
-        message: "PlayerId obrigatório",
+        success: false,
+        message: "playerId obrigatório",
       });
-      return;
+      return { success: false };
     }
 
-    const player = await this.minigameService.getPlayerById(
-      data.playerId,
-    );
+    const player =
+      await this.minigameService.getPlayerById(data.playerId);
+
+    if (!player || player.sessionId !== data.sessionId) {
+      client.emit("join:error", {
+        success: false,
+        message: "Player inválido",
+      });
+      return { success: false };
+    }
 
     await this.minigameService.updateSocketId(
       player.id,
       client.id,
     );
 
+    const session =
+      await this.minigameService.getSessionById(
+        data.sessionId,
+      );
+
     client.emit("session:joined", {
+      success: true,
       sessionId: data.sessionId,
       playerId: player.id,
       storeId: player.storeId,
+      role: player.role,
+      sessionStatus: session.status,
+      currentRound: session.currentRound,
     });
 
+    // 🔥 FIX PRINCIPAL: payload consistente
     this.server.to(data.sessionId).emit("player:joined", {
       id: player.id,
       name: player.name,
+      storeName: player.store?.name ?? "Sem loja",
+      role: player.role,
+      sessionId: data.sessionId,
     });
-  }
 
-  @SubscribeMessage("player:submit_config")
-async submitConfiguration(
-  @ConnectedSocket() client: Socket,
-  @MessageBody()
-  data: {
-    playerId: string;
-    storeId: string;
-    sessionId: string;
-    roundId: string;
+    const players =
+      await this.minigameService.getPlayersSnapshot(
+        data.sessionId,
+      );
 
-    stockInputs: {
-      categoryId: string;
-      buyQty: number;
-      commercialMargin: number;
-      expectedSellPrice: number;
-    }[];
+    this.server
+      .to(data.sessionId)
+      .emit("session:players_updated", players);
 
-    capexSelections: {
-      capexId: string;
-    }[];
-  },
-) {
-  try {
-    const result =
-      await this.minigameService.submitConfiguration(data);
-
-    client.emit("submit:success", {
+    return {
       success: true,
-      configId: result.configId,
-      roundId: data.roundId,
-    });
-
-    this.server.to(data.sessionId).emit("player:submitted", {
-      playerId: data.playerId,
-      roundId: data.roundId,
-    });
-
-    return result;
-  } catch (error) {
-    client.emit("submit:error", {
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Erro ao enviar configuração",
-    });
+      playerId: player.id,
+    };
   }
-}
-  // ======================================================
-  // PLAYER READY
-  // ======================================================
 
-  @SubscribeMessage("player:ready")
-  async ready(
-    @MessageBody()
-    data: {
-      sessionId: string;
-      playerId: string;
-    },
-  ) {
-    const result = await this.minigameService.markPlayerReady(
-      data.sessionId,
-      data.playerId,
-    );
+  async submitConfiguration(client: Socket, data: any) {
+    try {
+      await this.minigameService.validateSubmissionWindow(
+        data.roundId,
+      );
 
-    this.server.to(data.sessionId).emit("player:ready_update", result);
+      const result =
+        await this.minigameService.submitConfiguration(data);
 
-    const allReady = await this.minigameService.allPlayersReady(
-      data.sessionId,
-    );
+      client.emit("submit:success", {
+        success: true,
+        configId: result.configId,
+        roundId: data.roundId,
+      });
+
+      this.server.to(data.sessionId).emit(
+        "player:submitted",
+        {
+          playerId: data.playerId,
+          roundId: data.roundId,
+        },
+      );
+
+      return result;
+    } catch (error) {
+      client.emit("submit:error", {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Erro ao enviar configuração",
+      });
+
+      return { success: false };
+    }
+  }
+
+  async ready(data: { sessionId: string; playerId: string }) {
+    const result =
+      await this.minigameService.markPlayerReady(
+        data.sessionId,
+        data.playerId,
+      );
+
+    this.server
+      .to(data.sessionId)
+      .emit("player:ready_update", result);
+
+    const allReady =
+      await this.minigameService.allPlayersReady(
+        data.sessionId,
+      );
 
     if (allReady) {
-      this.server.to(data.sessionId).emit("all_players_ready", {
-        sessionId: data.sessionId,
-      });
+      this.server
+        .to(data.sessionId)
+        .emit("all_players_ready", {
+          sessionId: data.sessionId,
+        });
     }
 
     return result;
   }
 
-  // ======================================================
-  // SESSION STATE
-  // ======================================================
-
-  @SubscribeMessage("session:get_state")
   async getState(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    data: {
-      sessionId: string;
-    },
+    client: Socket,
+    data: { sessionId: string },
   ) {
-    const session = await this.minigameService.getSessionById(
-      data.sessionId,
-    );
+    const session =
+      await this.minigameService.getSessionById(
+        data.sessionId,
+      );
 
     client.emit("session:state", session);
 

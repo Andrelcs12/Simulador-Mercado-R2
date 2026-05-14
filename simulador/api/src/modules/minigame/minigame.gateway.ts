@@ -1,24 +1,33 @@
+// minigame.gateway.ts
+
 import {
   ConnectedSocket,
   MessageBody,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
 
+import { Injectable, Logger } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
 
 import { PlayerGateway } from "./gateways/player.gateway";
 import { RoundGateway } from "./gateways/round.gateway";
 import { AdminGateway } from "./gateways/admin.gateway";
 
+@Injectable()
 @WebSocketGateway({
-  cors: { origin: "*" },
+  cors: {
+    origin: "*",
+  },
   namespace: "simulation",
 })
-export class MinigameGateway {
+export class MinigameGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
+
+  private readonly logger = new Logger(MinigameGateway.name);
 
   constructor(
     private readonly playerGateway: PlayerGateway,
@@ -27,19 +36,31 @@ export class MinigameGateway {
   ) {}
 
   // ======================================================
+  // INIT
+  // ======================================================
+
+  afterInit(server: Server) {
+    this.playerGateway.server = server;
+    this.roundGateway.server = server;
+    this.adminGateway.server = server;
+
+    this.logger.log("Simulation websocket initialized");
+  }
+
+  // ======================================================
   // SOCKET LIFECYCLE
   // ======================================================
 
   handleConnection(client: Socket) {
-    // opcional: logs, auth handshake etc
+    this.logger.log(`Socket connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    console.log("Socket disconnected:", client.id);
+    this.logger.log(`Socket disconnected: ${client.id}`);
   }
 
   // ======================================================
-  // JOIN SESSION (ENTRY POINT ÚNICO)
+  // JOIN SESSION
   // ======================================================
 
   @SubscribeMessage("join_session")
@@ -52,18 +73,11 @@ export class MinigameGateway {
       isAdmin?: boolean;
     },
   ) {
-    client.join(data.sessionId);
-
-    client.emit("server:time_sync", {
-      serverTime: Date.now(),
-    });
-
-    // 👉 delega lógica para PlayerGateway
     return this.playerGateway.join(client, data);
   }
 
   // ======================================================
-  // PLAYER EVENTS → DELEGATE
+  // PLAYER EVENTS
   // ======================================================
 
   @SubscribeMessage("player:submit_config")
@@ -80,7 +94,7 @@ export class MinigameGateway {
   }
 
   // ======================================================
-  // ROUND EVENTS → DELEGATE
+  // ROUND EVENTS
   // ======================================================
 
   @SubscribeMessage("admin:start_round")
@@ -94,12 +108,12 @@ export class MinigameGateway {
   }
 
   @SubscribeMessage("admin:start_next_round")
-  async nextRound(@MessageBody() data: any) {
+  async startNextRound(@MessageBody() data: any) {
     return this.roundGateway.startNextRound(data);
   }
 
   // ======================================================
-  // ADMIN EVENTS → DELEGATE
+  // ADMIN EVENTS
   // ======================================================
 
   @SubscribeMessage("admin:finish_session")
@@ -113,7 +127,7 @@ export class MinigameGateway {
   }
 
   // ======================================================
-  // STATE (shared)
+  // SESSION STATE
   // ======================================================
 
   @SubscribeMessage("session:get_state")
