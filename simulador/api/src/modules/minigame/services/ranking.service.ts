@@ -3,84 +3,87 @@ import { PrismaService } from "@/prisma.service";
 
 @Injectable()
 export class RankingService {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async computeSessionRanking(sessionId: string) {
-    const results =
-      await this.prisma.roundResult.findMany({
-        where: { sessionId },
-      });
+  async computeRoundRanking(sessionId: string, roundId: string) {
+    const results = await this.prisma.roundResult.findMany({
+      where: { sessionId, roundId },
+    });
 
-    const storeScores = new Map<
-      string,
-      number
-    >();
+    const map = new Map<string, number>();
 
+    // SCORE BASE (conforme tua simulação real)
     for (const r of results) {
       const score =
-        (r.ebitdaValue ?? 0) +
-        (r.finalCash ?? 0) * 0.1 -
-        (r.agingCosts ?? 0);
+        (r.ebitdaValue ?? 0) * 0.5 +
+        (r.finalCash ?? 0) * 0.2 +
+        (r.csat ?? 0) * 1000 +
+        (r.sla ?? 0) * 800 -
+        (r.agingCosts ?? 0) * 0.3;
 
-      storeScores.set(
-        r.storeId,
-        (storeScores.get(r.storeId) ?? 0) +
-          score,
-      );
+      map.set(r.storeId, (map.get(r.storeId) ?? 0) + score);
     }
 
-    const sorted = [...storeScores.entries()].sort(
-      (a, b) => b[1] - a[1],
-    );
+    const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
 
-    let lastScore: number | null = null;
+    const totalWeight = sorted.reduce((acc, [, v]) => acc + v, 0) || 1;
+
     let position = 0;
-    let lastRank = 0;
+    let lastScore: number | null = null;
+    let rank = 0;
 
-    const result = [];
+    const output: any[] = [];
 
     for (const [storeId, score] of sorted) {
       position++;
 
       if (lastScore === null || score !== lastScore) {
-        lastRank = position;
+        rank = position;
       }
 
-      await this.prisma.sessionResult.upsert({
+      const marketShare = score / totalWeight;
+
+      await this.prisma.roundRanking.upsert({
         where: {
-          sessionId_storeId: {
+          sessionId_roundId_storeId: {
             sessionId,
+            roundId,
             storeId,
           },
         },
         create: {
           sessionId,
+          roundId,
           storeId,
+
+          roundNumber: 0, // opcional (pode preencher depois se quiser)
+
+          priceScore: 0,
+          availabilityScore: 0,
+          csatScore: 0,
+
           finalScore: score,
-          totalRevenue: 0,
-          totalExpenses: 0,
-          finalEbitda: 0,
-          finalEbitdaMargin: 0,
-          finalCash: 0,
-          position: lastRank,
+          position: rank,
+
+          marketShare,
         },
         update: {
           finalScore: score,
-          position: lastRank,
+          position: rank,
+          marketShare,
         },
       });
 
-      result.push({
+      output.push({
         storeId,
         score,
-        position: lastRank,
+        rank,
+        marketShare,
       });
 
       lastScore = score;
     }
 
-    return result;
+    return output;
   }
 }

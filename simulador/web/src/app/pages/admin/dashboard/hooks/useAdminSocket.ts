@@ -13,7 +13,6 @@ type JoinedPlayerEvent = {
 
 export const useAdminSocket = (API_URL: string) => {
   const socketRef = useRef<Socket | null>(null);
-
   const playersRef = useRef<Player[]>([]);
 
   const [connected, setConnected] = useState(false);
@@ -22,22 +21,23 @@ export const useAdminSocket = (API_URL: string) => {
   const [endTime, setEndTime] = useState<number | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
-  const syncPlayers = (updater: Player[]) => {
-    playersRef.current = updater;
-    setPlayers(updater);
+  const syncPlayers = (data: Player[]) => {
+    playersRef.current = data;
+    setPlayers(data);
   };
 
   const conectar = useCallback(
-    (sessionId: string, onRoundFinished: () => void) => {
-      if (socketRef.current) return;
+    (sessionId: string, onRoundFinished?: () => void) => {
+      if (socketRef.current?.connected) return;
 
       const socket = io(`${API_URL}/simulation`, {
         reconnection: true,
+        transports: ["websocket"],
       });
 
       socketRef.current = socket;
 
-      // ================= CONNECT =================
+      // CONNECT
       socket.on("connect", () => {
         setConnected(true);
 
@@ -48,107 +48,90 @@ export const useAdminSocket = (API_URL: string) => {
         });
       });
 
-      socket.on("disconnect", () => setConnected(false));
-
-      // ================= SNAPSHOT =================
-      socket.on("session:players_updated", (data: Player[]) => {
-        syncPlayers(data);
+      socket.on("disconnect", () => {
+        setConnected(false);
       });
 
-      // ================= PLAYER JOINED (FIX PRINCIPAL) =================
+      // SNAPSHOT
+      socket.on("session:players_updated", (data: Player[]) => {
+        syncPlayers(data || []);
+      });
+
+      // PLAYER JOINED
       socket.on("player:joined", (player: JoinedPlayerEvent) => {
-        const storeName =
-          player.storeName ?? "Loja não definida";
+        const storeName = player.storeName ?? "Loja não definida";
 
         toast(`🎮 ${storeName} entrou na sala`);
 
-        const exists = playersRef.current.some(
-          (p) => p.id === player.id
-        );
+        const exists = playersRef.current.some((p) => p.id === player.id);
 
         if (!exists) {
-          const normalized: Player = {
+          const newPlayer: Player = {
             id: player.id,
             name: player.name,
-            role: player.role as any,
             storeName,
-          } as Player;
+          };
 
-          const updated = [...playersRef.current, normalized];
-
-          syncPlayers(updated);
+          syncPlayers([...playersRef.current, newPlayer]);
         }
       });
 
-      // ================= SUBMIT =================
-      socket.on(
-        "player:submitted",
-        ({ playerId }: { playerId: string }) => {
-          const now = new Date().toLocaleTimeString("pt-BR");
+      // SUBMIT
+      socket.on("player:submitted", ({ playerId }: { playerId: string }) => {
+        const now = new Date().toISOString();
 
-          const updated = playersRef.current.map((p) =>
-            p.id === playerId
-              ? { ...p, submittedAt: now }
-              : p
-          );
+        const updated = playersRef.current.map((p) =>
+          p.id === playerId ? { ...p, submittedAt: now } : p
+        );
 
-          syncPlayers(updated);
-        }
-      );
+        syncPlayers(updated);
+      });
 
-      // ================= KICK =================
-      socket.on(
-        "player:kicked",
-        ({ playerId }: { playerId: string }) => {
-          const updated = playersRef.current.filter(
-            (p) => p.id !== playerId
-          );
+      // KICK
+      socket.on("player:kicked", ({ playerId }: { playerId: string }) => {
+        syncPlayers(playersRef.current.filter((p) => p.id !== playerId));
+      });
 
-          syncPlayers(updated);
-        }
-      );
-
-      // ================= ROUND START =================
+      // ROUND START
       socket.on("round:started", (data: any) => {
         setGameStarted(true);
         setEndTime(data.endTime);
 
-        setSession((s) =>
-          s
+        setSession((prev) =>
+          prev
             ? {
-                ...s,
+                ...prev,
                 currentRound: data.roundNumber,
                 status: "IN_PROGRESS",
               }
-            : s
+            : prev
         );
 
         toast.success(`▶ Rodada ${data.roundNumber} iniciada`);
       });
 
-      // ================= ROUND STOP =================
+      // ROUND STOP
       socket.on("round:stopped", () => {
         setGameStarted(false);
         setEndTime(null);
+
         toast("🛑 Rodada encerrada");
       });
 
-      // ================= ROUND FINISHED =================
+      // ROUND FINISHED
       socket.on("round:finished", () => {
         setGameStarted(false);
         setEndTime(null);
-        onRoundFinished();
+
+        onRoundFinished?.();
       });
     },
     [API_URL]
   );
 
-  const emit = useCallback(
-    (event: string, data: object) => {
-      socketRef.current?.emit(event, data);
-    },
-    []
-  );
+  const emit = useCallback((event: string, data: object) => {
+    socketRef.current?.emit(event, data);
+  }, []);
 
   const disconnect = useCallback(() => {
     socketRef.current?.disconnect();
@@ -156,6 +139,10 @@ export const useAdminSocket = (API_URL: string) => {
 
     playersRef.current = [];
     setPlayers([]);
+    setConnected(false);
+    setGameStarted(false);
+    setEndTime(null);
+    setSession(null);
   }, []);
 
   return {
@@ -164,7 +151,9 @@ export const useAdminSocket = (API_URL: string) => {
     players,
     setPlayers,
     gameStarted,
+    setGameStarted,
     endTime,
+    setEndTime,
     session,
     setSession,
     conectar,

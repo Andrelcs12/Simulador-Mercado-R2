@@ -1,10 +1,14 @@
 import { Injectable } from "@nestjs/common";
+
 import { SessionService } from "./services/session.service";
 import { RoundService } from "./services/round.service";
 import { PlayerService } from "./services/player.service";
 import { SubmissionService } from "./services/submission.service";
 
+
 import { PlayerRole } from "@/generated/prisma/enums";
+import { SimulationService } from "./simulation.service";
+import { DashboardService } from "./services/dashboard.service";
 
 @Injectable()
 export class MinigameService {
@@ -13,7 +17,34 @@ export class MinigameService {
     private readonly roundService: RoundService,
     private readonly playerService: PlayerService,
     private readonly submissionService: SubmissionService,
+    private readonly dashboardService: DashboardService,
+    private readonly simulationService: SimulationService,
   ) {}
+
+  // ======================================================
+  // SIMULATION
+  // ======================================================
+
+  calculateRoundResult(data: {
+  categories: any[];
+  capex: any[];
+
+  stockInputs: any[];
+  capexSelections: any[];
+
+  storeCash: number;
+
+  marketShare: number;
+
+  operatorsQty: number;
+  serviceOperatorsQty: number;
+
+  quizScore: number;
+
+  totalMarketCustomers: number;
+}) {
+  return this.simulationService.calculateRound(data);
+}
 
   // ======================================================
   // SESSION
@@ -62,7 +93,10 @@ export class MinigameService {
   }
 
   updateSocketId(playerId: string, socketId: string) {
-    return this.playerService.updateSocketId(playerId, socketId);
+    return this.playerService.updateSocketId(
+      playerId,
+      socketId,
+    );
   }
 
   kickPlayer(playerId: string) {
@@ -74,18 +108,29 @@ export class MinigameService {
   // ======================================================
 
   startRound(sessionId: string, duration: number) {
-    return this.roundService.startRound(sessionId, duration);
+    return this.roundService.startRound(
+      sessionId,
+      duration,
+    );
   }
 
   finishRound(
     sessionId: string,
-    reason: "TIME_UP" | "ADMIN_STOP" | "MANUAL" = "MANUAL",
+    reason:
+      | "TIME_UP"
+      | "ADMIN_STOP"
+      | "MANUAL" = "MANUAL",
   ) {
-    return this.roundService.finishRound(sessionId, reason);
+    return this.roundService.finishRound(
+      sessionId,
+      reason,
+    );
   }
 
   startNextRound(sessionId: string) {
-    return this.roundService.startNextRound(sessionId);
+    return this.roundService.startNextRound(
+      sessionId,
+    );
   }
 
   // ======================================================
@@ -108,10 +153,19 @@ export class MinigameService {
       capexId: string;
     }[];
   }) {
-    return this.submissionService.submitConfiguration(data);
+    return this.submissionService.submitConfiguration(
+      data,
+    );
   }
 
-  markPlayerReady(sessionId: string, playerId: string) {
+  getDashboard(sessionId: string, roundId: string, storeId?: string) {
+  return this.dashboardService.getRoundDashboard(sessionId, roundId, storeId);
+}
+
+  markPlayerReady(
+    sessionId: string,
+    playerId: string,
+  ) {
     return this.submissionService.markPlayerReady(
       sessionId,
       playerId,
@@ -119,11 +173,15 @@ export class MinigameService {
   }
 
   allPlayersReady(sessionId: string) {
-    return this.submissionService.allPlayersReady(sessionId);
+    return this.submissionService.allPlayersReady(
+      sessionId,
+    );
   }
 
   clearReady(sessionId: string) {
-    return this.submissionService.clearReady(sessionId);
+    return this.submissionService.clearReady(
+      sessionId,
+    );
   }
 
   validateSubmissionWindow(roundId: string) {

@@ -274,6 +274,10 @@ model StoreCapex {
 // ROUND RANKING
 // ===============================
 
+// ===============================
+// ROUND RANKING
+// ===============================
+
 model RoundRanking {
   id String @id @default(uuid())
 
@@ -281,10 +285,12 @@ model RoundRanking {
   roundId   String
   storeId   String
 
+  roundNumber Int
+
+  marketShare Float
+
   session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
   round GameRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   priceScore        Float
@@ -293,15 +299,20 @@ model RoundRanking {
 
   finalScore Float
 
-  demandShare Float
-
   position Int
 
   createdAt DateTime @default(now())
 
-  @@unique([roundId, storeId])
+  @@unique([sessionId, roundId, storeId])
+  @@index([sessionId, roundNumber])
   @@index([sessionId, roundId])
 }
+
+
+// ===============================
+// ROUND RESULT
+// ===============================
+
 
 // ===============================
 // ROUND RESULT
@@ -314,10 +325,10 @@ model RoundResult {
   roundId   String
   storeId   String
 
+  marketShare Float @default(0)
+
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
   session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
   round GameRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
 
   customersReceived Float
@@ -340,7 +351,6 @@ model RoundResult {
   finalCash Float
 
   remainingStockValue Float
-
   stockBreakLoss Float
 
   csat Float
@@ -349,7 +359,9 @@ model RoundResult {
   createdAt DateTime @default(now())
 
   @@unique([storeId, roundId])
+  @@index([sessionId, roundId])
 }
+
 
 // ===============================
 // SESSION RESULT
@@ -362,24 +374,23 @@ model SessionResult {
   storeId   String
 
   session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   totalRevenue Float
-
   totalExpenses Float
 
   finalEbitda Float
-
   finalEbitdaMargin Float
 
   finalCash Float
-
   finalScore Float
 
   position Int
 
+  finalMarketShare Float
+
   createdAt DateTime @default(now())
 
   @@unique([sessionId, storeId])
+  @@index([sessionId])
 }

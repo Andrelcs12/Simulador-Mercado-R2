@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class SimulationService {
@@ -7,25 +7,24 @@ export class SimulationService {
     capex: any[];
     stockInputs: any[];
     capexSelections: any[];
+
     storeCash: number;
     marketShare: number;
+
+    operatorsQty: number;
+    serviceOperatorsQty: number;
+    quizScore: number;
+
+    totalMarketCustomers: number;
   }) {
     const totalRevenue = this.calcRevenue(input);
-
     const totalCMV = this.calcCMV(input);
-
     const totalTaxes = this.calcTaxes(input, totalRevenue);
 
     const capexCosts = this.calcCapex(input);
-
     const licensingCosts = this.calcLicensing(input);
-
     const operatingCosts = this.calcOperatingCosts(input);
-
     const agingCosts = this.calcAging(input);
-
-    const remainingStockValue = this.calcRemainingStockValue(input);
-
     const stockBreakLoss = this.calcStockBreakLoss(input);
 
     const interestCosts = this.calcInterestCosts(
@@ -51,12 +50,9 @@ export class SimulationService {
     const ebitdaValue = totalRevenue - totalExpenses;
 
     const ebitdaMargin =
-      totalRevenue > 0
-        ? (ebitdaValue / totalRevenue) * 100
-        : 0;
+      totalRevenue > 0 ? (ebitdaValue / totalRevenue) * 100 : 0;
 
-    const finalCash =
-      input.storeCash + totalRevenue - totalExpenses;
+    const finalCash = input.storeCash + totalRevenue - totalExpenses;
 
     return {
       customersReceived: this.calcCustomersReceived(input),
@@ -78,8 +74,7 @@ export class SimulationService {
 
       finalCash,
 
-      remainingStockValue,
-
+      remainingStockValue: this.calcRemainingStockValue(input),
       stockBreakLoss,
 
       csat: this.calcCSAT(input),
@@ -87,19 +82,10 @@ export class SimulationService {
     };
   }
 
-  // =========================
-  // CUSTOMERS
-  // =========================
-
   private calcCustomersReceived(input: any) {
-    const baseCustomers = 1000;
-
-    return baseCustomers * (input.marketShare || 1);
+    const base = input.totalMarketCustomers || 1000;
+    return base * input.marketShare;
   }
-
-  // =========================
-  // REVENUE
-  // =========================
 
   private calcRevenue(input: any) {
     let revenue = 0;
@@ -108,242 +94,106 @@ export class SimulationService {
       const category = input.categories.find(
         (c: any) => c.id === stock.categoryId,
       );
-
       if (!category) continue;
 
-      const margin =
-        stock.commercialMargin ?? 30;
+      const margin = stock.commercialMargin ?? 30;
+      const price = category.unitCost * (1 + margin / 100);
+      const sold = stock.buyQty * input.marketShare;
 
-      const sellPrice =
-        category.unitCost * (1 + margin / 100);
-
-      const soldQty =
-        stock.buyQty * (input.marketShare || 1);
-
-      revenue += sellPrice * soldQty;
+      revenue += price * sold;
     }
 
     return revenue;
   }
 
-  // =========================
-  // TAXES
-  // =========================
-
   private calcTaxes(input: any, revenue: number) {
-    let taxes = 0;
-
-    for (const stock of input.stockInputs) {
+    return input.stockInputs.reduce((acc, stock) => {
       const category = input.categories.find(
         (c: any) => c.id === stock.categoryId,
       );
+      if (!category) return acc;
 
-      if (!category) continue;
-
-      taxes +=
-        (revenue / input.stockInputs.length) *
-        (category.taxRate / 100);
-    }
-
-    return taxes;
+      return acc + revenue * (category.taxRate / 100);
+    }, 0);
   }
-
-  // =========================
-  // CMV
-  // =========================
 
   private calcCMV(input: any) {
-    let cmv = 0;
-
-    for (const stock of input.stockInputs) {
-      const category = input.categories.find(
-        (c: any) => c.id === stock.categoryId,
+    return input.stockInputs.reduce((acc, stock) => {
+      const c = input.categories.find(
+        (cat: any) => cat.id === stock.categoryId,
       );
-
-      if (!category) continue;
-
-      cmv += category.unitCost * stock.buyQty;
-    }
-
-    return cmv;
+      return acc + (c?.unitCost ?? 0) * stock.buyQty;
+    }, 0);
   }
-
-  // =========================
-  // CAPEX
-  // =========================
 
   private calcCapex(input: any) {
-    let total = 0;
-
-    for (const selection of input.capexSelections) {
-      const capex = input.capex.find(
-        (c: any) => c.id === selection.capexId,
-      );
-
-      if (!capex) continue;
-
-      total += capex.cost;
-    }
-
-    return total;
+    return input.capexSelections.reduce((acc, s) => {
+      const c = input.capex.find((x: any) => x.id === s.capexId);
+      return acc + (c?.cost ?? 0);
+    }, 0);
   }
-
-  // =========================
-  // LICENSING
-  // =========================
 
   private calcLicensing(input: any) {
-    let total = 0;
-
-    for (const selection of input.capexSelections) {
-      const capex = input.capex.find(
-        (c: any) => c.id === selection.capexId,
-      );
-
-      if (!capex) continue;
-
-      total += capex.recurringLicenseCost || 0;
-    }
-
-    return total;
+    return input.capexSelections.reduce((acc, s) => {
+      const c = input.capex.find((x: any) => x.id === s.capexId);
+      return acc + (c?.recurringLicenseCost ?? 0);
+    }, 0);
   }
-
-  // =========================
-  // OPERATING COSTS
-  // =========================
 
   private calcOperatingCosts(input: any) {
-    const stockOps =
-      input.stockInputs.length * 2500;
-
-    const capexOps =
+    return input.stockInputs.length * 2500 +
       input.capexSelections.length * 600;
-
-    return stockOps + capexOps;
   }
-
-  // =========================
-  // AGING COSTS
-  // =========================
 
   private calcAging(input: any) {
-    let aging = 0;
-
-    for (const stock of input.stockInputs) {
-      const category = input.categories.find(
-        (c: any) => c.id === stock.categoryId,
+    return input.stockInputs.reduce((acc, stock) => {
+      const c = input.categories.find(
+        (cat: any) => cat.id === stock.categoryId,
       );
+      if (!c) return acc;
 
-      if (!category) continue;
-
-      const unsoldQty =
-        stock.buyQty * 0.2;
-
-      aging +=
-        unsoldQty *
-        category.unitCost *
-        category.agingPenaltyRate;
-    }
-
-    return aging;
+      return acc + stock.buyQty * 0.2 * c.unitCost * c.agingPenaltyRate;
+    }, 0);
   }
-
-  // =========================
-  // REMAINING STOCK
-  // =========================
 
   private calcRemainingStockValue(input: any) {
-    let total = 0;
-
-    for (const stock of input.stockInputs) {
-      const category = input.categories.find(
-        (c: any) => c.id === stock.categoryId,
+    return input.stockInputs.reduce((acc, stock) => {
+      const c = input.categories.find(
+        (cat: any) => cat.id === stock.categoryId,
       );
-
-      if (!category) continue;
-
-      const remainingQty =
-        stock.buyQty * 0.2;
-
-      total += remainingQty * category.unitCost;
-    }
-
-    return total;
+      return acc + (stock.buyQty * 0.2 * (c?.unitCost ?? 0));
+    }, 0);
   }
-
-  // =========================
-  // STOCK BREAK LOSS
-  // =========================
 
   private calcStockBreakLoss(input: any) {
-    let total = 0;
-
-    for (const stock of input.stockInputs) {
-      const category = input.categories.find(
-        (c: any) => c.id === stock.categoryId,
+    return input.stockInputs.reduce((acc, stock) => {
+      const c = input.categories.find(
+        (cat: any) => cat.id === stock.categoryId,
       );
-
-      if (!category) continue;
-
-      const breakQty =
-        stock.buyQty * 0.03;
-
-      total += breakQty * category.unitCost;
-    }
-
-    return total;
+      return acc + stock.buyQty * 0.03 * (c?.unitCost ?? 0);
+    }, 0);
   }
-
-  // =========================
-  // INTEREST
-  // =========================
 
   private calcInterestCosts(
-    initialCash: number,
+    cash: number,
     revenue: number,
     cmv: number,
-    operatingCosts: number,
-    capexCosts: number,
-    licensingCosts: number,
-    agingCosts: number,
+    op: number,
+    capex: number,
+    lic: number,
+    aging: number,
   ) {
-    const projectedCash =
-      initialCash +
-      revenue -
-      cmv -
-      operatingCosts -
-      capexCosts -
-      licensingCosts -
-      agingCosts;
+    const projected =
+      cash + revenue - cmv - op - capex - lic - aging;
 
-    if (projectedCash >= 0) {
-      return 0;
-    }
-
-    return Math.abs(projectedCash) * 0.08;
+    return projected >= 0 ? 0 : Math.abs(projected) * 0.08;
   }
-
-  // =========================
-  // CSAT
-  // =========================
 
   private calcCSAT(input: any) {
-    let score = 70;
-
-    score += input.capexSelections.length * 2;
-
-    return Math.min(score, 100);
+    return Math.min(70 + input.capexSelections.length * 2, 100);
   }
 
-  // =========================
-  // SLA
-  // =========================
-
   private calcSLA(input: any) {
-    let score = 75;
-
-    score += input.capexSelections.length * 1.5;
-
-    return Math.min(score, 100);
+    return Math.min(75 + input.capexSelections.length * 1.5, 100);
   }
 }

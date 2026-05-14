@@ -297,175 +297,220 @@ export default function OnboardingPage() {
   // ─────────────────────────────────────────────
   // RENDER
   // ─────────────────────────────────────────────
+ 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-white flex flex-col">
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: { background: "#1A2235", color: "#fff", border: "1px solid rgba(255,255,255,0.08)" },
-        }}
-      />
+  <div className="min-h-screen bg-[#F5F7FB] text-[#0F172A] flex flex-col">
+    <Toaster
+      position="top-right"
+      toastOptions={{
+        style: {
+          background: "#FFFFFF",
+          color: "#0F172A",
+          border: "1px solid #E2E8F0",
+          boxShadow: "0 10px 30px rgba(15,23,42,0.08)",
+        },
+      }}
+    />
 
-      {/* ── HEADER ── */}
-      <header className="sticky top-0 z-30 bg-[#0B1220]/95 backdrop-blur border-b border-white/[0.06] px-4 md:px-8 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          {/* Número da rodada */}
-          <div className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-2">
-            <span className="text-[10px] uppercase tracking-widest text-slate-500 font-black">
+    {/* ── HEADER ── */}
+    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200 px-4 md:px-8 py-4 flex items-center justify-between gap-4 shadow-sm">
+      <div className="flex items-center gap-3">
+        {/* Rodada */}
+        <div className="flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-400 text-white rounded-2xl px-5 py-3 shadow-lg shadow-orange-500/20">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.25em] font-black text-white/70">
               Rodada
-            </span>
-            <span className="text-lg font-black text-white tabular-nums">
-              {round?.roundNumber ?? "—"}
-            </span>
-          </div>
-
-          {/* Loja */}
-          {player && (
-            <div className="hidden sm:flex items-center gap-2 text-sm text-slate-400 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-orange-500" />
-              {player.storeName}
             </div>
-          )}
-        </div>
 
-        {/* Timer */}
-        <div className="flex flex-col items-end gap-1">
-          <div className={`text-3xl md:text-4xl font-black font-mono tabular-nums ${timerColor}`}>
-            {formatTime(timeLeft)}
-          </div>
-          {/* Barra de progresso do timer */}
-          <div className="w-32 md:w-48 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              className={`h-full rounded-full ${
-                timeLeft > 120 ? "bg-emerald-400" : timeLeft > 30 ? "bg-yellow-400" : "bg-red-400"
-              }`}
-              animate={{ width: `${progressPercent}%` }}
-              transition={{ ease: "linear", duration: 1 }}
-            />
+            <div className="text-2xl font-black tabular-nums leading-none">
+              {round?.roundNumber ?? "—"}
+            </div>
           </div>
         </div>
-      </header>
 
-      {/* ── STEPS INDICATOR ── */}
-      <div className="border-b border-white/[0.06] bg-[#0D1528] px-4 md:px-8 py-3">
-        <div className="max-w-4xl mx-auto flex items-center gap-1 md:gap-2">
-          {STEP_LABELS.map((label, i) => {
-            const num = i + 1;
-            const isActive = step === num;
-            const isDone = step > num;
-            return (
-              <React.Fragment key={num}>
-                <div
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
-                    isActive
-                      ? "bg-orange-500 text-white"
-                      : isDone
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
-                      : "text-slate-600"
-                  }`}
-                >
-                  <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
-                      isActive ? "bg-white/20" : isDone ? "bg-emerald-500/30" : "bg-white/5"
-                    }`}
-                  >
-                    {isDone ? "✓" : num}
-                  </span>
-                  <span className="hidden sm:inline">{label}</span>
-                </div>
-                {i < STEP_LABELS.length - 1 && (
-                  <div className={`flex-1 h-px ${isDone ? "bg-emerald-500/30" : "bg-white/[0.06]"}`} />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
+        {/* Loja */}
+        {player && (
+          <div className="hidden md:flex items-center gap-3 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm">
+            <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+
+            <div>
+              <div className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                Loja
+              </div>
+
+              <div className="text-sm font-bold text-slate-700">
+                {player.storeName}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* ── STATUS BANNERS ── */}
-      <AnimatePresence>
-        {submitted && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="bg-emerald-500/10 border-b border-emerald-500/20 px-8 py-3 text-emerald-400 text-sm font-bold text-center"
-          >
-            ✅ Configuração enviada — aguardando próxima rodada
-          </motion.div>
-        )}
-        {timeUp && !submitted && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            className="bg-red-500/10 border-b border-red-500/20 px-8 py-3 text-red-400 text-sm font-bold text-center"
-          >
-            ⏱ Tempo esgotado
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── MAIN ── */}
-      <main className="flex-1 flex items-start justify-center p-4 md:p-8">
-        <div className="w-full max-w-4xl">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="bg-[#111827] border border-white/[0.06] rounded-3xl p-6 md:p-8"
-            >
-              {step === 1 && <SetupStep config={config} setConfig={setConfig} />}
-              {step === 2 && <ComercialStep config={config} setConfig={setConfig} />}
-              {step === 3 && <EmployeeStep config={config} setConfig={setConfig} />}
-              {step === 4 && <SummaryStep config={config} />}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </main>
-
-      {/* ── FOOTER NAV ── */}
-      <footer className="sticky bottom-0 bg-[#0B1220]/95 backdrop-blur border-t border-white/[0.06] px-4 md:px-8 py-4 flex justify-between items-center">
-        <button
-          disabled={step === 1}
-          onClick={() => setStep((s) => Math.max(1, s - 1))}
-          className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+      {/* TIMER */}
+      <div className="flex flex-col items-end gap-2">
+        <div
+          className={`text-4xl md:text-5xl font-black font-mono tabular-nums leading-none ${timerColor}`}
         >
-          ← Voltar
-        </button>
+          {formatTime(timeLeft)}
+        </div>
 
-        <span className="text-xs text-slate-600 font-bold uppercase tracking-widest">
-          {step} / {STEP_LABELS.length}
-        </span>
+        <div className="w-40 md:w-56 h-2 bg-slate-200 rounded-full overflow-hidden shadow-inner">
+          <motion.div
+            className={`h-full rounded-full ${
+              timeLeft > 120
+                ? "bg-emerald-500"
+                : timeLeft > 30
+                ? "bg-yellow-400"
+                : "bg-red-500"
+            }`}
+            animate={{ width: `${progressPercent}%` }}
+            transition={{ ease: "linear", duration: 1 }}
+          />
+        </div>
+      </div>
+    </header>
 
-        {step < 4 ? (
-          <button
-            onClick={() => setStep((s) => Math.min(4, s + 1))}
-            className="px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm transition-all"
-          >
-            Próximo →
-          </button>
-        ) : (
-          <button
-            onClick={handleFinalize}
-            disabled={submitting || timeUp || submitted}
-            className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {submitting ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Enviando...
-              </>
-            ) : submitted ? (
-              "✅ Enviado"
-            ) : (
-              "Enviar Configuração →"
-            )}
-          </button>
-        )}
-      </footer>
+    {/* ── STEPS ── */}
+    <div className="border-b border-slate-200 bg-white px-4 md:px-8 py-4 shadow-sm">
+      <div className="max-w-5xl mx-auto flex items-center gap-2">
+        {STEP_LABELS.map((label, i) => {
+          const num = i + 1;
+          const isActive = step === num;
+          const isDone = step > num;
+
+          return (
+            <React.Fragment key={num}>
+              <div
+                className={`flex items-center gap-3 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+                  isActive
+                    ? "bg-orange-500 text-white shadow-lg shadow-orange-500/20 scale-[1.02]"
+                    : isDone
+                    ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                    : "bg-slate-100 text-slate-400 border border-slate-200"
+                }`}
+              >
+                <span
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black ${
+                    isActive
+                      ? "bg-white/20"
+                      : isDone
+                      ? "bg-emerald-100"
+                      : "bg-white"
+                  }`}
+                >
+                  {isDone ? "✓" : num}
+                </span>
+
+                <span className="hidden sm:inline">{label}</span>
+              </div>
+
+              {i < STEP_LABELS.length - 1 && (
+                <div
+                  className={`flex-1 h-1 rounded-full ${
+                    isDone ? "bg-emerald-300" : "bg-slate-200"
+                  }`}
+                />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
-  );
+
+    {/* ── STATUS ── */}
+    <AnimatePresence>
+      {submitted && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="mx-4 md:mx-8 mt-4 bg-emerald-50 border border-emerald-200 rounded-2xl px-6 py-4 text-emerald-700 font-bold shadow-sm"
+        >
+          ✅ Configuração enviada com sucesso
+        </motion.div>
+      )}
+
+      {timeUp && !submitted && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-4 md:mx-8 mt-4 bg-red-50 border border-red-200 rounded-2xl px-6 py-4 text-red-600 font-bold shadow-sm"
+        >
+          ⏱ Tempo esgotado
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    {/* ── MAIN ── */}
+    <main className="flex-1 flex items-start justify-center p-4 md:p-8">
+      <div className="w-full max-w-5xl">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white border border-slate-200 rounded-[2rem] p-6 md:p-10 shadow-xl shadow-slate-200/60"
+          >
+            {step === 1 && (
+              <SetupStep config={config} setConfig={setConfig} />
+            )}
+
+            {step === 2 && (
+              <ComercialStep config={config} setConfig={setConfig} />
+            )}
+
+            {step === 3 && (
+              <EmployeeStep config={config} setConfig={setConfig} />
+            )}
+
+            {step === 4 && <SummaryStep config={config} />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </main>
+
+    {/* ── FOOTER ── */}
+    <footer className="sticky bottom-0 bg-white/95 backdrop-blur-xl border-t border-slate-200 px-4 md:px-8 py-4 flex justify-between items-center shadow-[0_-4px_20px_rgba(15,23,42,0.04)]">
+      <button
+        disabled={step === 1}
+        onClick={() => setStep((s) => Math.max(1, s - 1))}
+        className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        ← Voltar
+      </button>
+
+      <span className="text-xs text-slate-400 font-black uppercase tracking-[0.25em]">
+        {step} / {STEP_LABELS.length}
+      </span>
+
+      {step < 4 ? (
+        <button
+          onClick={() => setStep((s) => Math.min(4, s + 1))}
+          className="px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-400 text-white font-black text-sm transition-all shadow-lg shadow-orange-500/20"
+        >
+          Próximo →
+        </button>
+      ) : (
+        <button
+          onClick={handleFinalize}
+          disabled={submitting || timeUp || submitted}
+          className="px-7 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+        >
+          {submitting ? (
+            <>
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Enviando...
+            </>
+          ) : submitted ? (
+            "✅ Enviado"
+          ) : (
+            "Enviar Configuração →"
+          )}
+        </button>
+      )}
+    </footer>
+  </div>
+);
 }

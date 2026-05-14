@@ -27,6 +27,7 @@ export type AggregateRoundResult = {
 }
 
 export type RoundResultAvgAggregateOutputType = {
+  marketShare: number | null
   customersReceived: number | null
   totalRevenue: number | null
   totalTaxes: number | null
@@ -47,6 +48,7 @@ export type RoundResultAvgAggregateOutputType = {
 }
 
 export type RoundResultSumAggregateOutputType = {
+  marketShare: number | null
   customersReceived: number | null
   totalRevenue: number | null
   totalTaxes: number | null
@@ -71,6 +73,7 @@ export type RoundResultMinAggregateOutputType = {
   sessionId: string | null
   roundId: string | null
   storeId: string | null
+  marketShare: number | null
   customersReceived: number | null
   totalRevenue: number | null
   totalTaxes: number | null
@@ -96,6 +99,7 @@ export type RoundResultMaxAggregateOutputType = {
   sessionId: string | null
   roundId: string | null
   storeId: string | null
+  marketShare: number | null
   customersReceived: number | null
   totalRevenue: number | null
   totalTaxes: number | null
@@ -121,6 +125,7 @@ export type RoundResultCountAggregateOutputType = {
   sessionId: number
   roundId: number
   storeId: number
+  marketShare: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -144,6 +149,7 @@ export type RoundResultCountAggregateOutputType = {
 
 
 export type RoundResultAvgAggregateInputType = {
+  marketShare?: true
   customersReceived?: true
   totalRevenue?: true
   totalTaxes?: true
@@ -164,6 +170,7 @@ export type RoundResultAvgAggregateInputType = {
 }
 
 export type RoundResultSumAggregateInputType = {
+  marketShare?: true
   customersReceived?: true
   totalRevenue?: true
   totalTaxes?: true
@@ -188,6 +195,7 @@ export type RoundResultMinAggregateInputType = {
   sessionId?: true
   roundId?: true
   storeId?: true
+  marketShare?: true
   customersReceived?: true
   totalRevenue?: true
   totalTaxes?: true
@@ -213,6 +221,7 @@ export type RoundResultMaxAggregateInputType = {
   sessionId?: true
   roundId?: true
   storeId?: true
+  marketShare?: true
   customersReceived?: true
   totalRevenue?: true
   totalTaxes?: true
@@ -238,6 +247,7 @@ export type RoundResultCountAggregateInputType = {
   sessionId?: true
   roundId?: true
   storeId?: true
+  marketShare?: true
   customersReceived?: true
   totalRevenue?: true
   totalTaxes?: true
@@ -350,6 +360,7 @@ export type RoundResultGroupByOutputType = {
   sessionId: string
   roundId: string
   storeId: string
+  marketShare: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -398,6 +409,7 @@ export type RoundResultWhereInput = {
   sessionId?: Prisma.StringFilter<"RoundResult"> | string
   roundId?: Prisma.StringFilter<"RoundResult"> | string
   storeId?: Prisma.StringFilter<"RoundResult"> | string
+  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
   customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
   totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
@@ -426,6 +438,7 @@ export type RoundResultOrderByWithRelationInput = {
   sessionId?: Prisma.SortOrder
   roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
   customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalTaxes?: Prisma.SortOrder
@@ -458,6 +471,7 @@ export type RoundResultWhereUniqueInput = Prisma.AtLeast<{
   sessionId?: Prisma.StringFilter<"RoundResult"> | string
   roundId?: Prisma.StringFilter<"RoundResult"> | string
   storeId?: Prisma.StringFilter<"RoundResult"> | string
+  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
   customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
   totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
@@ -486,6 +500,7 @@ export type RoundResultOrderByWithAggregationInput = {
   sessionId?: Prisma.SortOrder
   roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
   customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalTaxes?: Prisma.SortOrder
@@ -519,6 +534,7 @@ export type RoundResultScalarWhereWithAggregatesInput = {
   sessionId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
   roundId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
   storeId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
+  marketShare?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   customersReceived?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   totalTaxes?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
@@ -541,6 +557,7 @@ export type RoundResultScalarWhereWithAggregatesInput = {
 
 export type RoundResultCreateInput = {
   id?: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -569,6 +586,7 @@ export type RoundResultUncheckedCreateInput = {
   sessionId: string
   roundId: string
   storeId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -591,6 +609,7 @@ export type RoundResultUncheckedCreateInput = {
 
 export type RoundResultUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -619,6 +638,7 @@ export type RoundResultUncheckedUpdateInput = {
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -644,6 +664,7 @@ export type RoundResultCreateManyInput = {
   sessionId: string
   roundId: string
   storeId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -666,6 +687,7 @@ export type RoundResultCreateManyInput = {
 
 export type RoundResultUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -691,6 +713,7 @@ export type RoundResultUncheckedUpdateManyInput = {
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -731,6 +754,7 @@ export type RoundResultCountOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
   customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalTaxes?: Prisma.SortOrder
@@ -752,6 +776,7 @@ export type RoundResultCountOrderByAggregateInput = {
 }
 
 export type RoundResultAvgOrderByAggregateInput = {
+  marketShare?: Prisma.SortOrder
   customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalTaxes?: Prisma.SortOrder
@@ -776,6 +801,7 @@ export type RoundResultMaxOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
   customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalTaxes?: Prisma.SortOrder
@@ -801,6 +827,7 @@ export type RoundResultMinOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
   customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalTaxes?: Prisma.SortOrder
@@ -822,6 +849,7 @@ export type RoundResultMinOrderByAggregateInput = {
 }
 
 export type RoundResultSumOrderByAggregateInput = {
+  marketShare?: Prisma.SortOrder
   customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
   totalTaxes?: Prisma.SortOrder
@@ -969,6 +997,7 @@ export type RoundResultUncheckedUpdateManyWithoutStoreNestedInput = {
 
 export type RoundResultCreateWithoutSessionInput = {
   id?: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -995,6 +1024,7 @@ export type RoundResultUncheckedCreateWithoutSessionInput = {
   id?: string
   roundId: string
   storeId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1049,6 +1079,7 @@ export type RoundResultScalarWhereInput = {
   sessionId?: Prisma.StringFilter<"RoundResult"> | string
   roundId?: Prisma.StringFilter<"RoundResult"> | string
   storeId?: Prisma.StringFilter<"RoundResult"> | string
+  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
   customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
   totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
@@ -1071,6 +1102,7 @@ export type RoundResultScalarWhereInput = {
 
 export type RoundResultCreateWithoutRoundInput = {
   id?: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1097,6 +1129,7 @@ export type RoundResultUncheckedCreateWithoutRoundInput = {
   id?: string
   sessionId: string
   storeId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1145,6 +1178,7 @@ export type RoundResultUpdateManyWithWhereWithoutRoundInput = {
 
 export type RoundResultCreateWithoutStoreInput = {
   id?: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1171,6 +1205,7 @@ export type RoundResultUncheckedCreateWithoutStoreInput = {
   id?: string
   sessionId: string
   roundId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1221,6 +1256,7 @@ export type RoundResultCreateManySessionInput = {
   id?: string
   roundId: string
   storeId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1243,6 +1279,7 @@ export type RoundResultCreateManySessionInput = {
 
 export type RoundResultUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1269,6 +1306,7 @@ export type RoundResultUncheckedUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1293,6 +1331,7 @@ export type RoundResultUncheckedUpdateManyWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1317,6 +1356,7 @@ export type RoundResultCreateManyRoundInput = {
   id?: string
   sessionId: string
   storeId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1339,6 +1379,7 @@ export type RoundResultCreateManyRoundInput = {
 
 export type RoundResultUpdateWithoutRoundInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1365,6 +1406,7 @@ export type RoundResultUncheckedUpdateWithoutRoundInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1389,6 +1431,7 @@ export type RoundResultUncheckedUpdateManyWithoutRoundInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1413,6 +1456,7 @@ export type RoundResultCreateManyStoreInput = {
   id?: string
   sessionId: string
   roundId: string
+  marketShare?: number
   customersReceived: number
   totalRevenue: number
   totalTaxes: number
@@ -1435,6 +1479,7 @@ export type RoundResultCreateManyStoreInput = {
 
 export type RoundResultUpdateWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1461,6 +1506,7 @@ export type RoundResultUncheckedUpdateWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1485,6 +1531,7 @@ export type RoundResultUncheckedUpdateManyWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
   customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1512,6 +1559,7 @@ export type RoundResultSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   sessionId?: boolean
   roundId?: boolean
   storeId?: boolean
+  marketShare?: boolean
   customersReceived?: boolean
   totalRevenue?: boolean
   totalTaxes?: boolean
@@ -1540,6 +1588,7 @@ export type RoundResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   sessionId?: boolean
   roundId?: boolean
   storeId?: boolean
+  marketShare?: boolean
   customersReceived?: boolean
   totalRevenue?: boolean
   totalTaxes?: boolean
@@ -1568,6 +1617,7 @@ export type RoundResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   sessionId?: boolean
   roundId?: boolean
   storeId?: boolean
+  marketShare?: boolean
   customersReceived?: boolean
   totalRevenue?: boolean
   totalTaxes?: boolean
@@ -1596,6 +1646,7 @@ export type RoundResultSelectScalar = {
   sessionId?: boolean
   roundId?: boolean
   storeId?: boolean
+  marketShare?: boolean
   customersReceived?: boolean
   totalRevenue?: boolean
   totalTaxes?: boolean
@@ -1616,7 +1667,7 @@ export type RoundResultSelectScalar = {
   createdAt?: boolean
 }
 
-export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "roundId" | "storeId" | "customersReceived" | "totalRevenue" | "totalTaxes" | "totalCMV" | "operatingCosts" | "capexCosts" | "licensingCosts" | "agingCosts" | "interestCosts" | "totalExpenses" | "ebitdaValue" | "ebitdaMargin" | "finalCash" | "remainingStockValue" | "stockBreakLoss" | "csat" | "sla" | "createdAt", ExtArgs["result"]["roundResult"]>
+export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "roundId" | "storeId" | "marketShare" | "customersReceived" | "totalRevenue" | "totalTaxes" | "totalCMV" | "operatingCosts" | "capexCosts" | "licensingCosts" | "agingCosts" | "interestCosts" | "totalExpenses" | "ebitdaValue" | "ebitdaMargin" | "finalCash" | "remainingStockValue" | "stockBreakLoss" | "csat" | "sla" | "createdAt", ExtArgs["result"]["roundResult"]>
 export type RoundResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
   session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
@@ -1645,6 +1696,7 @@ export type $RoundResultPayload<ExtArgs extends runtime.Types.Extensions.Interna
     sessionId: string
     roundId: string
     storeId: string
+    marketShare: number
     customersReceived: number
     totalRevenue: number
     totalTaxes: number
@@ -2093,6 +2145,7 @@ export interface RoundResultFieldRefs {
   readonly sessionId: Prisma.FieldRef<"RoundResult", 'String'>
   readonly roundId: Prisma.FieldRef<"RoundResult", 'String'>
   readonly storeId: Prisma.FieldRef<"RoundResult", 'String'>
+  readonly marketShare: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly customersReceived: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly totalRevenue: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly totalTaxes: Prisma.FieldRef<"RoundResult", 'Float'>

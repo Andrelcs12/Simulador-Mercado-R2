@@ -1470,11 +1470,12 @@ export const RoundRankingScalarFieldEnum = {
   sessionId: 'sessionId',
   roundId: 'roundId',
   storeId: 'storeId',
+  roundNumber: 'roundNumber',
+  marketShare: 'marketShare',
   priceScore: 'priceScore',
   availabilityScore: 'availabilityScore',
   csatScore: 'csatScore',
   finalScore: 'finalScore',
-  demandShare: 'demandShare',
   position: 'position',
   createdAt: 'createdAt'
 } as const
@@ -1487,6 +1488,7 @@ export const RoundResultScalarFieldEnum = {
   sessionId: 'sessionId',
   roundId: 'roundId',
   storeId: 'storeId',
+  marketShare: 'marketShare',
   customersReceived: 'customersReceived',
   totalRevenue: 'totalRevenue',
   totalTaxes: 'totalTaxes',
@@ -1521,6 +1523,7 @@ export const SessionResultScalarFieldEnum = {
   finalCash: 'finalCash',
   finalScore: 'finalScore',
   position: 'position',
+  finalMarketShare: 'finalMarketShare',
   createdAt: 'createdAt'
 } as const
 

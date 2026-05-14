@@ -43,6 +43,14 @@ export class MinigameController {
     return this.service.submitConfiguration(body);
   }
 
+  @Get("session/:id/dashboard/:roundId")
+getDashboard(
+  @Param("id") id: string,
+  @Param("roundId") roundId: string,
+) {
+  return this.service.getDashboard(id, roundId);
+}
+
   // 🔥 NOVO: fechar rodada manualmente (admin/backend tools)
   @Post('session/:id/finish-round')
   finishRound(@Param('id') id: string) {
