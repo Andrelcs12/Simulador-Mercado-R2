@@ -6,7 +6,6 @@ import {
   ArrowRight,
   Store,
   User,
-  Mail,
   Loader2,
   Hash,
 } from "lucide-react";
@@ -14,19 +13,16 @@ import { useRouter } from "next/navigation";
 
 const RegistroUsuario = () => {
   const router = useRouter();
-
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     sessionCode: "",
     name: "",
-    email: "",
     storeName: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
@@ -37,14 +33,13 @@ const RegistroUsuario = () => {
         `${API_URL}/minigame/register`,
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({
-            ...formData,
             sessionCode: formData.sessionCode.toUpperCase(),
+            name: formData.name,
+            storeName: formData.storeName,
             role: "STORE_MANAGER",
           }),
         }
@@ -57,7 +52,6 @@ const RegistroUsuario = () => {
       }
 
       localStorage.setItem("player_data", JSON.stringify(data));
-
       router.push("/pages/lobby");
     } catch (err: any) {
       alert(err.message || "Erro na conexão");
@@ -68,19 +62,11 @@ const RegistroUsuario = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4 sm:p-6">
-
       <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-[460px]"
       >
-
         {/* HEADER */}
         <div className="text-center mb-8 px-2">
           <img
@@ -101,7 +87,6 @@ const RegistroUsuario = () => {
 
         {/* CARD */}
         <div className="bg-white p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 shadow-xl">
-
           <form onSubmit={handleSubmit} className="space-y-5">
 
             {/* CODIGO */}
@@ -156,34 +141,6 @@ const RegistroUsuario = () => {
                     })
                   }
                   placeholder="Ex: André Lucas"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 focus:bg-white text-blue-900 placeholder:text-gray-400 font-bold text-sm sm:text-base transition-all"
-                />
-              </div>
-            </div>
-
-            {/* EMAIL */}
-            <div>
-              <label className="text-[10px] uppercase tracking-widest font-black text-blue-900 ml-1">
-                E-mail corporativo
-              </label>
-
-              <div className="relative mt-2">
-                <Mail
-                  size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                />
-
-                <input
-                  required
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      email: e.target.value,
-                    })
-                  }
-                  placeholder="gestor@empresa.com"
                   className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 focus:bg-white text-blue-900 placeholder:text-gray-400 font-bold text-sm sm:text-base transition-all"
                 />
               </div>

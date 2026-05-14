@@ -1,16 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/prisma.service";
 
 @Injectable()
 export class RankingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
   async computeSessionRanking(sessionId: string) {
-    const results = await this.prisma.roundResult.findMany({
-      where: { sessionId },
-    });
+    const results =
+      await this.prisma.roundResult.findMany({
+        where: { sessionId },
+      });
 
-    const storeScores = new Map<string, number>();
+    const storeScores = new Map<
+      string,
+      number
+    >();
 
     for (const r of results) {
       const score =
@@ -20,7 +26,8 @@ export class RankingService {
 
       storeScores.set(
         r.storeId,
-        (storeScores.get(r.storeId) ?? 0) + score,
+        (storeScores.get(r.storeId) ?? 0) +
+          score,
       );
     }
 
@@ -28,13 +35,17 @@ export class RankingService {
       (a, b) => b[1] - a[1],
     );
 
-    let position = 1;
     let lastScore: number | null = null;
-    let lastPosition = 1;
+    let position = 0;
+    let lastRank = 0;
+
+    const result = [];
 
     for (const [storeId, score] of sorted) {
-      if (lastScore !== null && score !== lastScore) {
-        lastPosition = position;
+      position++;
+
+      if (lastScore === null || score !== lastScore) {
+        lastRank = position;
       }
 
       await this.prisma.sessionResult.upsert({
@@ -53,22 +64,23 @@ export class RankingService {
           finalEbitda: 0,
           finalEbitdaMargin: 0,
           finalCash: 0,
-          position: lastPosition,
+          position: lastRank,
         },
         update: {
           finalScore: score,
-          position: lastPosition,
+          position: lastRank,
         },
       });
 
+      result.push({
+        storeId,
+        score,
+        position: lastRank,
+      });
+
       lastScore = score;
-      position++;
     }
 
-    return sorted.map(([storeId, score], index) => ({
-      storeId,
-      score,
-      position: index + 1,
-    }));
+    return result;
   }
 }

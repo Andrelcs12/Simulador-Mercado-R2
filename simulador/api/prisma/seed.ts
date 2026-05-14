@@ -40,7 +40,7 @@ async function main() {
   });
 
   // ===============================
-  // CATEGORIES (DADOS DO JOGO)
+  // CATEGORIES
   // ===============================
   await prisma.categoryMaster.createMany({
     data: [
@@ -76,7 +76,7 @@ async function main() {
   });
 
   // ===============================
-  // CAPEX (DINÂMICA DO JOGO)
+  // CAPEX
   // ===============================
   await prisma.capexMaster.createMany({
     data: [
@@ -138,16 +138,11 @@ async function main() {
   });
 
   // ===============================
-  // STORES (4 lojas do jogo)
+  // STORES
   // ===============================
-  const storeNames = [
-    "Loja Alpha",
-    "Loja Beta",
-    "Loja Gamma",
-    "Loja Delta",
-  ];
+  const storeNames = ["Loja Alpha", "Loja Beta", "Loja Gamma", "Loja Delta"];
 
-  const stores = [];
+  const stores: any[] = [];
 
   for (const name of storeNames) {
     const store = await prisma.store.create({
@@ -162,7 +157,7 @@ async function main() {
   }
 
   // ===============================
-  // PLAYERS (5 por loja = 20 total)
+  // PLAYERS (SEM EMAIL)
   // ===============================
   const roles = [
     "STORE_MANAGER",
@@ -177,7 +172,6 @@ async function main() {
       await prisma.player.create({
         data: {
           name: `${role}-${store.name}`,
-          email: `${role.toLowerCase()}-${store.name.toLowerCase().replace(/\s/g, "")}@game.com`,
           role,
           sessionId: session.id,
           storeId: store.id,

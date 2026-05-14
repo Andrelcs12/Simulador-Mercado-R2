@@ -1,58 +1,61 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/prisma.service';
-import { PlayerRole } from '@/generated/prisma/enums';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+
+import { PrismaService } from "@/prisma.service";
+import { PlayerRole } from "@/generated/prisma/enums";
 
 @Injectable()
 export class PlayerService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async registerPlayer(data: {
-  name: string;
-  email: string;
-  sessionCode: string;
-  role: PlayerRole;
-  storeName: string;
-}) {
-  const session = await this.prisma.gameSession.findUnique({
-    where: {
-      code: data.sessionCode,
-    },
-  });
+    name: string;
+    sessionCode: string;
+    role: PlayerRole;
+    storeName: string;
+  }) {
+    const session = await this.prisma.gameSession.findUnique({
+      where: { code: data.sessionCode },
+    });
 
-  if (!session) {
-    throw new Error("Sessão não encontrada");
+    if (!session) {
+      throw new NotFoundException("Sessão não encontrada");
+    }
+
+    if (session.status === "FINISHED") {
+      throw new BadRequestException("Sessão finalizada");
+    }
+
+    const existingPlayer = await this.prisma.player.findFirst({
+      where: {
+        name: data.name,
+        sessionId: session.id,
+      },
+      include: { store: true },
+    });
+
+    if (existingPlayer) return existingPlayer;
+
+    const store = await this.prisma.store.create({
+      data: {
+        name: data.storeName,
+        sessionId: session.id,
+      },
+    });
+
+    return this.prisma.player.create({
+      data: {
+        name: data.name,
+        role: data.role,
+        sessionId: session.id,
+        storeId: store.id,
+      },
+      include: { store: true },
+    });
   }
-
-  // cria loja
-  const store = await this.prisma.store.create({
-    data: {
-      name: data.storeName,
-      sessionId: session.id,
-    },
-  });
-
-  // cria player
-  return this.prisma.player.upsert({
-    where: {
-      email: data.email,
-    },
-
-    update: {
-      name: data.name,
-      role: data.role,
-      sessionId: session.id,
-      storeId: store.id,
-    },
-
-    create: {
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      sessionId: session.id,
-      storeId: store.id,
-    },
-  });
-}
 
   async getPlayerById(playerId: string) {
     const player = await this.prisma.player.findUnique({
@@ -60,7 +63,9 @@ export class PlayerService {
       include: { store: true },
     });
 
-    if (!player) throw new NotFoundException('Player não encontrado');
+    if (!player) {
+      throw new NotFoundException("Player não encontrado");
+    }
 
     return player;
   }
@@ -68,19 +73,24 @@ export class PlayerService {
   async getPlayersBySession(sessionId: string) {
     return this.prisma.player.findMany({
       where: { sessionId },
+      include: { store: true },
     });
   }
 
+  // 🔥 FIX PRINCIPAL: inclui store
   async getPlayersSnapshot(sessionId: string) {
     return this.prisma.player.findMany({
       where: { sessionId },
       select: {
         id: true,
         name: true,
-        email: true,
         role: true,
-        storeId: true,
         socketId: true,
+        store: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
   }
@@ -97,12 +107,14 @@ export class PlayerService {
       where: { id: playerId },
     });
 
-    if (!player) throw new NotFoundException('Player não encontrado');
+    if (!player) {
+      throw new NotFoundException("Player não encontrado");
+    }
 
     await this.prisma.player.delete({
       where: { id: playerId },
     });
 
-    return { playerId, kicked: true };
+    return { success: true, playerId };
   }
 }
