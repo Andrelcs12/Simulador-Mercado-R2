@@ -11,37 +11,42 @@ import {
 } from "lucide-react";
 
 interface Props {
-  results: any[];
+  results?: {
+    ebitda: number;
+    revenue: number;
+    expenses: number;
+    cash: number;
+    csat: number;
+    sla: number;
+  };
 }
 
 export default function KPISection({ results }: Props) {
-  const r = results?.[0];
-
   const kpis = [
     {
-      label: "Market Share",
-      value: `${r?.marketShare?.toFixed(2) ?? 0}%`,
-      icon: <Target />,
-      trend: "+0%",
-      up: true,
-    },
-    {
       label: "EBITDA",
-      value: `R$ ${(r?.ebitdaValue ?? 0).toLocaleString()}`,
+      value: `R$ ${(results?.ebitda ?? 0).toLocaleString()}`,
       icon: <TrendingUp />,
       trend: "+0%",
       up: true,
     },
     {
-      label: "Perdas",
-      value: `${r?.stockBreakLoss ?? 0}%`,
+      label: "Receita",
+      value: `R$ ${(results?.revenue ?? 0).toLocaleString()}`,
+      icon: <Target />,
+      trend: "+0%",
+      up: true,
+    },
+    {
+      label: "Despesas",
+      value: `R$ ${(results?.expenses ?? 0).toLocaleString()}`,
       icon: <AlertTriangle />,
       trend: "-0%",
       up: false,
     },
     {
       label: "CSAT",
-      value: r?.csat ?? 0,
+      value: results?.csat ?? 0,
       icon: <Smile />,
       trend: "Atual",
       up: true,
@@ -55,12 +60,20 @@ export default function KPISection({ results }: Props) {
           key={i}
           className="bg-white p-6 rounded-2xl border"
         >
-          <div className="flex justify-between mb-4">
-            {kpi.icon}
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[#002350]">
+              {kpi.icon}
+            </div>
+
             <span
-              className={kpi.up ? "text-green-500" : "text-red-500"}
+              className={`flex items-center gap-1 text-sm font-bold ${
+                kpi.up
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
             >
               {kpi.trend}
+
               {kpi.up ? (
                 <ArrowUpRight size={14} />
               ) : (
@@ -69,11 +82,11 @@ export default function KPISection({ results }: Props) {
             </span>
           </div>
 
-          <p className="text-[10px] uppercase text-gray-400">
+          <p className="text-[10px] uppercase text-gray-400 font-black">
             {kpi.label}
           </p>
 
-          <h3 className="text-2xl font-black text-[#002350]">
+          <h3 className="text-2xl font-black text-[#002350] mt-2">
             {kpi.value}
           </h3>
         </div>

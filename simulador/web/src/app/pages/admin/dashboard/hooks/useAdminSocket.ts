@@ -9,7 +9,21 @@ type JoinedPlayerEvent = {
   role: string;
   sessionId: string;
   storeName?: string;
+  store?: { name: string };
 };
+
+// Normaliza qualquer shape de player que o backend possa enviar:
+//   { storeName: "Loja X" }          → player:joined
+//   { store: { name: "Loja X" } }    → getPlayersSnapshot (Prisma select)
+function normalizePlayer(p: any): Player {
+  return {
+    id: p.id,
+    name: p.name,
+    storeName: p.storeName ?? p.store?.name ?? "Sem loja",
+    isReady: p.isReady ?? false,
+    submittedAt: p.submittedAt,
+  };
+}
 
 export const useAdminSocket = (API_URL: string) => {
   const socketRef = useRef<Socket | null>(null);
@@ -21,10 +35,10 @@ export const useAdminSocket = (API_URL: string) => {
   const [endTime, setEndTime] = useState<number | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
-  const syncPlayers = (data: Player[]) => {
+  const syncPlayers = useCallback((data: Player[]) => {
     playersRef.current = data;
-    setPlayers(data);
-  };
+    setPlayers([...data]);
+  }, []);
 
   const conectar = useCallback(
     (sessionId: string, onRoundFinished?: () => void) => {
@@ -37,10 +51,8 @@ export const useAdminSocket = (API_URL: string) => {
 
       socketRef.current = socket;
 
-      // CONNECT
       socket.on("connect", () => {
         setConnected(true);
-
         socket.emit("join_session", {
           sessionId,
           playerId: "ADMIN",
@@ -48,85 +60,69 @@ export const useAdminSocket = (API_URL: string) => {
         });
       });
 
-      socket.on("disconnect", () => {
-        setConnected(false);
+      socket.on("disconnect", () => setConnected(false));
+
+      // Lista completa — emitida pelo backend após join/kick
+      socket.on("session:players_updated", (data: any[]) => {
+        syncPlayers((data ?? []).map(normalizePlayer));
       });
 
-      // SNAPSHOT
-      socket.on("session:players_updated", (data: Player[]) => {
-        syncPlayers(data || []);
-      });
-
-      // PLAYER JOINED
+      // Novo jogador entrou
       socket.on("player:joined", (player: JoinedPlayerEvent) => {
-        const storeName = player.storeName ?? "Loja não definida";
-
-        toast(`🎮 ${storeName} entrou na sala`);
-
+        const normalized = normalizePlayer(player);
+        toast(`🎮 ${normalized.storeName} entrou`);
         const exists = playersRef.current.some((p) => p.id === player.id);
-
         if (!exists) {
-          const newPlayer: Player = {
-            id: player.id,
-            name: player.name,
-            storeName,
-          };
-
-          syncPlayers([...playersRef.current, newPlayer]);
+          syncPlayers([...playersRef.current, normalized]);
         }
       });
 
-      // SUBMIT
-      socket.on("player:submitted", ({ playerId }: { playerId: string }) => {
-        const now = new Date().toISOString();
-
-        const updated = playersRef.current.map((p) =>
-          p.id === playerId ? { ...p, submittedAt: now } : p
+      // CORRIGIDO: backend emite "player:ready_update", não "player:ready"
+      socket.on("player:ready_update", ({ playerId }: { playerId: string }) => {
+        syncPlayers(
+          playersRef.current.map((p) =>
+            p.id === playerId ? { ...p, isReady: true } : p
+          )
         );
-
-        syncPlayers(updated);
       });
 
-      // KICK
+      socket.on("player:submitted", ({ playerId }: { playerId: string }) => {
+        const now = new Date().toLocaleTimeString("pt-BR");
+        syncPlayers(
+          playersRef.current.map((p) =>
+            p.id === playerId ? { ...p, submittedAt: now } : p
+          )
+        );
+      });
+
       socket.on("player:kicked", ({ playerId }: { playerId: string }) => {
         syncPlayers(playersRef.current.filter((p) => p.id !== playerId));
       });
 
-      // ROUND START
       socket.on("round:started", (data: any) => {
         setGameStarted(true);
         setEndTime(data.endTime);
-
         setSession((prev) =>
           prev
-            ? {
-                ...prev,
-                currentRound: data.roundNumber,
-                status: "IN_PROGRESS",
-              }
+            ? { ...prev, currentRound: data.roundNumber, status: "IN_PROGRESS" }
             : prev
         );
-
         toast.success(`▶ Rodada ${data.roundNumber} iniciada`);
       });
 
-      // ROUND STOP
       socket.on("round:stopped", () => {
         setGameStarted(false);
         setEndTime(null);
-
         toast("🛑 Rodada encerrada");
       });
 
-      // ROUND FINISHED
       socket.on("round:finished", () => {
         setGameStarted(false);
         setEndTime(null);
-
         onRoundFinished?.();
       });
     },
-    [API_URL]
+    [API_URL, syncPlayers]
   );
 
   const emit = useCallback((event: string, data: object) => {
@@ -134,26 +130,19 @@ export const useAdminSocket = (API_URL: string) => {
   }, []);
 
   const disconnect = useCallback(() => {
+    socketRef.current?.removeAllListeners();
     socketRef.current?.disconnect();
     socketRef.current = null;
-
     playersRef.current = [];
     setPlayers([]);
-    setConnected(false);
-    setGameStarted(false);
-    setEndTime(null);
-    setSession(null);
   }, []);
 
   return {
-    socketRef,
     connected,
     players,
     setPlayers,
     gameStarted,
-    setGameStarted,
     endTime,
-    setEndTime,
     session,
     setSession,
     conectar,

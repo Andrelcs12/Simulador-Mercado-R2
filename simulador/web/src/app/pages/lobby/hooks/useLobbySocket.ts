@@ -30,16 +30,15 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
   const [roundLabel, setRoundLabel] = useState("Aguardando rodada");
   const [sessionCode, setSessionCode] = useState("");
   const [myPlayerData, setMyPlayerData] = useState<Player | null>(null);
-
   const [config, setConfig] = useState<GameConfig>({
     duration: 2700,
     round: 1,
     adminName: "Aguardando Mestre...",
   });
 
+  // ── Carga inicial + socket ────────────────────────────
   useEffect(() => {
     const savedData = localStorage.getItem("player_data");
-
     if (!savedData) {
       router.push("/pages/registro-do-usuario");
       return;
@@ -53,150 +52,114 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
     });
-
     socketRef.current = socket;
 
-    // =========================
-    // CONNECT
-    // =========================
+    // Entra no room após connect (e após cada reconexão)
     socket.on("connect", () => {
       setConnected(true);
-
       socket.emit("join_session", {
         sessionId: player.sessionId,
         playerId: player.id,
       });
     });
 
-    socket.on("disconnect", () => {
-      setConnected(false);
+    socket.on("disconnect", () => setConnected(false));
+
+    socket.on("simulation:config_update", (newConfig: GameConfig) => {
+      setConfig(newConfig);
+      if (newConfig.duration) setTempoRestante(newConfig.duration);
     });
 
-    // =========================
-    // JOIN ERRORS / INVALID STATE
-    // =========================
-    const forceExit = () => {
-      localStorage.removeItem("player_data");
-      router.push("/pages/registro-do-usuario");
-    };
-
-    socket.on("join:error", forceExit);
-
-    socket.on("session:finished", forceExit);
-
-    // =========================
-    // SESSION JOINED
-    // =========================
-    socket.on("session:joined", (data: any) => {
-      if (data?.success === false) {
-        forceExit();
-      }
+    // Normaliza shape do backend: { store: { name } } ou { storeName }
+    const normalize = (p: any): Player => ({
+      ...p,
+      storeName: p.storeName ?? p.store?.name ?? "Sem loja",
     });
 
-    // =========================
-    // PLAYERS UPDATE
-    // =========================
-    socket.on("session:players_updated", (list: Player[]) => {
-      setPlayers(list);
-
-      const me = list.find((p) => p.id === player.id);
-
-      if (!me) {
-        forceExit();
-        return;
-      }
-
-      if (me.isReady) setIsReady(true);
+    // Lista completa — fonte da verdade
+    socket.on("session:players_updated", (list: any[]) => {
+      const normalized = (list ?? []).map(normalize);
+      setPlayers(normalized);
+      const me = normalized.find((p) => p.id === player.id);
+      if (me?.isReady) setIsReady(true);
     });
 
-    socket.on("player:joined", (newPlayer: Player) => {
+    // Novo jogador entrou (Kahoot-style: atualiza lista sem F5)
+    socket.on("player:joined", (newPlayer: any) => {
+      const normalized = normalize(newPlayer);
       setPlayers((prev) =>
-        prev.some((p) => p.id === newPlayer.id)
-          ? prev
-          : [...prev, newPlayer]
+        prev.some((p) => p.id === normalized.id) ? prev : [...prev, normalized]
       );
     });
 
     socket.on("player:ready_update", (data: { playerId: string }) => {
       setPlayers((prev) =>
-        prev.map((p) =>
-          p.id === data.playerId ? { ...p, isReady: true } : p
-        )
+        prev.map((p) => (p.id === data.playerId ? { ...p, isReady: true } : p))
       );
     });
 
-    // =========================
-    // ROUND START
-    // =========================
+    socket.on("session:all_ready", () => setRoundLabel("Todos prontos"));
+
     socket.on("round:started", (data: any) => {
+      localStorage.setItem(
+        "round_data",
+        JSON.stringify({
+          roundId: data.roundId,
+          roundNumber: data.roundNumber,
+          duration: data.duration,
+          endTime: data.endTime,
+        })
+      );
       setEndTime(data.endTime);
       setTempoRestante(data.duration);
       setRoundLabel(`Rodada ${data.roundNumber}`);
       setIsGameStarted(true);
-
-      setTimeout(() => {
-        router.push("/pages/onboarding");
-      }, 2200);
+      setTimeout(() => router.push("/pages/onboarding"), 2200);
     });
 
-    // =========================
-    // HTTP INIT
-    // =========================
+    // Carga HTTP inicial
     fetch(`${API_URL}/minigame/session/${player.sessionId}`)
       .then((r) => r.json())
       .then((data) => {
-        if (!data || data.error) {
-          forceExit();
-          return;
+        if (data.players) {
+          const normalize = (p: any): Player => ({
+            ...p,
+            storeName: p.storeName ?? p.store?.name ?? "Sem loja",
+          });
+          setPlayers(data.players.map(normalize));
         }
-
-        if (data.players) setPlayers(data.players);
         if (data.code) setSessionCode(data.code);
-
-        if (data.adminName) {
-          setConfig((prev) => ({
-            ...prev,
-            adminName: data.adminName,
-          }));
-        }
-
-        if (data.currentRound) {
-          setRoundLabel(`Rodada ${data.currentRound}`);
-        }
-
-        const me = data.players?.find(
-          (p: Player) => p.id === player.id
-        );
-
-        if (!me) {
-          forceExit();
-          return;
-        }
-
-        if (me.isReady) setIsReady(true);
+        if (data.adminName)
+          setConfig((prev) => ({ ...prev, adminName: data.adminName }));
+        if (data.currentRound) setRoundLabel(`Rodada ${data.currentRound}`);
+        const me = data.players?.find((p: Player) => p.id === player.id);
+        if (me?.isReady) setIsReady(true);
       })
-      .catch(forceExit);
+      .catch(console.error);
 
-    // =========================
-    // CLEANUP CORRETO
-    // =========================
     return () => {
-      socket.removeAllListeners();
       socket.disconnect();
     };
   }, [API_URL, router]);
 
-  // =========================
-  // READY ACTION
-  // =========================
+  // ── Timer ─────────────────────────────────────────────
+  useEffect(() => {
+    if (!isGameStarted || !endTime) return;
+    const id = setInterval(() => {
+      const diff = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      setTempoRestante(diff);
+      if (diff <= 0) clearInterval(id);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isGameStarted, endTime]);
+
+  // ── Confirmar pronto ──────────────────────────────────
   const confirmarPronto = useCallback(() => {
     if (!myPlayerData || !socketRef.current) return;
-
     socketRef.current.emit("player:ready", {
       sessionId: myPlayerData.sessionId,
       playerId: myPlayerData.id,
     });
-
     setIsReady(true);
   }, [myPlayerData]);
 

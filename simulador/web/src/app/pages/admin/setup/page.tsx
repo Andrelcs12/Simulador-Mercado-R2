@@ -50,94 +50,150 @@ const SetupAdmin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#001f3f] flex items-center justify-center p-4 sm:p-6 font-sans relative overflow-hidden">
+  <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center px-4 py-8 overflow-hidden relative">
 
-      {/* background grid */}
-      <div
-        className="absolute inset-0 opacity-[0.06] pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(#ffffff 1px, transparent 1px)",
-          backgroundSize: "36px 36px",
-        }}
-      />
+    {/* BG EFFECT */}
+    <div
+      className="absolute inset-0 opacity-[0.04] pointer-events-none"
+      style={{
+        backgroundImage:
+          "radial-gradient(#0F172A 1px, transparent 1px)",
+        backgroundSize: "34px 34px",
+      }}
+    />
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="relative w-full max-w-md sm:max-w-xl bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl border-b-4 border-orange-500 p-6 sm:p-10"
-      >
-        {/* watermark */}
-        <div className="absolute top-4 right-4 opacity-[0.04] pointer-events-none">
-          <ShieldCheck size={140} className="text-[#001f3f]" />
+    {/* GRADIENT BLUR */}
+    <div className="absolute top-[-120px] left-[-120px] w-[280px] h-[280px] bg-orange-400/20 blur-3xl rounded-full" />
+    <div className="absolute bottom-[-120px] right-[-120px] w-[280px] h-[280px] bg-blue-900/10 blur-3xl rounded-full" />
+
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="relative w-full max-w-[520px]"
+    >
+      {/* HEADER */}
+      <div className="text-center mb-8">
+        <div className="w-20 h-20 rounded-[2rem] bg-blue-950 mx-auto flex items-center justify-center shadow-xl mb-6">
+          <ShieldCheck
+            className="text-orange-500"
+            size={36}
+          />
         </div>
 
-        {/* header */}
-        <div className="mb-8 sm:mb-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#001f3f] rounded-xl flex items-center justify-center">
-              <ShieldCheck className="text-orange-500" size={22} />
+        <div className="space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-black text-blue-950 tracking-tight leading-tight">
+            Painel{" "}
+            <span className="text-orange-500">
+              Mestre
+            </span>
+          </h1>
+
+          <p className="text-gray-500 text-sm sm:text-base font-medium max-w-md mx-auto leading-relaxed">
+            Configure e inicie a simulação operacional em tempo real.
+          </p>
+        </div>
+      </div>
+
+      {/* CARD */}
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_20px_60px_rgba(15,23,42,0.08)] overflow-hidden">
+
+        {/* TOP BAR */}
+        <div className="bg-gradient-to-r from-blue-950 to-blue-900 px-7 py-6 relative overflow-hidden">
+
+          <div className="absolute right-0 top-0 opacity-[0.05]">
+            <ShieldCheck size={160} className="text-white" />
+          </div>
+
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+              <ShieldCheck
+                className="text-orange-400"
+                size={28}
+              />
             </div>
 
             <div>
-              <h1 className="text-xl sm:text-3xl font-black text-[#001f3f] leading-tight">
-                Configuração{" "}
-                <span className="text-orange-500">Mestra</span>
-              </h1>
+              <p className="text-white font-black uppercase tracking-[0.25em] text-xs">
+                Controle Administrativo
+              </p>
 
-              <p className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-slate-400 font-bold mt-1">
-                Simulação Operacional Cencosud
+              <p className="text-blue-100 text-sm mt-1">
+                Ambiente de gerenciamento da rodada
               </p>
             </div>
           </div>
         </div>
 
-        {/* input */}
-        <div className="space-y-3 mb-8">
-          <label className="flex items-center gap-2 text-[11px] font-bold text-[#001f3f]/60 uppercase">
-            <UserCircle2 size={14} className="text-orange-500" />
-            Facilitador
-          </label>
+        {/* CONTENT */}
+        <div className="p-6 sm:p-8">
 
-          <input
-            value={adminName}
-            onChange={(e) => setAdminName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleCreateGame()}
-            placeholder="Ex: Consultor Cencosud / Operação Brasil"
-            className="w-full bg-slate-50 border border-slate-200 focus:border-orange-500 focus:bg-white transition-all rounded-2xl px-5 py-4 sm:py-5 text-[#001f3f] font-semibold outline-none placeholder:text-slate-400"
-          />
-        </div>
+          {/* INPUT */}
+          <div className="space-y-3">
+            <label className="ml-1 flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] font-black text-blue-950">
+              <UserCircle2
+                size={14}
+                className="text-orange-500"
+              />
 
-        {/* button */}
-        <button
-          onClick={handleCreateGame}
-          disabled={loading || !adminName.trim()}
-          className="w-full bg-[#001f3f] hover:bg-[#003366] transition-all text-white font-black rounded-2xl py-4 sm:py-5 flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <Loader2 className="animate-spin text-orange-500" size={22} />
-          ) : (
-            <>
-              <span className="uppercase tracking-wide text-sm sm:text-base">
+              Nome do facilitador
+            </label>
+
+            <div className="relative">
+              <input
+                value={adminName}
+                onChange={(e) =>
+                  setAdminName(e.target.value)
+                }
+                onKeyDown={(e) =>
+                  e.key === "Enter" &&
+                  handleCreateGame()
+                }
+                placeholder="Ex: Operação Brasil / Consultor Cencosud"
+                className="w-full h-[62px] bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 outline-none focus:border-orange-500 focus:bg-white transition-all text-blue-950 font-semibold placeholder:text-gray-400"
+              />
+            </div>
+
+            <p className="text-xs text-gray-400 pl-1 leading-relaxed">
+              Esse nome será utilizado como identificação do administrador da simulação.
+            </p>
+          </div>
+
+          {/* BUTTON */}
+          <button
+            onClick={handleCreateGame}
+            disabled={loading || !adminName.trim()}
+            className="w-full h-[62px] mt-7 rounded-2xl bg-blue-950 hover:bg-blue-900 transition-all text-white font-black text-sm sm:text-base flex items-center justify-center gap-3 shadow-lg hover:shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99]"
+          >
+            {loading ? (
+              <Loader2
+                className="animate-spin text-orange-400"
+                size={22}
+              />
+            ) : (
+              <>
                 Iniciar Simulação
-              </span>
-              <ChevronRight className="text-orange-500" size={18} />
-            </>
-          )}
-        </button>
+                <ChevronRight
+                  className="text-orange-400"
+                  size={20}
+                />
+              </>
+            )}
+          </button>
 
-        {/* footer */}
-        <div className="mt-8 pt-6 border-t border-slate-100 flex justify-center">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              Cencosud Simulation Engine
-            </span>
+          {/* STATUS */}
+          <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+
+            <p className="text-[10px] uppercase tracking-[0.30em] font-black text-gray-400">
+              Sistema operacional online
+            </p>
           </div>
         </div>
-      </motion.div>
-    </div>
-  );
+      </div>
+    </motion.div>
+  </div>
+);
 };
 
 export default SetupAdmin;

@@ -1,13 +1,25 @@
 export interface DashboardResponse {
-  session: {
-    id: string;
-    code: string;
-    status: string;
-    currentRound: number;
-    totalRounds: number;
-  };
+  sessionId: string;
 
-  results: any[];
+  roundNumber: number;
+
+  myStore: {
+    storeId: string;
+    name: string;
+
+    position: number | null;
+
+    marketShare: number;
+
+    kpis: {
+      ebitda: number;
+      revenue: number;
+      expenses: number;
+      cash: number;
+      csat: number;
+      sla: number;
+    };
+  } | null;
 
   ranking: {
     storeId: string;

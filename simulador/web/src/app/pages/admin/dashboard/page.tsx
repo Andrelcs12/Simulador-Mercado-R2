@@ -13,14 +13,21 @@ import { StatsCards } from "./components/StatsCard";
 import { RoundTimer } from "./components/RoundTimer";
 import { RoundConfigPanel } from "./components/RoundConfigPanel";
 import { PlayersTable } from "./components/PlayersTable";
-import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
-import AdminRoundRanking from "./components/RoundRankingBoard";
+import {
+  ModalEncerrarSessao,
+  ModalExpulsarJogador,
+} from "./components/Modals";
 
 import { Player } from "./types";
+import AdminRoundRanking from "./components/RoundRankingBoard";
 
 const AdminMestre = () => {
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+  const [adminName, setAdminName] = useState("Administrador");
 
   const {
     connected,
@@ -39,7 +46,6 @@ const AdminMestre = () => {
   const [showConfig, setShowConfig] = useState(true);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmKick, setConfirmKick] = useState<Player | null>(null);
-
   const [dashboard, setDashboard] = useState<any>(null);
 
   const connectedRef = useRef(false);
@@ -52,7 +58,12 @@ const AdminMestre = () => {
   });
 
   const submittedCount = useMemo(
-    () => players.filter((p) => p.submittedAt).length,
+    () => players.filter((p) => !!p.submittedAt).length,
+    [players]
+  );
+
+  const readyCount = useMemo(
+    () => players.filter((p: any) => p?.isReady === true).length,
     [players]
   );
 
@@ -61,7 +72,10 @@ const AdminMestre = () => {
 
   const progressPercent =
     endTime && totalDurationSeconds > 0
-      ? (timeLeft / (totalDurationSeconds * 1000)) * 100
+      ? Math.max(
+          0,
+          Math.min(100, (timeLeft / (totalDurationSeconds * 1000)) * 100)
+        )
       : 0;
 
   const ranking = dashboard?.ranking ?? [];
@@ -69,6 +83,9 @@ const AdminMestre = () => {
   // ================= LOAD =================
   useEffect(() => {
     const sessionId = localStorage.getItem("admin_session_id");
+    const admin = localStorage.getItem("admin_name");
+
+    if (admin) setAdminName(admin);
 
     if (!sessionId) {
       router.push("/pages/admin/dashboard/setup");
@@ -88,26 +105,13 @@ const AdminMestre = () => {
         setSession(sessionData);
         setPlayers(playersData || []);
 
-        // evita conexão duplicada
         if (!connectedRef.current) {
-          conectar(sessionData.id, () => {
-            // callback round finished (opcional)
-          });
+          conectar(sessionData.id);
           connectedRef.current = true;
         }
 
-        const roundId = sessionData.currentRoundId;
-
-        if (roundId) {
-          const resDash = await fetch(
-            `${API_URL}/dashboard/${sessionData.id}/${roundId}`
-          );
-          const dash = await resDash.json();
-          setDashboard(dash);
-        }
-
-        setConfig((c) => ({
-          ...c,
+        setConfig((prev) => ({
+          ...prev,
           roundNumber: (sessionData.currentRound ?? 0) + 1,
         }));
       } catch {
@@ -118,7 +122,7 @@ const AdminMestre = () => {
     };
 
     fetchAll();
-  }, [API_URL]);
+  }, [API_URL, conectar, router, setPlayers, setSession]);
 
   // ================= TIMER =================
   useEffect(() => {
@@ -129,25 +133,23 @@ const AdminMestre = () => {
       setTimeLeft(diff <= 0 ? 0 : diff);
     };
 
-    const id = setInterval(tick, 500);
-    return () => clearInterval(id);
+    tick();
+    const interval = setInterval(tick, 500);
+    return () => clearInterval(interval);
   }, [endTime, gameStarted]);
 
   // ================= ACTIONS =================
   const iniciarRodada = () => {
-    if (!session || totalDurationSeconds <= 0)
-      return toast.error("Duração inválida");
-
-    setPlayers((prev) =>
-      prev.map((p) => ({ ...p, submittedAt: undefined }))
-    );
-
     emit("admin:start_round", {
-      sessionId: session.id,
+      sessionId: session?.id,
       duration: totalDurationSeconds,
       round: config.roundNumber,
       interval: config.intervalMinutes * 60,
     });
+
+    setPlayers((prev) =>
+      prev.map((p) => ({ ...p, submittedAt: undefined }))
+    );
   };
 
   const pararRodada = () =>
@@ -164,8 +166,6 @@ const AdminMestre = () => {
 
     setPlayers((prev) => prev.filter((p) => p.id !== player.id));
     setConfirmKick(null);
-
-    toast(`🚫 ${player.storeName} removido`);
   };
 
   const encerrarSessao = () => {
@@ -182,9 +182,9 @@ const AdminMestre = () => {
     );
   }
 
-  // ================= RENDER =================
   return (
-    <div className="min-h-screen bg-[#080D17] text-white font-sans">
+    <div className="min-h-screen bg-[#080D17] text-white">
+
       <Toaster position="top-right" />
 
       <Header
@@ -193,53 +193,67 @@ const AdminMestre = () => {
         gameStarted={gameStarted}
         currentRoundNumber={config.roundNumber}
         playersCount={players.length}
+        adminName={adminName}
         onEncerrar={() => setConfirmFinish(true)}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-6 grid grid-cols-1 lg:grid-cols-3 gap-5">
+      {/* CONTAINER PRINCIPAL (SEM CARDS INTERNOS) */}
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <div className="lg:col-span-2 space-y-5">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
-          <StatsCards
-            session={session}
-            playersCount={players.length}
-            submittedCount={submittedCount}
-          />
+          {/* LEFT */}
+          <div className="xl:col-span-8 space-y-6">
 
-          <RoundTimer
-            gameStarted={gameStarted}
-            timeLeft={timeLeft}
-            progressPercent={progressPercent}
-            roundNumber={config.roundNumber}
-            playersCount={players.length}
-            submittedCount={submittedCount}
-          />
+            <StatsCards
+              session={session}
+              players={players}
+              playersCount={players.length}
+              submittedCount={submittedCount}
+            />
 
-          <RoundConfigPanel
-            config={config}
-            gameStarted={gameStarted}
-            showConfig={showConfig}
-            canGoNext={(session?.currentRound ?? 0) > 0}
-            onToggle={() => setShowConfig((v) => !v)}
-            onConfigChange={(patch) =>
-              setConfig((c) => ({ ...c, ...patch }))
-            }
-            onIniciar={iniciarRodada}
-            onParar={pararRodada}
-            onProxima={proximaRodada}
-          />
+            <RoundTimer
+              gameStarted={gameStarted}
+              timeLeft={timeLeft}
+              progressPercent={progressPercent}
+              roundNumber={config.roundNumber}
+              playersCount={players.length}
+              submittedCount={submittedCount}
+              readyCount={readyCount}
+            />
 
-          <AdminRoundRanking
-            ranking={ranking}
-            roundNumber={config.roundNumber}
-          />
+            <RoundConfigPanel
+              config={config}
+              gameStarted={gameStarted}
+              showConfig={showConfig}
+              canGoNext={(session?.currentRound ?? 0) > 0}
+              onToggle={() => setShowConfig((v) => !v)}
+              onConfigChange={(patch) =>
+                setConfig((prev) => ({ ...prev, ...patch }))
+              }
+              onIniciar={iniciarRodada}
+              onParar={pararRodada}
+              onProxima={proximaRodada}
+            />
+
+            <AdminRoundRanking
+              ranking={ranking}
+              roundNumber={config.roundNumber}
+            />
+          </div>
+
+          {/* RIGHT */}
+          <div className="xl:col-span-4">
+            <div className="sticky top-24">
+              <PlayersTable
+                players={players}
+                submittedCount={submittedCount}
+                onKick={setConfirmKick}
+              />
+            </div>
+          </div>
+
         </div>
-
-        <PlayersTable
-          players={players}
-          submittedCount={submittedCount}
-          onKick={setConfirmKick}
-        />
       </main>
 
       <ModalEncerrarSessao

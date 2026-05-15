@@ -1,55 +1,138 @@
-import { CircleDot, Trophy, Users, BarChart2 } from "lucide-react";
-import { Session } from "../types";
+"use client";
+
+import {
+  CircleDot,
+  Trophy,
+  Users,
+  Activity,
+  CheckCircle2,
+  ShieldCheck,
+} from "lucide-react";
+
+import { motion } from "framer-motion";
+import { Session, Player } from "../types";
 
 interface StatsCardsProps {
   session: Session | null;
+  players: Player[];
   playersCount: number;
   submittedCount: number;
 }
 
-export const StatsCards = ({ session, playersCount, submittedCount }: StatsCardsProps) => {
+export const StatsCards = ({
+  session,
+  players,
+  playersCount,
+  submittedCount,
+}: StatsCardsProps) => {
+  const readyCount = players.filter((p: any) => p?.isReady).length;
+
+  const progress =
+    playersCount > 0
+      ? Math.round((submittedCount / playersCount) * 100)
+      : 0;
+
   const stats = [
     {
-      icon: <CircleDot size={16} className="text-orange-400" />,
-      label: "Status",
+      label: "Sessão",
       value:
         session?.status === "IN_PROGRESS"
-          ? "Em Progresso"
+          ? "Ativa"
           : session?.status === "FINISHED"
           ? "Encerrada"
-          : "Aguardando",
+          : "Lobby",
+      icon: CircleDot,
+      sub: null,
     },
     {
-      icon: <Trophy size={16} className="text-yellow-400" />,
-      label: "Rodada Atual",
-      value: `${session?.currentRound ?? 0} / ${session?.totalRounds ?? "—"}`,
+      label: "Rodada",
+      value: session?.currentRound ?? 0,
+      sub: `de ${session?.totalRounds ?? 0}`,
+      icon: Trophy,
     },
     {
-      icon: <Users size={16} className="text-sky-400" />,
       label: "Jogadores",
       value: playersCount,
+      sub: "online",
+      icon: Users,
     },
     {
-      icon: <BarChart2 size={16} className="text-emerald-400" />,
-      label: "Enviaram",
-      value: `${submittedCount} / ${playersCount}`,
+      label: "Prontos",
+      value: readyCount,
+      sub: playersCount ? `${Math.round((readyCount / playersCount) * 100)}%` : "0%",
+      icon: ShieldCheck,
+    },
+    {
+      label: "Envios",
+      value: submittedCount,
+      sub: `${progress}%`,
+      icon: CheckCircle2,
+    },
+    {
+      label: "Progresso",
+      value: `${progress}%`,
+      sub: progress === 100 ? "concluído" : "em andamento",
+      icon: Activity,
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="bg-[#111827] border border-white/[0.06] rounded-2xl px-4 py-3 flex flex-col gap-2"
-        >
-          <div className="flex items-center gap-1.5 text-slate-500 text-xs font-black uppercase tracking-wider">
-            {stat.icon}
-            {stat.label}
-          </div>
-          <div className="text-xl font-black text-white">{stat.value}</div>
-        </div>
-      ))}
-    </div>
+    <section className="grid grid-cols-2 xl:grid-cols-3 gap-3">
+      {stats.map((stat, index) => {
+        const Icon = stat.icon;
+
+        return (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.03 }}
+            className="bg-[#111827] border border-white/5 rounded-2xl p-4"
+          >
+            {/* TOP */}
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black">
+                  {stat.label}
+                </div>
+
+                <div className="text-xl font-black text-white leading-none">
+                  {stat.value}
+                </div>
+
+                {stat.sub && (
+                  <div className="text-[11px] text-slate-500">
+                    {stat.sub}
+                  </div>
+                )}
+              </div>
+
+              <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center">
+                <Icon size={18} className="text-slate-300" />
+              </div>
+            </div>
+
+            {/* PROGRESS ONLY WHERE MEANINGFUL */}
+            {(stat.label === "Prontos" || stat.label === "Envios") && (
+              <div className="mt-3 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{
+                    width:
+                      stat.label === "Prontos"
+                        ? playersCount
+                          ? `${(readyCount / playersCount) * 100}%`
+                          : "0%"
+                        : `${progress}%`,
+                  }}
+                  transition={{ duration: 0.35 }}
+                  className="h-full bg-white/30 rounded-full"
+                />
+              </div>
+            )}
+          </motion.div>
+        );
+      })}
+    </section>
   );
 };

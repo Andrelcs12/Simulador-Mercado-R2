@@ -17,47 +17,65 @@ export default function DashboardPage() {
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const [data, setData] = useState<DashboardResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useRoundWatcher(API_URL);
 
-  const sessionId =
-    typeof window !== "undefined"
-      ? localStorage.getItem("session_id")
-      : null;
-
-  const roundId =
-    typeof window !== "undefined"
-      ? localStorage.getItem("round_id")
-      : null;
-
   useEffect(() => {
     async function load() {
-      if (!sessionId || !roundId) return;
+      try {
+        const sessionId = localStorage.getItem("session_id");
+        const roundId = localStorage.getItem("round_id");
 
-      const res = await fetch(
-        `${API_URL}/dashboard/${sessionId}/${roundId}`
-      );
-
-      const json = await res.json();
-      setData(json);
-
-      toast.success(
-        `Rodada ${json.session.currentRound} sincronizada`,
-        {
-          style: {
-            background: "#002350",
-            color: "#fff",
-            fontWeight: "bold",
-            borderRadius: "15px",
-          },
+        if (!sessionId || !roundId) {
+          setLoading(false);
+          return;
         }
-      );
+
+        const res = await fetch(
+          `${API_URL}/minigame/session/${sessionId}/dashboard/${roundId}`
+        );
+
+        if (!res.ok) {
+          throw new Error("Erro ao carregar dashboard");
+        }
+
+        const json = await res.json();
+
+        console.log("DASHBOARD:", json);
+
+        setData(json);
+
+        toast.success(
+          `Rodada ${json.roundNumber} sincronizada`,
+          {
+            style: {
+              background: "#002350",
+              color: "#fff",
+              fontWeight: "bold",
+              borderRadius: "15px",
+            },
+          }
+        );
+      } catch (error) {
+        console.error(error);
+
+        toast.error("Falha ao carregar dashboard");
+      } finally {
+        setLoading(false);
+      }
     }
 
     load();
-  }, [sessionId, roundId]);
+  }, [API_URL]);
 
-  if (!data) return <WaitingStatus />;
+  if (loading) {
+    return <WaitingStatus />;
+  }
+
+  if (!data) {
+    return <WaitingStatus />;
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -65,14 +83,17 @@ export default function DashboardPage() {
 
       <div className="p-6 md:p-10 max-w-[1600px] mx-auto space-y-10">
         <DashboardHeader
-          roundNumber={data.session.currentRound}
+          roundNumber={data.roundNumber}
         />
 
-        <KPISection results={data.results} />
+        <KPISection results={data.myStore?.kpis} />
 
         <div className="grid lg:grid-cols-3 gap-8">
           <RankingPanel ranking={data.ranking} />
-          <StrategyPanel configurations={data.configurations} />
+
+          <StrategyPanel
+            configurations={data.configurations || []}
+          />
         </div>
       </div>
     </div>

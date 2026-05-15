@@ -1,4 +1,13 @@
-import { Hash, Wifi, WifiOff, Timer, LogOut } from "lucide-react";
+import {
+  Hash,
+  Wifi,
+  WifiOff,
+  Timer,
+  LogOut,
+  Shield,
+  Copy,
+} from "lucide-react";
+
 import { Session } from "../types";
 
 interface HeaderProps {
@@ -7,6 +16,7 @@ interface HeaderProps {
   gameStarted: boolean;
   currentRoundNumber: number;
   playersCount: number;
+  adminName: string;
   onEncerrar: () => void;
 }
 
@@ -16,108 +26,136 @@ export const Header = ({
   gameStarted,
   currentRoundNumber,
   playersCount,
+  adminName,
   onEncerrar,
 }: HeaderProps) => {
+  const copyCode = () => {
+    if (session?.code) {
+      navigator.clipboard.writeText(session.code);
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.06] bg-[#080D17]/90 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full border-b border-white/[0.06] bg-[#080D17]/90 backdrop-blur-2xl">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
 
-        {/* ── LEFT ── */}
-        <div className="flex flex-col gap-3 w-full lg:w-auto">
+        {/* LEFT */}
+        <div className="flex flex-col gap-3 w-full">
 
-          {/* Título + Status */}
+          {/* TITLE + STATUS */}
           <div className="flex flex-wrap items-center gap-3">
             <div>
-              <h1 className="font-black italic uppercase tracking-tight text-xl md:text-2xl text-white leading-none">
+              <h1 className="font-black uppercase tracking-tight text-xl md:text-2xl text-white leading-none">
                 Central Mestre
               </h1>
-              <p className="text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-slate-500 font-black mt-1">
-                Painel de Controle da Simulação
+
+              <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500 font-black mt-1">
+                Painel operacional da simulação
               </p>
             </div>
 
             <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[11px] font-black uppercase tracking-wider ${
+              className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${
                 connected
                   ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
                   : "bg-red-500/10 border-red-500/20 text-red-400"
               }`}
             >
-              {connected ? (
-                <Wifi className="animate-pulse" size={13} />
-              ) : (
-                <WifiOff size={13} />
-              )}
-              {connected ? "Conectado" : "Desconectado"}
+              {connected ? <Wifi size={12} /> : <WifiOff size={12} />}
+              {connected ? "Online" : "Offline"}
             </div>
           </div>
 
-          {/* Código da Sala + Status da Sessão */}
-          <div className="flex flex-wrap items-center gap-3">
+          {/* ROOM CODE (HIGHLIGHTED) */}
+          <div className="flex items-stretch gap-3">
 
-            {/* Código */}
-            <div className="bg-orange-500 rounded-2xl px-5 py-3 shadow-xl border-b-4 border-orange-700">
-              <div className="flex items-center gap-2 mb-1">
-                <Hash size={14} className="text-orange-100" />
-                <span className="text-[10px] uppercase tracking-[0.25em] text-orange-100 font-black">
-                  Código da Sala
-                </span>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-orange-500/10 border border-orange-500/20">
+
+              <Hash size={14} className="text-orange-400" />
+
+              <div className="leading-tight">
+                <div className="text-[10px] uppercase tracking-[0.25em] text-orange-300 font-black">
+                  Código da sessão
+                </div>
+
+                <div className="text-2xl md:text-3xl font-black tracking-[0.35em] text-white">
+                  {session?.code || "----"}
+                </div>
               </div>
-              <div className="text-2xl md:text-3xl font-black tracking-[0.35em] text-white leading-none">
-                {session?.code || "----"}
-              </div>
+
             </div>
 
-            {/* Info da sessão */}
-            <div className="flex flex-col justify-center bg-white/[0.03] border border-white/[0.06] rounded-2xl px-4 py-3 min-h-[76px]">
-              <span className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-black mb-1">
-                Status da Sessão
+            <button
+              onClick={copyCode}
+              className="px-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition flex items-center gap-2"
+            >
+              <Copy size={14} className="text-slate-400" />
+              <span className="text-[10px] uppercase font-black text-slate-400">
+                copiar
               </span>
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-2.5 h-2.5 rounded-full ${
-                    gameStarted ? "bg-orange-500 animate-pulse" : "bg-emerald-400"
-                  }`}
-                />
-                <span className="font-black uppercase text-sm text-white">
-                  {gameStarted
-                    ? `Rodada ${currentRoundNumber} em andamento`
-                    : "Lobby — aguardando início"}
-                </span>
-              </div>
-              <span className="text-xs text-slate-500 mt-1">
-                {playersCount} participante(s) conectado(s)
+            </button>
+
+          </div>
+
+          {/* COMPACT INFO ROW */}
+          <div className="flex flex-wrap gap-2">
+
+            {/* STATUS RODADA */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  gameStarted ? "bg-orange-500 animate-pulse" : "bg-emerald-400"
+                }`}
+              />
+              <span className="text-[10px] uppercase text-slate-400 font-black">
+                {gameStarted ? `Rodada ${currentRoundNumber}` : "Lobby"}
               </span>
             </div>
+
+            {/* PLAYERS */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+              <span className="text-[10px] uppercase text-slate-400 font-black">
+                {playersCount} jogadores
+              </span>
+            </div>
+
+            {/* ADMIN */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+              <Shield size={12} className="text-orange-400" />
+              <span className="text-[10px] uppercase text-slate-400 font-black truncate max-w-[140px]">
+                {adminName}
+              </span>
+            </div>
+
           </div>
         </div>
 
-        {/* ── RIGHT ── */}
-        <div className="flex items-center gap-3 w-full lg:w-auto">
+        {/* RIGHT */}
+        <div className="flex items-center gap-3 w-full xl:w-auto">
 
-          {/* Rodada atual */}
-          <div className="hidden md:flex items-center gap-3 bg-[#121826] border border-white/[0.06] rounded-2xl px-5 py-3">
-            <div className="w-11 h-11 rounded-xl bg-orange-500/10 flex items-center justify-center">
-              <Timer className="text-orange-500" size={20} />
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-black">
-                Rodada Atual
+          {/* ROUND */}
+          <div className="hidden md:flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+            <Timer size={16} className="text-orange-400" />
+
+            <div className="leading-tight">
+              <div className="text-[10px] uppercase text-slate-500 font-black">
+                Rodada atual
               </div>
-              <div className="text-lg font-black text-white">
+              <div className="text-xl font-black text-white">
                 {currentRoundNumber}
               </div>
             </div>
           </div>
 
-          {/* Encerrar */}
+          {/* END BUTTON */}
           <button
             onClick={onEncerrar}
-            className="group flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 hover:border-red-500 px-4 md:px-5 py-3 rounded-2xl transition-all duration-200 font-black uppercase text-xs md:text-sm shadow-lg w-full lg:w-auto"
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-black uppercase text-[11px]"
           >
-            <LogOut size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-            <span>Encerrar Sessão</span>
+            <LogOut size={14} />
+            Encerrar sessão
           </button>
+
         </div>
       </div>
     </header>
