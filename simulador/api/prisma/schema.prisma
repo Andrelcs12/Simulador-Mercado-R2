@@ -356,12 +356,15 @@ model RoundResult {
   csat Float
   sla  Float
 
+  averagePrice Float @default(0)
+
+  availabilityRate Float @default(0)
+
   createdAt DateTime @default(now())
 
   @@unique([storeId, roundId])
   @@index([sessionId, roundId])
 }
-
 
 // ===============================
 // SESSION RESULT

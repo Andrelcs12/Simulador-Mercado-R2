@@ -1,87 +1,234 @@
 import { Injectable } from "@nestjs/common";
+
 import { PrismaService } from "@/prisma.service";
 
 @Injectable()
 export class RankingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async computeRoundRanking(sessionId: string, roundId: string) {
-    const results = await this.prisma.roundResult.findMany({
-      where: { sessionId, roundId },
-    });
+  async computeRoundRanking(
+    sessionId: string,
+    roundId: string,
+  ) {
+    const results =
+      await this.prisma.roundResult.findMany({
+        where: {
+          sessionId,
+          roundId,
+        },
+      });
 
-    const map = new Map<string, number>();
-
-    // SCORE BASE (conforme tua simulação real)
-    for (const r of results) {
-      const score =
-        (r.ebitdaValue ?? 0) * 0.5 +
-        (r.finalCash ?? 0) * 0.2 +
-        (r.csat ?? 0) * 1000 +
-        (r.sla ?? 0) * 800 -
-        (r.agingCosts ?? 0) * 0.3;
-
-      map.set(r.storeId, (map.get(r.storeId) ?? 0) + score);
+    if (!results.length) {
+      return [];
     }
 
-    const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
+    // =========================
+    // HELPER
+    // =========================
 
-    const totalWeight = sorted.reduce((acc, [, v]) => acc + v, 0) || 1;
+    const buildRankMap = (
+      values: {
+        storeId: string;
+        value: number;
+      }[],
+      higherIsBetter = true,
+    ) => {
+      const sorted = [...values].sort((a, b) =>
+        higherIsBetter
+          ? b.value - a.value
+          : a.value - b.value,
+      );
 
-    let position = 0;
-    let lastScore: number | null = null;
-    let rank = 0;
+      const map = new Map<string, number>();
 
-    const output: any[] = [];
+      sorted.forEach((item, index) => {
+        map.set(item.storeId, 4 - index);
+      });
 
-    for (const [storeId, score] of sorted) {
-      position++;
+      return map;
+    };
 
-      if (lastScore === null || score !== lastScore) {
-        rank = position;
-      }
+    // =========================
+    // PRICE SCORE
+    // MENOR PREÇO = MELHOR
+    // =========================
 
-      const marketShare = score / totalWeight;
+    const priceScores =
+      buildRankMap(
+        results.map((r) => ({
+          storeId: r.storeId,
+          value: r.averagePrice || 0,
+        })),
+        false,
+      );
+
+    // =========================
+    // AVAILABILITY SCORE
+    // MAIOR = MELHOR
+    // =========================
+
+    const availabilityScores =
+      buildRankMap(
+        results.map((r) => ({
+          storeId: r.storeId,
+          value:
+            r.availabilityRate || 0,
+        })),
+        true,
+      );
+
+    // =========================
+    // CSAT SCORE
+    // MAIOR = MELHOR
+    // =========================
+
+    const csatScores =
+      buildRankMap(
+        results.map((r) => ({
+          storeId: r.storeId,
+          value: r.csat || 0,
+        })),
+        true,
+      );
+
+    // =========================
+    // FINAL SCORES
+    // =========================
+
+    const finalScores = results.map((r) => {
+      const priceScore =
+        priceScores.get(r.storeId) || 1;
+
+      const availabilityScore =
+        availabilityScores.get(
+          r.storeId,
+        ) || 1;
+
+      const csatScore =
+        csatScores.get(r.storeId) || 1;
+
+      const finalScore =
+        priceScore +
+        availabilityScore +
+        csatScore;
+
+      return {
+        storeId: r.storeId,
+
+        priceScore,
+        availabilityScore,
+        csatScore,
+
+        finalScore,
+      };
+    });
+
+    // =========================
+    // SORT FINAL
+    // =========================
+
+    const sorted = [...finalScores].sort(
+      (a, b) =>
+        b.finalScore - a.finalScore,
+    );
+
+    // =========================
+    // MARKET SHARE
+    // =========================
+
+    const totalScore =
+      sorted.reduce(
+        (acc, item) =>
+          acc + item.finalScore,
+        0,
+      ) || 1;
+
+    const output = [];
+
+    for (
+      let i = 0;
+      i < sorted.length;
+      i++
+    ) {
+      const item = sorted[i];
+
+      const marketShare =
+        item.finalScore / totalScore;
 
       await this.prisma.roundRanking.upsert({
         where: {
           sessionId_roundId_storeId: {
             sessionId,
             roundId,
-            storeId,
+            storeId: item.storeId,
           },
         },
+
         create: {
           sessionId,
           roundId,
-          storeId,
 
-          roundNumber: 0, // opcional (pode preencher depois se quiser)
+          storeId: item.storeId,
 
-          priceScore: 0,
-          availabilityScore: 0,
-          csatScore: 0,
-
-          finalScore: score,
-          position: rank,
+          roundNumber: 0,
 
           marketShare,
+
+          priceScore:
+            item.priceScore,
+
+          availabilityScore:
+            item.availabilityScore,
+
+          csatScore:
+            item.csatScore,
+
+          finalScore:
+            item.finalScore,
+
+          position: i + 1,
         },
+
         update: {
-          finalScore: score,
-          position: rank,
           marketShare,
+
+          priceScore:
+            item.priceScore,
+
+          availabilityScore:
+            item.availabilityScore,
+
+          csatScore:
+            item.csatScore,
+
+          finalScore:
+            item.finalScore,
+
+          position: i + 1,
         },
       });
 
       output.push({
-        storeId,
-        score,
-        rank,
-        marketShare,
-      });
+        storeId: item.storeId,
 
-      lastScore = score;
+        position: i + 1,
+
+        marketShare,
+
+        priceScore:
+          item.priceScore,
+
+        availabilityScore:
+          item.availabilityScore,
+
+        csatScore:
+          item.csatScore,
+
+        finalScore:
+          item.finalScore,
+      });
     }
 
     return output;

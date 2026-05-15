@@ -45,6 +45,8 @@ export type RoundResultAvgAggregateOutputType = {
   stockBreakLoss: number | null
   csat: number | null
   sla: number | null
+  averagePrice: number | null
+  availabilityRate: number | null
 }
 
 export type RoundResultSumAggregateOutputType = {
@@ -66,6 +68,8 @@ export type RoundResultSumAggregateOutputType = {
   stockBreakLoss: number | null
   csat: number | null
   sla: number | null
+  averagePrice: number | null
+  availabilityRate: number | null
 }
 
 export type RoundResultMinAggregateOutputType = {
@@ -91,6 +95,8 @@ export type RoundResultMinAggregateOutputType = {
   stockBreakLoss: number | null
   csat: number | null
   sla: number | null
+  averagePrice: number | null
+  availabilityRate: number | null
   createdAt: Date | null
 }
 
@@ -117,6 +123,8 @@ export type RoundResultMaxAggregateOutputType = {
   stockBreakLoss: number | null
   csat: number | null
   sla: number | null
+  averagePrice: number | null
+  availabilityRate: number | null
   createdAt: Date | null
 }
 
@@ -143,6 +151,8 @@ export type RoundResultCountAggregateOutputType = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice: number
+  availabilityRate: number
   createdAt: number
   _all: number
 }
@@ -167,6 +177,8 @@ export type RoundResultAvgAggregateInputType = {
   stockBreakLoss?: true
   csat?: true
   sla?: true
+  averagePrice?: true
+  availabilityRate?: true
 }
 
 export type RoundResultSumAggregateInputType = {
@@ -188,6 +200,8 @@ export type RoundResultSumAggregateInputType = {
   stockBreakLoss?: true
   csat?: true
   sla?: true
+  averagePrice?: true
+  availabilityRate?: true
 }
 
 export type RoundResultMinAggregateInputType = {
@@ -213,6 +227,8 @@ export type RoundResultMinAggregateInputType = {
   stockBreakLoss?: true
   csat?: true
   sla?: true
+  averagePrice?: true
+  availabilityRate?: true
   createdAt?: true
 }
 
@@ -239,6 +255,8 @@ export type RoundResultMaxAggregateInputType = {
   stockBreakLoss?: true
   csat?: true
   sla?: true
+  averagePrice?: true
+  availabilityRate?: true
   createdAt?: true
 }
 
@@ -265,6 +283,8 @@ export type RoundResultCountAggregateInputType = {
   stockBreakLoss?: true
   csat?: true
   sla?: true
+  averagePrice?: true
+  availabilityRate?: true
   createdAt?: true
   _all?: true
 }
@@ -378,6 +398,8 @@ export type RoundResultGroupByOutputType = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice: number
+  availabilityRate: number
   createdAt: Date
   _count: RoundResultCountAggregateOutputType | null
   _avg: RoundResultAvgAggregateOutputType | null
@@ -427,6 +449,8 @@ export type RoundResultWhereInput = {
   stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
   csat?: Prisma.FloatFilter<"RoundResult"> | number
   sla?: Prisma.FloatFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeFilter<"RoundResult"> | Date | string
   store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
   session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
@@ -456,6 +480,8 @@ export type RoundResultOrderByWithRelationInput = {
   stockBreakLoss?: Prisma.SortOrder
   csat?: Prisma.SortOrder
   sla?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   store?: Prisma.StoreOrderByWithRelationInput
   session?: Prisma.GameSessionOrderByWithRelationInput
@@ -489,6 +515,8 @@ export type RoundResultWhereUniqueInput = Prisma.AtLeast<{
   stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
   csat?: Prisma.FloatFilter<"RoundResult"> | number
   sla?: Prisma.FloatFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeFilter<"RoundResult"> | Date | string
   store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
   session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
@@ -518,6 +546,8 @@ export type RoundResultOrderByWithAggregationInput = {
   stockBreakLoss?: Prisma.SortOrder
   csat?: Prisma.SortOrder
   sla?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.RoundResultCountOrderByAggregateInput
   _avg?: Prisma.RoundResultAvgOrderByAggregateInput
@@ -552,6 +582,8 @@ export type RoundResultScalarWhereWithAggregatesInput = {
   stockBreakLoss?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   csat?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   sla?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RoundResult"> | Date | string
 }
 
@@ -575,6 +607,8 @@ export type RoundResultCreateInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
   store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
   session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
@@ -604,6 +638,8 @@ export type RoundResultUncheckedCreateInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -627,6 +663,8 @@ export type RoundResultUpdateInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
   session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
@@ -656,6 +694,8 @@ export type RoundResultUncheckedUpdateInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -682,6 +722,8 @@ export type RoundResultCreateManyInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -705,6 +747,8 @@ export type RoundResultUpdateManyMutationInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -731,6 +775,8 @@ export type RoundResultUncheckedUpdateManyInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -772,6 +818,8 @@ export type RoundResultCountOrderByAggregateInput = {
   stockBreakLoss?: Prisma.SortOrder
   csat?: Prisma.SortOrder
   sla?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -794,6 +842,8 @@ export type RoundResultAvgOrderByAggregateInput = {
   stockBreakLoss?: Prisma.SortOrder
   csat?: Prisma.SortOrder
   sla?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
 }
 
 export type RoundResultMaxOrderByAggregateInput = {
@@ -819,6 +869,8 @@ export type RoundResultMaxOrderByAggregateInput = {
   stockBreakLoss?: Prisma.SortOrder
   csat?: Prisma.SortOrder
   sla?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -845,6 +897,8 @@ export type RoundResultMinOrderByAggregateInput = {
   stockBreakLoss?: Prisma.SortOrder
   csat?: Prisma.SortOrder
   sla?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -867,6 +921,8 @@ export type RoundResultSumOrderByAggregateInput = {
   stockBreakLoss?: Prisma.SortOrder
   csat?: Prisma.SortOrder
   sla?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
 }
 
 export type RoundResultCreateNestedManyWithoutSessionInput = {
@@ -1015,6 +1071,8 @@ export type RoundResultCreateWithoutSessionInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
   store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
   round: Prisma.GameRoundCreateNestedOneWithoutResultsInput
@@ -1042,6 +1100,8 @@ export type RoundResultUncheckedCreateWithoutSessionInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -1097,6 +1157,8 @@ export type RoundResultScalarWhereInput = {
   stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
   csat?: Prisma.FloatFilter<"RoundResult"> | number
   sla?: Prisma.FloatFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeFilter<"RoundResult"> | Date | string
 }
 
@@ -1120,6 +1182,8 @@ export type RoundResultCreateWithoutRoundInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
   store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
   session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
@@ -1147,6 +1211,8 @@ export type RoundResultUncheckedCreateWithoutRoundInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -1196,6 +1262,8 @@ export type RoundResultCreateWithoutStoreInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
   session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
   round: Prisma.GameRoundCreateNestedOneWithoutResultsInput
@@ -1223,6 +1291,8 @@ export type RoundResultUncheckedCreateWithoutStoreInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -1274,6 +1344,8 @@ export type RoundResultCreateManySessionInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -1297,6 +1369,8 @@ export type RoundResultUpdateWithoutSessionInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
   round?: Prisma.GameRoundUpdateOneRequiredWithoutResultsNestedInput
@@ -1324,6 +1398,8 @@ export type RoundResultUncheckedUpdateWithoutSessionInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1349,6 +1425,8 @@ export type RoundResultUncheckedUpdateManyWithoutSessionInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1374,6 +1452,8 @@ export type RoundResultCreateManyRoundInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -1397,6 +1477,8 @@ export type RoundResultUpdateWithoutRoundInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
   session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
@@ -1424,6 +1506,8 @@ export type RoundResultUncheckedUpdateWithoutRoundInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1449,6 +1533,8 @@ export type RoundResultUncheckedUpdateManyWithoutRoundInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1474,6 +1560,8 @@ export type RoundResultCreateManyStoreInput = {
   stockBreakLoss: number
   csat: number
   sla: number
+  averagePrice?: number
+  availabilityRate?: number
   createdAt?: Date | string
 }
 
@@ -1497,6 +1585,8 @@ export type RoundResultUpdateWithoutStoreInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
   round?: Prisma.GameRoundUpdateOneRequiredWithoutResultsNestedInput
@@ -1524,6 +1614,8 @@ export type RoundResultUncheckedUpdateWithoutStoreInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1549,6 +1641,8 @@ export type RoundResultUncheckedUpdateManyWithoutStoreInput = {
   stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
   csat?: Prisma.FloatFieldUpdateOperationsInput | number
   sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1577,6 +1671,8 @@ export type RoundResultSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   stockBreakLoss?: boolean
   csat?: boolean
   sla?: boolean
+  averagePrice?: boolean
+  availabilityRate?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
   session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
@@ -1606,6 +1702,8 @@ export type RoundResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   stockBreakLoss?: boolean
   csat?: boolean
   sla?: boolean
+  averagePrice?: boolean
+  availabilityRate?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
   session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
@@ -1635,6 +1733,8 @@ export type RoundResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   stockBreakLoss?: boolean
   csat?: boolean
   sla?: boolean
+  averagePrice?: boolean
+  availabilityRate?: boolean
   createdAt?: boolean
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
   session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
@@ -1664,10 +1764,12 @@ export type RoundResultSelectScalar = {
   stockBreakLoss?: boolean
   csat?: boolean
   sla?: boolean
+  averagePrice?: boolean
+  availabilityRate?: boolean
   createdAt?: boolean
 }
 
-export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "roundId" | "storeId" | "marketShare" | "customersReceived" | "totalRevenue" | "totalTaxes" | "totalCMV" | "operatingCosts" | "capexCosts" | "licensingCosts" | "agingCosts" | "interestCosts" | "totalExpenses" | "ebitdaValue" | "ebitdaMargin" | "finalCash" | "remainingStockValue" | "stockBreakLoss" | "csat" | "sla" | "createdAt", ExtArgs["result"]["roundResult"]>
+export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "roundId" | "storeId" | "marketShare" | "customersReceived" | "totalRevenue" | "totalTaxes" | "totalCMV" | "operatingCosts" | "capexCosts" | "licensingCosts" | "agingCosts" | "interestCosts" | "totalExpenses" | "ebitdaValue" | "ebitdaMargin" | "finalCash" | "remainingStockValue" | "stockBreakLoss" | "csat" | "sla" | "averagePrice" | "availabilityRate" | "createdAt", ExtArgs["result"]["roundResult"]>
 export type RoundResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
   session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
@@ -1714,6 +1816,8 @@ export type $RoundResultPayload<ExtArgs extends runtime.Types.Extensions.Interna
     stockBreakLoss: number
     csat: number
     sla: number
+    averagePrice: number
+    availabilityRate: number
     createdAt: Date
   }, ExtArgs["result"]["roundResult"]>
   composites: {}
@@ -2163,6 +2267,8 @@ export interface RoundResultFieldRefs {
   readonly stockBreakLoss: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly csat: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly sla: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly averagePrice: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly availabilityRate: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly createdAt: Prisma.FieldRef<"RoundResult", 'DateTime'>
 }
     

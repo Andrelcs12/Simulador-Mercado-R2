@@ -189,4 +189,10 @@ export class MinigameService {
       roundId,
     );
   }
+
+  finalizeSession(sessionId: string) {
+  return this.simulationService.finalizeSession(sessionId);
+}
+
+
 }

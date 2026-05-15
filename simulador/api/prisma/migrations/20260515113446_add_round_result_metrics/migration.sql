@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "RoundResult" ADD COLUMN     "availabilityRate" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN     "averagePrice" DOUBLE PRECISION NOT NULL DEFAULT 0;

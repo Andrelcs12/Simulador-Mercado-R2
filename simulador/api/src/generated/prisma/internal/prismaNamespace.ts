@@ -1506,6 +1506,8 @@ export const RoundResultScalarFieldEnum = {
   stockBreakLoss: 'stockBreakLoss',
   csat: 'csat',
   sla: 'sla',
+  averagePrice: 'averagePrice',
+  availabilityRate: 'availabilityRate',
   createdAt: 'createdAt'
 } as const
 

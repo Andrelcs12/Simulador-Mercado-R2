@@ -23,6 +23,13 @@ export class MinigameController {
     return this.service.startRound(id, body.duration);
   }
 
+  @Post("session/:id/finalize")
+finalizeSession(@Param("id") sessionId: string) {
+  return this.service.finalizeSession(sessionId);
+}
+
+  
+
   @Post('session/:id/next')
   next(@Param('id') id: string) {
     return this.service.startNextRound(id);
@@ -56,4 +63,7 @@ getDashboard(
   finishRound(@Param('id') id: string) {
     return this.service.finishRound(id, 'MANUAL');
   }
+
+  
+  
 }
