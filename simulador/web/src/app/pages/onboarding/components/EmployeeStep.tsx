@@ -2,33 +2,33 @@
 
 import React from "react";
 import { Info } from "lucide-react";
-
-interface AppConfig {
-  operadores: number;
-  quizScore?: number;
-}
+import { AppConfig } from "../types/onboarding";
 
 interface Props {
   config: AppConfig;
-  setConfig: React.Dispatch<React.SetStateAction<any>>;
+  setConfig: React.Dispatch<React.SetStateAction<AppConfig>>;
 }
 
 const EmployeeStep = ({ config, setConfig }: Props) => {
-  const operadores = config?.operadores ?? 0;
-  const quiz = config?.quizScore ?? 100;
+  const operadores = config.operadores ?? 0;
 
-  // COMPONENTES DO CSAT (conforme regra do jogo)
-  const csatOperadores = (operadores / 10) * 100; // %
-  const csatQuiz = quiz; // já está em %
+  // CSAT baseado apenas em operadores (conforme seu backend atual)
+  const csatOperadores = (operadores / 10) * 100;
 
-  const csatFinal = (csatOperadores / 100) * (csatQuiz / 100) * 100;
+  const csatFinal = csatOperadores;
 
   const sla =
-    operadores >= 10 ? 1 :
-    operadores >= 8 ? 2 :
-    operadores >= 6 ? 3 :
-    operadores >= 4 ? 4 :
-    operadores >= 2 ? 5 : 6;
+    operadores >= 10
+      ? 1
+      : operadores >= 8
+      ? 2
+      : operadores >= 6
+      ? 3
+      : operadores >= 4
+      ? 4
+      : operadores >= 2
+      ? 5
+      : 6;
 
   return (
     <div className="space-y-8">
@@ -42,7 +42,9 @@ const EmployeeStep = ({ config, setConfig }: Props) => {
         </div>
 
         <div className="bg-white border rounded-2xl px-6 py-4">
-          <p className="text-[10px] font-black text-gray-400 uppercase">CSAT Final</p>
+          <p className="text-[10px] font-black text-gray-400 uppercase">
+            CSAT Final
+          </p>
           <p className="text-2xl font-black text-cencosud-blue">
             {csatFinal.toFixed(0)}%
           </p>
@@ -50,44 +52,52 @@ const EmployeeStep = ({ config, setConfig }: Props) => {
       </div>
 
       {/* SLIDER */}
-      <input
-        type="range"
-        min={0}
-        max={10}
-        value={operadores}
-        onChange={(e) =>
-          setConfig((prev: any) => ({
-            ...prev,
-            operadores: Number(e.target.value),
-          }))
-        }
-        className="w-full accent-cencosud-orange"
-      />
+      <div className="space-y-2">
+        <label className="text-sm font-bold text-gray-600">
+          Número de operadores (impacta CSAT e SLA)
+        </label>
 
-      {/* BREAKDOWN CSAT (IMPORTANTE) */}
-      <div className="grid md:grid-cols-3 gap-4">
+        <input
+          type="range"
+          min={0}
+          max={10}
+          value={operadores}
+          onChange={(e) =>
+            setConfig((prev) => ({
+              ...prev,
+              operadores: Number(e.target.value),
+            }))
+          }
+          className="w-full accent-cencosud-orange"
+        />
+      </div>
+
+      {/* BREAKDOWN */}
+      <div className="grid md:grid-cols-2 gap-4">
 
         <div className="bg-white border rounded-2xl p-4">
-          <p className="text-[10px] font-black text-gray-400 uppercase">Operadores</p>
+          <p className="text-[10px] font-black text-gray-400 uppercase">
+            Eficiência Operacional
+          </p>
           <p className="text-xl font-black text-cencosud-blue">
             {csatOperadores.toFixed(0)}%
           </p>
-        </div>
-
-        <div className="bg-white border rounded-2xl p-4">
-          <p className="text-[10px] font-black text-gray-400 uppercase">Quiz</p>
-          <p className="text-xl font-black text-cencosud-orange">
-            {csatQuiz.toFixed(0)}%
+          <p className="text-xs text-gray-500 mt-1">
+            Baseado na quantidade de operadores disponíveis
           </p>
         </div>
 
         <div className="bg-white border rounded-2xl p-4">
-          <p className="text-[10px] font-black text-gray-400 uppercase">CSAT Final</p>
-          <p className="text-xl font-black text-cencosud-blue">
+          <p className="text-[10px] font-black text-gray-400 uppercase">
+            CSAT Final
+          </p>
+          <p className="text-xl font-black text-cencosud-orange">
             {csatFinal.toFixed(0)}%
           </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Impacto direto na experiência do cliente
+          </p>
         </div>
-
       </div>
 
       {/* SLA */}

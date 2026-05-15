@@ -3,13 +3,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  PieChart,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  DollarSign,
-  Zap,
-  FileText,
   ShieldAlert,
   HardDrive,
   Monitor,
@@ -19,9 +12,9 @@ import {
   ShoppingBasket,
   Package,
   Droplets,
-  Users,
-  XCircle,
+  CheckCircle2,
   ClipboardList,
+  AlertTriangle,
   Computer,
 } from "lucide-react";
 
@@ -38,61 +31,37 @@ interface AppConfig {
     eletro: CategoriaConfig;
     hipel: CategoriaConfig;
   };
-  operadores?: number;
+  operadores: number;
 }
 
 interface SummaryProps {
   config: AppConfig;
 }
 
-const capexMeta: Record<
-  string,
-  { label: string; Icon: any; value: number }
-> = {
-  seguranca: { label: "Segurança", Icon: ShieldAlert, value: 50000 },
-  equipamentos: { label: "Equipamentos", Icon: Wrench, value: 75000 },
-  redes: { label: "Redes", Icon: HardDrive, value: 80000 },
-  site: { label: "Site", Icon: Monitor, value: 65000 },
-  "self-checkout": { label: "Self Checkout", Icon: ReceiptText, value: 80000 },
-  melhorias: { label: "Melhoria Contínua", Icon: RefreshCw, value: 45000 },
-};
+const capexMeta: Record<string, { label: string; Icon: any; value: number }> =
+  {
+    seguranca: { label: "Segurança", Icon: ShieldAlert, value: 50000 },
+    equipamentos: { label: "Equipamentos", Icon: Wrench, value: 75000 },
+    redes: { label: "Redes", Icon: HardDrive, value: 80000 },
+    site: { label: "Site", Icon: Monitor, value: 65000 },
+    "self-checkout": {
+      label: "Self Checkout",
+      Icon: ReceiptText,
+      value: 80000,
+    },
+    melhorias: { label: "Melhoria Contínua", Icon: RefreshCw, value: 45000 },
+  };
 
 const categoriaMeta = [
-  {
-    id: "pereciveis",
-    label: "Perecíveis",
-    Icon: ShoppingBasket,
-    custoUn: 15.5,
-    cor: "text-red-500",
-    bg: "bg-red-50",
-  },
-  {
-    id: "mercearia",
-    label: "Mercearia",
-    Icon: Package,
-    custoUn: 8.9,
-    cor: "text-blue-500",
-    bg: "bg-blue-50",
-  },
-  {
-    id: "eletro",
-    label: "Eletrônicos",
-    Icon: Computer,
-    custoUn: 12.4,
-    cor: "text-green-500",
-    bg: "bg-green-50",
-  },
-  {
-    id: "hipel",
-    label: "Higiene e Limpeza",
-    Icon: Droplets,
-    custoUn: 6.2,
-    cor: "text-orange-500",
-    bg: "bg-orange-50",
-  },
+  { id: "pereciveis", label: "Perecíveis", Icon: ShoppingBasket, custoUn: 15.5 },
+  { id: "mercearia", label: "Mercearia", Icon: Package, custoUn: 8.9 },
+  { id: "eletro", label: "Eletrônicos", Icon: Computer, custoUn: 12.4 },
+  { id: "hipel", label: "Higiene e Limpeza", Icon: Droplets, custoUn: 6.2 },
 ] as const;
 
 const SummaryStep = ({ config }: SummaryProps) => {
+  const comercial = config.comercial;
+
   const safeCapex = config.capex ?? {};
 
   const totalCapex = Object.values(safeCapex).reduce(
@@ -100,22 +69,22 @@ const SummaryStep = ({ config }: SummaryProps) => {
     0
   );
 
-  const totalEstoque =
-    config.comercial.pereciveis.estoque * 15.5 +
-    config.comercial.mercearia.estoque * 8.9 +
-    config.comercial.eletro.estoque * 12.4 +
-    config.comercial.hipel.estoque * 6.2;
+  const totalEstoque = categoriaMeta.reduce((acc, c) => {
+    const dados = comercial?.[c.id as keyof typeof comercial];
+    return acc + (dados?.estoque || 0) * c.custoUn;
+  }, 0);
 
   const saldoFinal = 700000 - totalCapex - totalEstoque;
 
   const markupMedio =
-    (config.comercial.pereciveis.margem +
-      config.comercial.mercearia.margem +
-      config.comercial.eletro.margem +
-      config.comercial.hipel.margem) /
+    (comercial.pereciveis.margem +
+      comercial.mercearia.margem +
+      comercial.eletro.margem +
+      comercial.hipel.margem) /
     4;
 
   const operadores = config.operadores ?? 0;
+
   const margemOperadores = (operadores / 10) * 100;
 
   const taxaSLA =
@@ -135,12 +104,9 @@ const SummaryStep = ({ config }: SummaryProps) => {
     ([, v]) => (v ?? 0) > 0
   );
 
-  const capexNaoSelecionados = Object.entries(safeCapex).filter(
-    ([, v]) => (v ?? 0) === 0
-  );
-
   return (
     <div className="space-y-8 pb-10">
+
       {/* HEADER */}
       <div className="border-l-4 border-green-500 pl-6 py-2">
         <h2 className="text-4xl font-black text-cencosud-blue uppercase italic">
@@ -148,8 +114,9 @@ const SummaryStep = ({ config }: SummaryProps) => {
         </h2>
       </div>
 
-      {/* BOX PRINCIPAL */}
+      {/* BOX */}
       <motion.div className="bg-white rounded-[2.5rem] border shadow-sm overflow-hidden">
+
         <div className="bg-cencosud-blue px-8 py-5 flex items-center gap-3">
           <ClipboardList size={20} className="text-cencosud-orange" />
           <h3 className="font-black text-white uppercase text-sm">
@@ -158,6 +125,7 @@ const SummaryStep = ({ config }: SummaryProps) => {
         </div>
 
         <div className="grid lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x">
+
           {/* CAPEX */}
           <div className="p-6 space-y-3">
             <h4 className="text-xs font-black text-gray-400 uppercase">
@@ -200,15 +168,15 @@ const SummaryStep = ({ config }: SummaryProps) => {
             </h4>
 
             {categoriaMeta.map((c) => {
-              const dados = config.comercial[c.id];
+              const dados = comercial?.[c.id as keyof typeof comercial];
 
-              const subtotal = dados.estoque * c.custoUn;
+              const subtotal = (dados?.estoque || 0) * c.custoUn;
 
               return (
                 <div key={c.id} className="flex justify-between text-xs">
                   <span>{c.label}</span>
                   <span>
-                    {dados.estoque} un | R${" "}
+                    {dados?.estoque || 0} un | R${" "}
                     {subtotal.toLocaleString("pt-BR")}
                   </span>
                 </div>
@@ -228,7 +196,9 @@ const SummaryStep = ({ config }: SummaryProps) => {
 
             <p className="text-sm font-bold">{operadores}</p>
 
-            <p className="text-xs">Margem: {margemOperadores.toFixed(1)}%</p>
+            <p className="text-xs">
+              Margem: {margemOperadores.toFixed(1)}%
+            </p>
 
             <p className="text-xs">SLA: {taxaSLA} dia(s)</p>
 
@@ -240,16 +210,18 @@ const SummaryStep = ({ config }: SummaryProps) => {
               Saldo: R$ {saldoFinal.toLocaleString("pt-BR")}
             </div>
           </div>
+
         </div>
       </motion.div>
 
-      {/* ALERTA FINAL */}
+      {/* ALERTA */}
       <div className="bg-yellow-50 border p-4 rounded-2xl flex gap-3">
         <AlertTriangle size={18} />
         <p className="text-xs font-bold">
           Confirme antes de finalizar a rodada.
         </p>
       </div>
+
     </div>
   );
 };

@@ -3,26 +3,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
+import { PlayerData, RoundData, AppConfig } from "../types/onboarding";
 
-interface RoundData {
-  roundId: string;
-  roundNumber: number;
-  duration: number;
-  endTime: number | null;
-}
-
-interface PlayerData {
-  id: string;
+type SubmitPayload = {
+  playerId: string;
   sessionId: string;
-  storeName: string;
-  store?: { id: string };
-}
+  roundId: string;
+  storeId?: string;
+  config: AppConfig;
+};
 
 export function useOnboardingSession(API_URL: string) {
   const router = useRouter();
 
   const socketRef = useRef<Socket | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [player, setPlayer] = useState<PlayerData | null>(null);
   const [round, setRound] = useState<RoundData | null>(null);
@@ -36,11 +31,15 @@ export function useOnboardingSession(API_URL: string) {
     if (timerRef.current) clearInterval(timerRef.current);
 
     const tick = () => {
-      const diff = Math.max(0, Math.floor((endTimeMs - Date.now()) / 1000));
+      const diff = Math.max(
+        0,
+        Math.floor((endTimeMs - Date.now()) / 1000)
+      );
+
       setTimeLeft(diff);
 
       if (diff <= 0) {
-        clearInterval(timerRef.current!);
+        if (timerRef.current) clearInterval(timerRef.current);
         setTimeUp(true);
       }
     };
@@ -51,6 +50,7 @@ export function useOnboardingSession(API_URL: string) {
 
   useEffect(() => {
     const saved = localStorage.getItem("player_data");
+
     if (!saved) {
       router.push("/pages/registro-do-usuario");
       return;
@@ -61,7 +61,6 @@ export function useOnboardingSession(API_URL: string) {
 
     const socket = io(`${API_URL}/simulation`, {
       reconnection: true,
-      reconnectionDelay: 1000,
     });
 
     socketRef.current = socket;
@@ -72,7 +71,9 @@ export function useOnboardingSession(API_URL: string) {
         playerId: p.id,
       });
 
-      socket.emit("session:get_state", { sessionId: p.sessionId });
+      socket.emit("session:get_state", {
+        sessionId: p.sessionId,
+      });
     });
 
     socket.on("round:started", (data: any) => {
@@ -96,29 +97,6 @@ export function useOnboardingSession(API_URL: string) {
       startTimer(endTimeMs);
     });
 
-    socket.on("session:state", (session: any) => {
-      const activeRound = session?.rounds?.find(
-        (r: any) => r.status === "OPEN",
-      );
-
-      if (!activeRound) return;
-
-      const endTimeMs = new Date(activeRound.endsAt).getTime();
-
-      setRound({
-        roundId: activeRound.id,
-        roundNumber: session.currentRound,
-        duration: Math.round(
-          (new Date(activeRound.endsAt).getTime() -
-            new Date(activeRound.startsAt).getTime()) /
-            1000,
-        ),
-        endTime: endTimeMs,
-      });
-
-      if (endTimeMs > Date.now()) startTimer(endTimeMs);
-    });
-
     socket.on("round:time_up", () => {
       setTimeUp(true);
       setTimeLeft(0);
@@ -136,17 +114,22 @@ export function useOnboardingSession(API_URL: string) {
 
     return () => {
       socket.disconnect();
-      if (timerRef.current) clearInterval(timerRef.current);
+
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, [API_URL, router, startTimer]);
 
-  const submit = (payload: any) => {
-    if (!socketRef.current || submitting) return;
+  const submit = useCallback(
+    (payload: SubmitPayload) => {
+      if (!socketRef.current || submitting) return;
 
-    setSubmitting(true);
-
-    socketRef.current.emit("player:submit_config", payload);
-  };
+      setSubmitting(true);
+      socketRef.current.emit("player:submit_config", payload);
+    },
+    [submitting]
+  );
 
   return {
     player,
@@ -156,6 +139,5 @@ export function useOnboardingSession(API_URL: string) {
     submitting,
     timeUp,
     submit,
-    setPlayer,
   };
 }

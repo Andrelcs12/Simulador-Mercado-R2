@@ -18,35 +18,38 @@ interface Props {
     cash: number;
     csat: number;
     sla: number;
-  };
+  } | null;
 }
 
 export default function KPISection({ results }: Props) {
+  const money = (v: number) =>
+    (v ?? 0).toLocaleString("pt-BR");
+
   const kpis = [
     {
       label: "EBITDA",
-      value: `R$ ${(results?.ebitda ?? 0).toLocaleString()}`,
+      value: `R$ ${money(results?.ebitda ?? 0)}`,
       icon: <TrendingUp />,
       trend: "+0%",
       up: true,
     },
     {
       label: "Receita",
-      value: `R$ ${(results?.revenue ?? 0).toLocaleString()}`,
+      value: `R$ ${money(results?.revenue ?? 0)}`,
       icon: <Target />,
       trend: "+0%",
       up: true,
     },
     {
       label: "Despesas",
-      value: `R$ ${(results?.expenses ?? 0).toLocaleString()}`,
+      value: `R$ ${money(results?.expenses ?? 0)}`,
       icon: <AlertTriangle />,
       trend: "-0%",
       up: false,
     },
     {
       label: "CSAT",
-      value: results?.csat ?? 0,
+      value: (results?.csat ?? 0).toFixed(1),
       icon: <Smile />,
       trend: "Atual",
       up: true,
@@ -56,29 +59,17 @@ export default function KPISection({ results }: Props) {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
       {kpis.map((kpi, i) => (
-        <div
-          key={i}
-          className="bg-white p-6 rounded-2xl border"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-[#002350]">
-              {kpi.icon}
-            </div>
+        <div key={i} className="bg-white p-6 rounded-2xl border">
+          <div className="flex justify-between items-center mb-4 text-[#002350]">
+            {kpi.icon}
 
             <span
               className={`flex items-center gap-1 text-sm font-bold ${
-                kpi.up
-                  ? "text-green-500"
-                  : "text-red-500"
+                kpi.up ? "text-green-500" : "text-red-500"
               }`}
             >
               {kpi.trend}
-
-              {kpi.up ? (
-                <ArrowUpRight size={14} />
-              ) : (
-                <ArrowDownRight size={14} />
-              )}
+              {kpi.up ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
             </span>
           </div>
 
