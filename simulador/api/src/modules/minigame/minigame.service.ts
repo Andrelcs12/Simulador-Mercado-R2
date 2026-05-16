@@ -114,10 +114,19 @@ export class MinigameService {
   // ================= DASHBOARD =================
 
   getDashboard(sessionId: string, roundId: string, storeId?: string) {
-    return this.dashboardService.getRoundDashboard(sessionId, roundId, storeId);
+    return this.dashboardService.getRoundDashboard(
+      sessionId,
+      roundId,
+      storeId,
+    );
   }
 
-  // ================= SIMULATION (TIPADO FORTE) =================
+  // 🔥 NOVO: dashboard automático (SEM roundId)
+  getLatestDashboard(sessionId: string, storeId?: string) {
+    return this.dashboardService.getLatestDashboard(sessionId, storeId);
+  }
+
+  // ================= SIMULATION =================
 
   calculateBaseMetrics(input: {
     categories: any[];

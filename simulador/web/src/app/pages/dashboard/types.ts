@@ -1,14 +1,15 @@
+
 export interface DashboardResponse {
   sessionId: string;
 
   roundNumber: number;
+  totalRounds: number;
 
   myStore: {
     storeId: string;
     name: string;
 
     position: number | null;
-
     marketShare: number;
 
     kpis: {

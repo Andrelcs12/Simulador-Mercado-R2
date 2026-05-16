@@ -7,49 +7,53 @@ import {
   ShoppingCart,
   Users,
   BarChart3,
-  CheckCircle2,
   Timer,
+  CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 import { useOnboardingSession } from "./hooks/useOnboardingSession";
 import SetupStep from "./components/SetupStep";
 import ComercialStep from "./components/ComercialStep";
 import EmployeeStep from "./components/EmployeeStep";
 import SummaryStep from "./components/SummaryStep";
-
 import { AppConfig } from "./types/onboarding";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-const STEP_LABELS = ["Configuração", "Comercial", "Operadores", "Resumo"];
 
 const initialConfig: AppConfig = {
   capex: {
-    seguranca: false,
-    equipamentos: false,
-    redes: false,
-    site: false,
-    selfcheckout: false,
-    melhoria: false,
+    seguranca: 0,
+    equipamentos: 0,
+    redes: 0,
+    site: 0,
+    selfcheckout: 0,
+    melhoria: 0,
   },
-
   comercial: {
-    pereciveis: { estoque: 0, margem: 0 },
-    mercearia: { estoque: 0, margem: 0 },
-    eletro: { estoque: 0, margem: 0 },
-    hipel: { estoque: 0, margem: 0 },
+    pereciveis: { estoque: 0, margem: 30 },
+    mercearia: { estoque: 0, margem: 20 },
+    eletro: { estoque: 0, margem: 25 },
+    hipel: { estoque: 0, margem: 18 },
   },
-
-  operadoresCaixa: 0,
-  operadoresAtendimento: 0,
-  quizScore: 0,
+  operadoresCaixa: 5,
+  operadoresAtendimento: 3,
+  quizScore: 100,
 };
 
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+const STEPS = [
+  { label: "CAPEX", Icon: Settings2 },
+  { label: "Comercial", Icon: ShoppingCart },
+  { label: "Operadores", Icon: Users },
+  { label: "Resumo", Icon: BarChart3 },
+];
+
+function formatTime(s: number) {
+  if (!s || s <= 0) return "00:00";
+  return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(
+    s % 60
+  ).padStart(2, "0")}`;
 }
 
 export default function OnboardingPage() {
@@ -71,160 +75,143 @@ export default function OnboardingPage() {
     });
   };
 
-  const nextStep = () => setStep((p) => Math.min(p + 1, 4));
-  const prevStep = () => setStep((p) => Math.max(p - 1, 1));
-
-  const progressPercent =
-    round?.duration && round.duration > 0
-      ? (timeLeft / round.duration) * 100
-      : 0;
+  const pct = round?.duration
+    ? Math.min((timeLeft / round.duration) * 100, 100)
+    : 0;
 
   const timerColor =
     timeLeft > 120
-      ? "text-emerald-400"
+      ? "text-emerald-600"
       : timeLeft > 30
-      ? "text-yellow-400"
-      : "text-red-400";
+      ? "text-amber-500"
+      : "text-red-500";
 
-  const stepIcons = [
-    <Settings2 key="s1" size={14} />,
-    <ShoppingCart key="s2" size={14} />,
-    <Users key="s3" size={14} />,
-    <BarChart3 key="s4" size={14} />,
-  ];
+  const barColor =
+    timeLeft > 120
+      ? "bg-emerald-500"
+      : timeLeft > 30
+      ? "bg-amber-400"
+      : "bg-red-500";
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-white flex flex-col font-sans antialiased">
+    <div className="min-h-screen bg-white flex flex-col font-sans">
+
       <Toaster
         position="top-right"
         toastOptions={{
           style: {
-            background: "#1A2235",
-            color: "#fff",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "#fff",
+            color: "#001F3F",
+            border: "1px solid #E2E8F0",
           },
         }}
       />
 
-      {/* ── HEADER PREMIUM CENCOSUD ── */}
-      <header className="sticky top-0 z-30 bg-[#0B1220]/95 backdrop-blur border-b border-white/[0.06] px-4 md:px-8 py-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-2xl px-4 py-2 shadow-inner">
-            <span className="text-[10px] uppercase tracking-widest text-slate-400 font-black">
-              Rodada
-            </span>
-            <span className="text-xl font-black text-orange-500 tabular-nums">
-              {round?.roundNumber ?? "—"}
-            </span>
+      {/* HEADER */}
+      <header className="sticky top-0 z-30 bg-white border-b border-slate-200">
+        <div className="px-6 py-4 flex items-center justify-between gap-6">
+
+          {/* LEFT */}
+          <div className="flex items-center gap-4">
+
+            <div className="bg-[#001F3F] text-white px-5 py-3 rounded-2xl shadow-sm">
+              <div className="text-[10px] uppercase text-white/60 tracking-widest font-black">
+                Rodada
+              </div>
+              <div className="text-xl font-black leading-none">
+                {round?.roundNumber ?? "—"}
+              </div>
+            </div>
+
+            {player && (
+              <div className="flex items-center gap-3 px-4 py-2 rounded-2xl border border-slate-200 bg-white">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="leading-tight">
+                  <div className="text-[10px] uppercase text-slate-400 font-black tracking-widest">
+                    Loja
+                  </div>
+                  <div className="text-sm font-black text-[#001F3F]">
+                    {player.storeName ?? player.store?.name}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {player && (
-            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-300 font-bold uppercase tracking-wider bg-white/[0.02] border border-white/[0.04] px-3 py-2 rounded-xl">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              {player.storeName || "Loja Cencosud"}
-            </div>
-          )}
-        </div>
-
-        {/* Cronômetro Dinâmico */}
-        <div className="flex items-center gap-4 bg-white/[0.02] border border-white/[0.05] p-2 px-4 rounded-2xl">
-          <div className="flex flex-col items-end gap-0.5">
-            <div className={`text-2xl md:text-3xl font-black font-mono tabular-nums flex items-center gap-2 ${timerColor}`}>
-              <Timer size={20} className="opacity-80" />
+          {/* RIGHT TIMER */}
+          <div className="flex flex-col items-end">
+            <div className={`flex items-center gap-2 font-black ${timerColor}`}>
+              <Timer size={16} />
               {formatTime(timeLeft)}
             </div>
-            <div className="w-28 md:w-36 h-1 bg-white/10 rounded-full overflow-hidden mt-1">
+
+            <div className="w-44 h-1.5 bg-slate-200 rounded-full overflow-hidden mt-1">
               <motion.div
-                className={`h-full rounded-full ${
-                  timeLeft > 120 ? "bg-emerald-400" : timeLeft > 30 ? "bg-yellow-400" : "bg-red-400"
-                }`}
-                animate={{ width: `${progressPercent}%` }}
-                transition={{ ease: "linear", duration: 1 }}
+                className={`h-full ${barColor}`}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 1, ease: "linear" }}
               />
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* ── STEPPER HORIZONTAL ── */}
-      <div className="border-b border-white/[0.06] bg-[#0D1528] px-4 md:px-8 py-3.5 shadow-md">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
-          {STEP_LABELS.map((label, i) => {
+        </div>
+
+        {/* STEPS */}
+        <div className="px-6 pb-3 flex items-center gap-2">
+          {STEPS.map((s, i) => {
             const num = i + 1;
-            const isActive = step === num;
-            const isDone = step > num;
+            const active = step === num;
+            const done = step > num;
 
             return (
-              <React.Fragment key={num}>
+              <div key={s.label} className="flex items-center gap-2">
                 <button
-                  onClick={() => setStep(num)}
-                  className={`flex items-center gap-2.5 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-wider transition-all border ${
-                    isActive
-                      ? "bg-orange-500 text-white border-orange-400 shadow-lg shadow-orange-500/20"
-                      : isDone
-                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                      : "bg-white/[0.02] text-slate-500 border-white/[0.04] hover:text-slate-300 hover:border-white/[0.08]"
+                  onClick={() => done && setStep(num)}
+                  className={`px-4 py-2 rounded-xl text-xs font-black uppercase border transition ${
+                    active
+                      ? "bg-[#FF6D00] text-white border-[#FF6D00]"
+                      : done
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "bg-white text-slate-400 border-slate-200"
                   }`}
                 >
-                  <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border transition-colors ${
-                      isActive 
-                        ? "bg-white/20 border-white/30 text-white" 
-                        : isDone 
-                        ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400" 
-                        : "bg-white/5 border-white/10 text-slate-400"
-                    }`}
-                  >
-                    {isDone ? "✓" : num}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="opacity-60">{stepIcons[i]}</span>
-                    {label}
-                  </span>
+                  {done ? "✓" : num} {s.label}
                 </button>
-                {i < STEP_LABELS.length - 1 && (
-                  <div className={`flex-1 h-[2px] rounded-full min-w-[20px] ${isDone ? "bg-emerald-500/30" : "bg-white/[0.06]"}`} />
+
+                {i < STEPS.length - 1 && (
+                  <div className={`w-10 h-[2px] rounded-full ${done ? "bg-emerald-300" : "bg-slate-200"}`} />
                 )}
-              </React.Fragment>
+              </div>
             );
           })}
         </div>
-      </div>
+      </header>
 
-      {/* ── ALERTS DE STATUS EM TEMPO REAL ── */}
+      {/* ALERTS */}
       <AnimatePresence>
         {submitted && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="bg-emerald-500/10 border-b border-emerald-500/20 px-8 py-3 text-emerald-400 text-xs font-black tracking-wider uppercase text-center flex items-center justify-center gap-2"
-          >
-            <CheckCircle2 size={14} /> Configuração enviada — aguardando encerramento da rodada
+          <motion.div className="bg-emerald-50 text-emerald-700 text-center py-2 text-xs font-bold flex justify-center gap-2">
+            <CheckCircle2 size={14} /> Configuração enviada
           </motion.div>
         )}
+
         {timeUp && !submitted && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            className="bg-red-500/10 border-b border-red-500/20 px-8 py-3 text-red-400 text-xs font-black tracking-wider uppercase text-center flex items-center justify-center gap-2"
-          >
-            <AlertTriangle size={14} /> Tempo Limite Atingido — Fechando planejamento
+          <motion.div className="bg-red-50 text-red-600 text-center py-2 text-xs font-bold flex justify-center gap-2">
+            <AlertTriangle size={14} /> Tempo esgotado
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── CORPO DO MINI-JOGO ── */}
-      <main className="flex-1 flex items-start justify-center p-4 md:p-8 overflow-y-auto">
-        <div className="w-full max-w-6xl mt-2">
+      {/* MAIN */}
+      <main className="flex-1 flex justify-center p-6">
+        <div className="w-full max-w-5xl">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              initial={{ opacity: 0, x: 15 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -15 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="bg-[#111827] border border-white/[0.06] rounded-3xl p-6 md:p-10 shadow-2xl shadow-black/40"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-white rounded-3xl border border-slate-200 p-6 md:p-10 shadow-sm"
             >
               {step === 1 && <SetupStep config={config} setConfig={setConfig} />}
               {step === 2 && <ComercialStep config={config} setConfig={setConfig} />}
@@ -235,43 +222,35 @@ export default function OnboardingPage() {
         </div>
       </main>
 
-      {/* ── FOOTER DE NAVEGAÇÃO ── */}
-      <footer className="sticky bottom-0 bg-[#0B1220]/95 backdrop-blur border-t border-white/[0.06] px-4 md:px-8 py-4 flex justify-between items-center z-40 shadow-xl">
+      {/* FOOTER */}
+      <footer className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex justify-between items-center">
+
         <button
           disabled={step === 1}
-          onClick={prevStep}
-          className="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/[0.05] text-slate-300 font-bold text-sm transition-all disabled:opacity-20 disabled:cursor-not-allowed active:scale-95"
+          onClick={() => setStep((s) => Math.max(1, s - 1))}
+          className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold disabled:opacity-40"
         >
-          ← Voltar
+          Voltar
         </button>
 
-        <span className="text-xs text-slate-500 font-black tracking-widest bg-white/[0.03] px-3 py-1.5 rounded-xl border border-white/[0.04]">
-          PASSO {step} DE {STEP_LABELS.length}
+        <span className="text-xs font-bold text-slate-400">
+          {step} / {STEPS.length}
         </span>
 
-        {step < 4 ? (
+        {step < STEPS.length ? (
           <button
-            onClick={nextStep}
-            className="px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-400 text-white font-black text-sm transition-all shadow-lg shadow-orange-500/10 active:scale-95"
+            onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))}
+            className="px-5 py-2 rounded-xl bg-[#FF6D00] text-white font-black"
           >
             Próximo →
           </button>
-          ) : (
+        ) : (
           <button
             onClick={handleFinalize}
             disabled={submitting || timeUp || submitted}
-            className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-emerald-500/10 active:scale-95"
+            className="px-5 py-2 rounded-xl bg-emerald-500 text-white font-black disabled:opacity-40"
           >
-            {submitting ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Enviando...
-              </>
-            ) : submitted ? (
-              "✅ Enviado"
-            ) : (
-              "Enviar Configuração →"
-            )}
+            {submitting ? "Enviando..." : submitted ? "Enviado" : "Enviar"}
           </button>
         )}
       </footer>

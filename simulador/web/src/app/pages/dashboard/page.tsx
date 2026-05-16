@@ -12,7 +12,8 @@ import WaitingStatus from "./components/WaitingStatus";
 import { DashboardResponse } from "./types";
 
 export default function DashboardPage() {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,15 +24,14 @@ export default function DashboardPage() {
     async function load() {
       try {
         const sessionId = localStorage.getItem("session_id");
-        const roundId = localStorage.getItem("round_id");
 
-        if (!sessionId || !roundId) {
+        if (!sessionId) {
           setLoading(false);
           return;
         }
 
         const res = await fetch(
-          `${API_URL}/minigame/session/${sessionId}/dashboard/${roundId}`
+          `${API_URL}/minigame/session/${sessionId}/dashboard/latest`
         );
 
         if (!res.ok) throw new Error("Erro ao carregar dashboard");
@@ -68,7 +68,10 @@ export default function DashboardPage() {
       <Toaster position="top-right" />
 
       <div className="p-6 md:p-10 max-w-[1600px] mx-auto space-y-10">
-        <DashboardHeader roundNumber={data.roundNumber} />
+        <DashboardHeader
+          roundNumber={data.roundNumber}
+          totalRounds={data.totalRounds}
+        />
 
         <KPISection results={data.myStore?.kpis} />
 
