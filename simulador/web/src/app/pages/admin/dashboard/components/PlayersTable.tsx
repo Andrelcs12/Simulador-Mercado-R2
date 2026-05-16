@@ -22,7 +22,8 @@ export const PlayersTable = ({
   submittedCount,
   onKick,
 }: PlayersTableProps) => {
-  const readyCount = players.filter((p: any) => p.ready).length;
+  const readyCount = players.filter((p: any) => p.isReady).length;
+  
 
   return (
     <aside className="bg-[#0F172A] border border-white/[0.06] rounded-[2rem] overflow-hidden h-fit">
@@ -119,7 +120,7 @@ export const PlayersTable = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.18 }}
-                  className="group relative overflow-hidden bg-[#111827] hover:bg-[#151D2E] border border-white/[0.06] hover:border-orange-500/20 rounded-[1.6rem] p-4 transition-all duration-300 shadow-lg"
+                  className="group relative overflow-hidden bg-[#111827] hover:bg-[#151D2E] border border-orange-500/20 rounded-[1.6rem] p-4 transition-all duration-300 shadow-lg"
                 >
 
                   {/* glow */}
@@ -223,7 +224,7 @@ export const PlayersTable = ({
 
                       <button
                         onClick={() => onKick(player)}
-                        className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-200 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/10 hover:border-red-500 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+                        className="transition-all duration-200 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/10 hover:border-red-500 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
                         title="Remover jogador"
                       >
                         <UserMinus size={16} />
