@@ -1,21 +1,69 @@
-import { PrismaService } from "@/prisma.service";
+
+
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class SimulationService {
+  calculateBaseMetrics(input: {
+    categories: any[];
+    stockInputs: any[];
+    operatorsQty: number;
+    serviceOperatorsQty: number;
+    quizScore: number;
+  }) {
+    let totalBought = 0;
+    let priceSum = 0;
 
-   constructor(private readonly prisma: PrismaService) {}
+    for (const stock of input.stockInputs) {
+      const category = input.categories.find(
+        (c) => c.id === stock.categoryId,
+      );
+      if (!category) continue;
 
+      const sellPrice =
+        category.unitCost * (1 + (stock.commercialMargin || 30) / 100);
 
-  calculateRound(input: {
+      priceSum += sellPrice;
+      totalBought += stock.buyQty;
+    }
+
+    const averagePrice =
+      input.stockInputs.length > 0
+        ? priceSum / input.stockInputs.length
+        : 0;
+
+    const csat =
+      Math.min(input.operatorsQty / 10, 1) *
+      (input.quizScore / 100);
+
+    let sla = 40;
+    if (input.serviceOperatorsQty >= 8) sla = 95;
+    else if (input.serviceOperatorsQty >= 6) sla = 85;
+    else if (input.serviceOperatorsQty >= 4) sla = 75;
+    else if (input.serviceOperatorsQty >= 2) sla = 60;
+
+    const totalMarketStock = input.categories.reduce(
+      (acc, c) => acc + (c.totalMarketStock || 0),
+      0,
+    );
+
+    const availabilityRate =
+      totalMarketStock > 0 ? totalBought / totalMarketStock : 0;
+
+    return {
+      averagePrice,
+      availabilityRate,
+      csat,
+      sla,
+    };
+  }
+
+  calculateRoundResult(input: {
     categories: any[];
     capex: any[];
-
     stockInputs: any[];
     capexSelections: any[];
-
     storeCash: number;
-    marketShare: number;
 
     operatorsQty: number;
     serviceOperatorsQty: number;
@@ -23,132 +71,91 @@ export class SimulationService {
     quizScore: number;
 
     totalMarketCustomers: number;
-  }) {
-    const customersReceived =
-      input.totalMarketCustomers *
-      input.marketShare;
 
-    const stockCount =
-      input.stockInputs.length || 1;
+    // ✅ AGORA CORRETO: ranking externo entra como score
+    competitivenessScore: number;
+    competitorsTotalScore: number;
+
+    averagePrice: number;
+    availabilityRate: number;
+    csat: number;
+    sla: number;
+  }) {
+    const marketShare =
+      input.competitorsTotalScore > 0
+        ? input.competitivenessScore / input.competitorsTotalScore
+        : 0;
+
+    const demandBase = input.totalMarketCustomers * marketShare;
+
+    const slaPenalty = (100 - input.sla) / 100;
+    const effectiveDemand = demandBase * (1 - slaPenalty * 0.3);
 
     let totalRevenue = 0;
-    let totalTaxes = 0;
     let totalCMV = 0;
+    let totalTaxes = 0;
     let agingCosts = 0;
     let remainingStockValue = 0;
-    let averagePrice = 0;
+
+    const stockCount = input.stockInputs.length || 1;
 
     for (const stock of input.stockInputs) {
-      const category =
-        input.categories.find(
-          (c: any) =>
-            c.id === stock.categoryId,
-        );
-
+      const category = input.categories.find(
+        (c) => c.id === stock.categoryId,
+      );
       if (!category) continue;
 
-      const margin =
-        stock.commercialMargin || 30;
-
       const sellPrice =
-        category.unitCost *
-        (1 + margin / 100);
+        category.unitCost * (1 + (stock.commercialMargin || 30) / 100);
 
-      const demand =
-        customersReceived / stockCount;
+      const demandPerCategory = effectiveDemand / stockCount;
 
-      const soldQty = Math.min(
-        stock.buyQty,
-        demand,
-      );
+      const priceFactor = Math.max(0.5, 1 - sellPrice / 1000);
 
-      const remainingQty =
-        stock.buyQty - soldQty;
+      const adjustedDemand = demandPerCategory * priceFactor;
 
-      const revenue =
-        soldQty * sellPrice;
+      const soldQty = Math.min(stock.buyQty, adjustedDemand);
+
+      const remainingQty = stock.buyQty - soldQty;
+
+      const revenue = soldQty * sellPrice;
 
       totalRevenue += revenue;
 
-      totalTaxes +=
-        revenue *
-        (category.taxRate / 100);
+      totalTaxes += revenue * (category.taxRate / 100);
 
-      totalCMV +=
-        stock.buyQty *
-        category.unitCost;
+      totalCMV += stock.buyQty * category.unitCost;
 
       agingCosts +=
         remainingQty *
         category.unitCost *
-        (category.agingPenaltyRate ||
-          0);
+        (category.agingPenaltyRate || 0);
 
-      remainingStockValue +=
-        remainingQty *
-        category.unitCost;
-
-      averagePrice += sellPrice;
+      remainingStockValue += remainingQty * category.unitCost;
     }
 
-    averagePrice =
-      averagePrice / stockCount;
+    const capexCosts = input.capexSelections.reduce((acc, sel) => {
+      const capex = input.capex.find((c) => c.id === sel.capexId);
+      return acc + (capex?.cost || 0);
+    }, 0);
 
-    const capexCosts =
-      input.capexSelections.reduce(
-        (acc, selection) => {
-          const capex =
-            input.capex.find(
-              (c: any) =>
-                c.id ===
-                selection.capexId,
-            );
-
-          return (
-            acc + (capex?.cost || 0)
-          );
-        },
-        0,
-      );
-
-    const licensingCosts =
-      input.capexSelections.reduce(
-        (acc, selection) => {
-          const capex =
-            input.capex.find(
-              (c: any) =>
-                c.id ===
-                selection.capexId,
-            );
-
-          return (
-            acc +
-            (capex?.recurringLicenseCost ||
-              0)
-          );
-        },
-        0,
-      );
+    const licensingCosts = input.capexSelections.reduce((acc, sel) => {
+      const capex = input.capex.find((c) => c.id === sel.capexId);
+      return acc + (capex?.recurringLicenseCost || 0);
+    }, 0);
 
     const operatingCosts =
       input.operatorsQty * 2200 +
-      input.serviceOperatorsQty *
-        3200;
+      input.serviceOperatorsQty * 3200;
 
-    const stockBreakLoss =
-      totalCMV * 0.03;
+    const stockBreakLoss = totalCMV * 0.03;
 
-    const exceededCash =
-      totalCMV +
-      capexCosts +
-      licensingCosts +
-      operatingCosts -
-      input.storeCash;
+    const totalCashNeed =
+      totalCMV + capexCosts + licensingCosts + operatingCosts;
 
-    const interestCosts =
-      exceededCash > 0
-        ? exceededCash * 0.12
-        : 0;
+    const exceeded = totalCashNeed - input.storeCash;
+
+    const interestCosts = exceeded > 0 ? exceeded * 0.12 : 0;
 
     const totalExpenses =
       totalCMV +
@@ -160,61 +167,14 @@ export class SimulationService {
       stockBreakLoss +
       interestCosts;
 
-    const ebitdaValue =
-      totalRevenue - totalExpenses;
+    const ebitdaValue = totalRevenue - totalExpenses;
 
     const ebitdaMargin =
-      totalRevenue > 0
-        ? (ebitdaValue /
-            totalRevenue) *
-          100
-        : 0;
-
-    const operatorFactor =
-      Math.min(
-        input.operatorsQty / 10,
-        1,
-      );
-
-    const csat =
-      operatorFactor *
-      input.quizScore;
-
-    const sla =
-      input.serviceOperatorsQty >= 8
-        ? 95
-        : input.serviceOperatorsQty >= 6
-          ? 85
-          : input.serviceOperatorsQty >= 4
-            ? 75
-            : input.serviceOperatorsQty >= 2
-              ? 60
-              : 40;
-
-    const totalBought =
-      input.stockInputs.reduce(
-        (acc, stock) =>
-          acc + stock.buyQty,
-        0,
-      );
-
-    const totalMarketStock =
-      input.categories.reduce(
-        (acc, category) =>
-          acc +
-          (category.totalMarketStock ||
-            0),
-        0,
-      );
-
-    const availabilityRate =
-      totalMarketStock > 0
-        ? totalBought /
-          totalMarketStock
-        : 0;
+      totalRevenue > 0 ? (ebitdaValue / totalRevenue) * 100 : 0;
 
     return {
-      customersReceived,
+      marketShare,
+      customersReceived: effectiveDemand,
 
       totalRevenue,
       totalTaxes,
@@ -233,99 +193,14 @@ export class SimulationService {
       ebitdaValue,
       ebitdaMargin,
 
-      finalCash:
-        input.storeCash -
-        totalCMV -
-        capexCosts -
-        licensingCosts -
-        operatingCosts -
-        interestCosts,
+      finalCash: input.storeCash - totalExpenses,
 
       remainingStockValue,
 
-      csat,
-      sla,
-
-      averagePrice,
-      availabilityRate,
+      csat: input.csat,
+      sla: input.sla,
+      averagePrice: input.averagePrice,
+      availabilityRate: input.availabilityRate,
     };
   }
-
-
-
-
-  async finalizeSession(sessionId: string) {
-  const rounds = await this.prisma.roundResult.findMany({
-    where: { sessionId },
-  });
-
-  const stockHistory = await this.prisma.stockInput.findMany({
-    where: {
-      configuration: {
-        sessionId,
-      },
-    },
-    include: {
-      category: true,
-    },
-  });
-
-  const totalCustomers = rounds.reduce(
-    (acc, r) => acc + r.customersReceived,
-    0,
-  );
-
-  const agingLoss = this.calculateFinalAging({
-    stockInputsHistory: stockHistory.map((s) => ({
-      categoryId: s.categoryId,
-      buyQty: s.buyQty,
-      unitCost: s.category?.unitCost ?? 0,
-    })),
-    totalCustomersServed: totalCustomers,
-  });
-
-  await this.prisma.sessionResult.updateMany({
-    where: { sessionId },
-    data: {
-      finalScore: {
-        decrement: agingLoss,
-      },
-    },
-  });
-
-  return {
-    sessionId,
-    agingLoss,
-    status: "FINALIZED",
-  };
-}
-
-  private calculateFinalAging(input: {
-    stockInputsHistory: {
-      categoryId: string;
-      buyQty: number;
-      unitCost: number;
-    }[];
-
-    totalCustomersServed: number;
-  }) {
-    let totalLoss = 0;
-
-    for (const stock of input.stockInputsHistory) {
-      const estimatedSold = Math.min(
-        stock.buyQty,
-        input.totalCustomersServed,
-      );
-
-      const remaining = stock.buyQty - estimatedSold;
-
-      if (remaining <= 0) continue;
-
-      totalLoss += remaining * stock.unitCost * 0.2;
-    }
-
-    return totalLoss;
-  }
-
-
 }

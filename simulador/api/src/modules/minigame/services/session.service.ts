@@ -11,32 +11,36 @@ import {
 
 @Injectable()
 export class SessionService {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private generateCode() {
-    return Math.random()
-      .toString(36)
-      .substring(2, 6)
-      .toUpperCase();
+    return Math.random().toString(36).substring(2, 6).toUpperCase();
+  }
+
+  private async getSessionOrThrow(sessionId: string) {
+    const session = await this.prisma.gameSession.findUnique({
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      throw new NotFoundException("Sessão não encontrada");
+    }
+
+    return session;
   }
 
   async createSession(totalRounds = 5) {
-    const session =
-      await this.prisma.gameSession.create({
-        data: {
-          code: this.generateCode(),
-          status: GameSessionStatus.LOBBY,
-          totalRounds,
-          currentRound: 0,
-        },
-      });
+    const session = await this.prisma.gameSession.create({
+      data: {
+        code: this.generateCode(),
+        status: GameSessionStatus.LOBBY,
+        totalRounds,
+        currentRound: 0,
+      },
+    });
 
     await this.prisma.gameRound.createMany({
-      data: Array.from({
-        length: totalRounds,
-      }).map((_, i) => ({
+      data: Array.from({ length: totalRounds }).map((_, i) => ({
         sessionId: session.id,
         roundNumber: i + 1,
         status: GameRoundStatus.CLOSED,
@@ -46,87 +50,133 @@ export class SessionService {
     return session;
   }
 
-  async getSessionById(sessionId: string) {
-    const session =
-      await this.prisma.gameSession.findUnique({
-        where: { id: sessionId },
-        include: {
-          rounds: {
-            orderBy: {
-              roundNumber: "asc",
-            },
-          },
-          players: true,
-          stores: true,
-        },
-      });
-
-    if (!session) {
-      throw new NotFoundException(
-        "Sessão não encontrada",
-      );
-    }
-
-    return session;
-  }
-
-  async getSessionByCode(code: string) {
-    const session =
-      await this.prisma.gameSession.findUnique({
-        where: { code },
-        include: {
-          rounds: true,
-          players: true,
-        },
-      });
-
-    if (!session) {
-      throw new NotFoundException(
-        "Sessão não encontrada",
-      );
-    }
-
-    return session;
-  }
-
-  async finishSession(sessionId: string) {
-    return this.prisma.gameSession.update({
+  getSessionById(sessionId: string) {
+    return this.prisma.gameSession.findUnique({
       where: { id: sessionId },
-      data: {
-        status: GameSessionStatus.FINISHED,
+      include: {
+        rounds: { orderBy: { roundNumber: "asc" } },
+        players: true,
+        stores: true,
       },
     });
   }
 
-  async updateSessionState(
-    sessionId: string,
-    data: {
-      status?: GameSessionStatus;
-      currentRound?: number;
-    },
-  ) {
+  getSessionByCode(code: string) {
+    return this.prisma.gameSession.findUnique({
+      where: { code },
+      include: {
+        rounds: true,
+        players: true,
+      },
+    });
+  }
+
+  finishSession(sessionId: string) {
+    return this.prisma.gameSession.update({
+      where: { id: sessionId },
+      data: { status: GameSessionStatus.FINISHED },
+    });
+  }
+
+  updateSessionState(sessionId: string, data: {
+    status?: GameSessionStatus;
+    currentRound?: number;
+  }) {
     return this.prisma.gameSession.update({
       where: { id: sessionId },
       data,
     });
   }
 
-  async validateSession(sessionId: string) {
-    const session =
-      await this.prisma.gameSession.findUnique({
-        where: { id: sessionId },
-        select: {
-          id: true,
-          status: true,
-        },
-      });
-
-    if (!session) {
-      throw new NotFoundException(
-        "Sessão não encontrada",
-      );
-    }
-
-    return session;
+  validateSession(sessionId: string) {
+    return this.getSessionOrThrow(sessionId);
   }
+
+
+  async finalizeSession(sessionId: string) {
+  const results = await this.prisma.roundResult.findMany({
+    where: { sessionId },
+  });
+
+  if (!results.length) {
+    return {
+      success: false,
+      message: "Nenhum resultado encontrado",
+    };
+  }
+
+  const grouped = results.reduce((acc, r) => {
+    if (!acc[r.storeId]) acc[r.storeId] = [];
+    acc[r.storeId].push(r);
+    return acc;
+  }, {} as Record<string, typeof results>);
+
+  const finalResults: any[] = [];
+
+  for (const storeId of Object.keys(grouped)) {
+    const storeResults = grouped[storeId];
+
+    const totalRevenue = storeResults.reduce((a, r) => a + r.totalRevenue, 0);
+    const totalExpenses = storeResults.reduce((a, r) => a + r.totalExpenses, 0);
+
+    const finalEbitda = storeResults.reduce((a, r) => a + r.ebitdaValue, 0);
+
+    const finalEbitdaMargin =
+      totalRevenue > 0 ? (finalEbitda / totalRevenue) * 100 : 0;
+
+    const finalMarketShare =
+      storeResults.reduce((a, r) => a + r.marketShare, 0) /
+      storeResults.length;
+
+    await this.prisma.sessionResult.upsert({
+      where: {
+        sessionId_storeId: {
+          sessionId,
+          storeId,
+        },
+      },
+      create: {
+        sessionId,
+        storeId,
+        totalRevenue,
+        totalExpenses,
+        finalCash: storeResults.at(-1)?.finalCash || 0,
+        finalEbitda,
+        finalEbitdaMargin,
+        finalMarketShare,
+        finalScore: finalEbitdaMargin,
+        position: 0,
+      },
+      update: {
+        totalRevenue,
+        totalExpenses,
+        finalCash: storeResults.at(-1)?.finalCash || 0,
+        finalEbitda,
+        finalEbitdaMargin,
+        finalMarketShare,
+        finalScore: finalEbitdaMargin,
+      },
+    });
+
+    finalResults.push({ storeId, finalEbitdaMargin });
+  }
+
+  const ranking = [...finalResults].sort(
+    (a, b) => b.finalEbitdaMargin - a.finalEbitdaMargin,
+  );
+
+  for (let i = 0; i < ranking.length; i++) {
+    await this.prisma.sessionResult.update({
+      where: {
+        sessionId_storeId: {
+          sessionId,
+          storeId: ranking[i].storeId,
+        },
+      },
+      data: { position: i + 1 },
+    });
+  }
+
+  return { success: true, ranking };
+}
 }

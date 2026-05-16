@@ -96,12 +96,8 @@ export class RoundService {
     this.clearTimer(sessionId);
     this.readyPlayers.delete(sessionId);
 
-    const results = await this.runRoundSimulation(
-      sessionId,
-      closed.id,
-    );
+    const results = await this.runRoundSimulation(sessionId, closed.id);
 
-    // 🔥 CRÍTICO: ranking automático após simulação
     await this.ranking.computeRoundRanking(sessionId, closed.id);
 
     return {
@@ -167,18 +163,16 @@ export class RoundService {
     this.roundTimers.delete(sessionId);
   }
 
-  async runRoundSimulation(sessionId: string, roundId: string) {
+  // =====================================================
+// SIMULATION FLOW CORRIGIDO
+// =====================================================
+
+async runRoundSimulation(sessionId: string, roundId: string) {
   const round = await this.prisma.gameRound.findUnique({
     where: { id: roundId },
   });
 
   if (!round) throw new NotFoundException("Rodada não encontrada");
-
-  const session = await this.prisma.gameSession.findUnique({
-    where: { id: sessionId },
-  });
-
-  if (!session) throw new NotFoundException("Sessão não encontrada");
 
   const configs = await this.prisma.configuration.findMany({
     where: { roundId },
@@ -192,98 +186,101 @@ export class RoundService {
   const categories = await this.prisma.categoryMaster.findMany();
   const capex = await this.prisma.capexMaster.findMany();
 
-  // 🔥 RANKING ANTERIOR (base do market share dinâmico)
-  const previousRanking = await this.prisma.roundRanking.findMany({
-    where: { sessionId },
-    orderBy: { position: "asc" },
-  });
-
-  const totalStores = configs.length;
-
-  const marketShareMap = new Map<string, number>();
-
-  // =========================
-  // MARKET SHARE RULE ENGINE
-  // =========================
-
-  if (previousRanking.length === 0) {
-    // primeira rodada → igualitário
-    for (const c of configs) {
-      marketShareMap.set(c.storeId, 1 / totalStores);
-    }
-  } else {
-    const totalWeight = previousRanking.reduce(
-      (acc, r) => acc + (totalStores - r.position + 1),
-      0,
-    );
-
-    for (const r of previousRanking) {
-      const weight = totalStores - r.position + 1;
-      marketShareMap.set(r.storeId, weight / totalWeight);
-    }
-  }
-
-  const results = [];
-
-  // =========================
-  // CONSTANTE DO MODELO (DA REGRA DO JOGO)
-  // =========================
-  const TOTAL_MARKET_CUSTOMERS = 1000;
-
-  for (const config of configs) {
-    const marketShare =
-      marketShareMap.get(config.storeId) ?? 1 / totalStores;
-
-    const sim = this.simulation.calculateRound({
+  // 1. métricas base (SEM mercado ainda)
+  const baseResults = configs.map((config) => {
+    const metrics = this.simulation.calculateBaseMetrics({
       categories,
-      capex,
-
       stockInputs: config.stockInputs,
-      capexSelections: config.capexSelections,
-
-      storeCash: config.store.cashBalance,
-      marketShare,
-
-      operatorsQty: config.operatorsQty ?? 0,
-      serviceOperatorsQty: config.serviceOperatorsQty ?? 0,
-      quizScore: config.quizScore ?? 0,
-
-      totalMarketCustomers: TOTAL_MARKET_CUSTOMERS,
+      operatorsQty: config.operatorsQty,
+      serviceOperatorsQty: config.serviceOperatorsQty,
+      quizScore: config.quizScore,
     });
 
-    const { indicators, ...safeSim } = sim as any;
+    return { config, metrics };
+  });
+
+  // 2. monta ranking INPUT (SEM calcular ainda dentro do ranking service)
+  const rankingInput = baseResults.map((r) => ({
+    storeId: r.config.storeId,
+    averagePrice: r.metrics.averagePrice,
+    availabilityRate: r.metrics.availabilityRate,
+    csat: r.metrics.csat,
+  }));
+
+  // 🔥 IMPORTANTE: ranking deve ser baseado nesses dados, não reconsultar DB
+  const ranking = this.ranking.buildRankingFromMetrics(rankingInput);
+
+  const totalScore =
+    ranking.reduce((acc, x) => acc + x.finalScore, 0) || 1;
+
+  // 3. execução final com marketShare REAL
+  const results = [];
+
+  for (const r of baseResults) {
+    const rankItem = ranking.find(
+      (x) => x.storeId === r.config.storeId,
+    );
+
+    const sim = this.simulation.calculateRoundResult({
+      categories,
+      capex,
+      stockInputs: r.config.stockInputs,
+      capexSelections: r.config.capexSelections,
+      storeCash: r.config.store.cashBalance,
+
+      operatorsQty: r.config.operatorsQty,
+      serviceOperatorsQty: r.config.serviceOperatorsQty,
+
+      quizScore: r.config.quizScore,
+
+      totalMarketCustomers: 1000,
+
+      // 🔥 AGORA CORRETO (SEM MOCK)
+      competitivenessScore: rankItem?.finalScore ?? 1,
+      competitorsTotalScore: totalScore,
+
+      averagePrice: r.metrics.averagePrice,
+      availabilityRate: r.metrics.availabilityRate,
+      csat: r.metrics.csat,
+      sla: r.metrics.sla,
+    });
 
     const result = await this.prisma.roundResult.create({
       data: {
         sessionId,
         roundId,
-        storeId: config.storeId,
+        storeId: r.config.storeId,
 
-        marketShare,
+        marketShare: sim.marketShare,
 
-        customersReceived: safeSim.customersReceived,
-        totalRevenue: safeSim.totalRevenue,
-        totalTaxes: safeSim.totalTaxes,
-        totalCMV: safeSim.totalCMV,
+        customersReceived: sim.customersReceived,
 
-        operatingCosts: safeSim.operatingCosts,
-        capexCosts: safeSim.capexCosts,
-        licensingCosts: safeSim.licensingCosts,
-        agingCosts: safeSim.agingCosts,
-        interestCosts: safeSim.interestCosts,
+        totalRevenue: sim.totalRevenue,
+        totalTaxes: sim.totalTaxes,
+        totalCMV: sim.totalCMV,
 
-        totalExpenses: safeSim.totalExpenses,
+        operatingCosts: sim.operatingCosts,
+        capexCosts: sim.capexCosts,
+        licensingCosts: sim.licensingCosts,
 
-        ebitdaValue: safeSim.ebitdaValue,
-        ebitdaMargin: safeSim.ebitdaMargin,
+        agingCosts: sim.agingCosts,
+        interestCosts: sim.interestCosts,
 
-        finalCash: safeSim.finalCash,
+        totalExpenses: sim.totalExpenses,
 
-        remainingStockValue: safeSim.remainingStockValue,
-        stockBreakLoss: safeSim.stockBreakLoss,
+        ebitdaValue: sim.ebitdaValue,
+        ebitdaMargin: sim.ebitdaMargin,
 
-        csat: safeSim.csat,
-        sla: safeSim.sla,
+        finalCash: sim.finalCash,
+
+        remainingStockValue: sim.remainingStockValue,
+        stockBreakLoss: sim.stockBreakLoss,
+
+        csat: sim.csat,
+        sla: sim.sla,
+
+        averagePrice: sim.averagePrice,
+        availabilityRate: sim.availabilityRate,
       },
     });
 

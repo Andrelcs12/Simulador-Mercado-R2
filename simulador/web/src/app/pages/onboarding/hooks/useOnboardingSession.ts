@@ -10,7 +10,21 @@ type SubmitPayload = {
   sessionId: string;
   roundId: string;
   storeId?: string;
-  config: AppConfig;
+
+  operatorsQty: number;
+  serviceOperatorsQty: number;
+  quizScore: number;
+
+  stockInputs: {
+    categoryId: string;
+    buyQty: number;
+    commercialMargin: number;
+    expectedSellPrice: number;
+  }[];
+
+  capexSelections: {
+    capexId: string;
+  }[];
 };
 
 export function useOnboardingSession(API_URL: string) {
@@ -114,21 +128,49 @@ export function useOnboardingSession(API_URL: string) {
 
     return () => {
       socket.disconnect();
-
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [API_URL, router, startTimer]);
 
   const submit = useCallback(
-    (payload: SubmitPayload) => {
-      if (!socketRef.current || submitting) return;
+    (payload: {
+      config: AppConfig;
+    }) => {
+      if (!socketRef.current || submitting || !player || !round) return;
+
+      const config = payload.config;
+
+      const formatted: SubmitPayload = {
+        playerId: player.id,
+        sessionId: player.sessionId,
+        roundId: round.roundId,
+        storeId: player.store?.id,
+
+        operatorsQty:
+          config.operadoresCaixa + config.operadoresAtendimento,
+        serviceOperatorsQty: config.operadoresAtendimento,
+        quizScore: config.quizScore,
+
+        stockInputs: Object.entries(config.comercial).map(
+          ([categoryId, value]) => ({
+            categoryId,
+            buyQty: value.estoque,
+            commercialMargin: value.margem,
+            expectedSellPrice: 0,
+          })
+        ),
+
+        capexSelections: Object.entries(config.capex)
+          .filter(([_, v]) => v)
+          .map(([key]) => ({
+            capexId: key,
+          })),
+      };
 
       setSubmitting(true);
-      socketRef.current.emit("player:submit_config", payload);
+      socketRef.current.emit("player:submit_config", formatted);
     },
-    [submitting]
+    [submitting, player, round]
   );
 
   return {

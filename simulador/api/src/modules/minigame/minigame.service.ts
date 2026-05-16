@@ -4,11 +4,12 @@ import { SessionService } from "./services/session.service";
 import { RoundService } from "./services/round.service";
 import { PlayerService } from "./services/player.service";
 import { SubmissionService } from "./services/submission.service";
-
+import { DashboardService } from "./services/dashboard.service";
+import { SimulationService } from "./simulation.service";
 
 import { PlayerRole } from "@/generated/prisma/enums";
-import { SimulationService } from "./simulation.service";
-import { DashboardService } from "./services/dashboard.service";
+import { SubmitConfigurationDTO } from "./contracts/submission.dto";
+import { RoundSimulationInput } from "./types/round-simulation-input";
 
 @Injectable()
 export class MinigameService {
@@ -21,37 +22,10 @@ export class MinigameService {
     private readonly simulationService: SimulationService,
   ) {}
 
-  // ======================================================
-  // SIMULATION
-  // ======================================================
+  // ================= SESSION =================
 
-  calculateRoundResult(data: {
-  categories: any[];
-  capex: any[];
-
-  stockInputs: any[];
-  capexSelections: any[];
-
-  storeCash: number;
-
-  marketShare: number;
-
-  operatorsQty: number;
-  serviceOperatorsQty: number;
-
-  quizScore: number;
-
-  totalMarketCustomers: number;
-}) {
-  return this.simulationService.calculateRound(data);
-}
-
-  // ======================================================
-  // SESSION
-  // ======================================================
-
-  createSession() {
-    return this.sessionService.createSession();
+  createSession(totalRounds?: number) {
+    return this.sessionService.createSession(totalRounds);
   }
 
   getSessionById(sessionId: string) {
@@ -66,9 +40,7 @@ export class MinigameService {
     return this.sessionService.finishSession(sessionId);
   }
 
-  // ======================================================
-  // PLAYERS
-  // ======================================================
+  // ================= PLAYERS =================
 
   registerPlayer(data: {
     name: string;
@@ -93,106 +65,75 @@ export class MinigameService {
   }
 
   updateSocketId(playerId: string, socketId: string) {
-    return this.playerService.updateSocketId(
-      playerId,
-      socketId,
-    );
+    return this.playerService.updateSocketId(playerId, socketId);
   }
 
   kickPlayer(playerId: string) {
     return this.playerService.kickPlayer(playerId);
   }
 
-  // ======================================================
-  // ROUND
-  // ======================================================
+  // ================= ROUND =================
 
   startRound(sessionId: string, duration: number) {
-    return this.roundService.startRound(
-      sessionId,
-      duration,
-    );
+    return this.roundService.startRound(sessionId, duration);
   }
 
   finishRound(
     sessionId: string,
-    reason:
-      | "TIME_UP"
-      | "ADMIN_STOP"
-      | "MANUAL" = "MANUAL",
+    reason: "TIME_UP" | "ADMIN_STOP" | "MANUAL" = "MANUAL",
   ) {
-    return this.roundService.finishRound(
-      sessionId,
-      reason,
-    );
+    return this.roundService.finishRound(sessionId, reason);
   }
 
   startNextRound(sessionId: string) {
-    return this.roundService.startNextRound(
-      sessionId,
-    );
+    return this.roundService.startNextRound(sessionId);
   }
 
-  // ======================================================
-  // SUBMISSIONS
-  // ======================================================
+  // ================= SUBMISSION =================
 
-  submitConfiguration(data: {
-    playerId: string;
-    sessionId: string;
-    roundId: string;
-
-    stockInputs: {
-      categoryId: string;
-      buyQty: number;
-      commercialMargin: number;
-      expectedSellPrice: number;
-    }[];
-
-    capexSelections: {
-      capexId: string;
-    }[];
-  }) {
-    return this.submissionService.submitConfiguration(
-      data,
-    );
+  submitConfiguration(data: SubmitConfigurationDTO) {
+    return this.submissionService.submitConfiguration(data);
   }
 
-  getDashboard(sessionId: string, roundId: string, storeId?: string) {
-  return this.dashboardService.getRoundDashboard(sessionId, roundId, storeId);
-}
-
-  markPlayerReady(
-    sessionId: string,
-    playerId: string,
-  ) {
-    return this.submissionService.markPlayerReady(
-      sessionId,
-      playerId,
-    );
+  markPlayerReady(sessionId: string, playerId: string) {
+    return this.submissionService.markPlayerReady(sessionId, playerId);
   }
 
   allPlayersReady(sessionId: string) {
-    return this.submissionService.allPlayersReady(
-      sessionId,
-    );
+    return this.submissionService.allPlayersReady(sessionId);
   }
 
   clearReady(sessionId: string) {
-    return this.submissionService.clearReady(
-      sessionId,
-    );
+    return this.submissionService.clearReady(sessionId);
   }
 
   validateSubmissionWindow(roundId: string) {
-    return this.submissionService.validateSubmissionWindow(
-      roundId,
-    );
+    return this.submissionService.validateSubmissionWindow(roundId);
+  }
+
+  // ================= DASHBOARD =================
+
+  getDashboard(sessionId: string, roundId: string, storeId?: string) {
+    return this.dashboardService.getRoundDashboard(sessionId, roundId, storeId);
+  }
+
+  // ================= SIMULATION (TIPADO FORTE) =================
+
+  calculateBaseMetrics(input: {
+    categories: any[];
+    stockInputs: any[];
+    operatorsQty: number;
+    serviceOperatorsQty: number;
+    quizScore: number;
+  }) {
+    return this.simulationService.calculateBaseMetrics(input);
+  }
+
+  calculateRoundResult(input: RoundSimulationInput) {
+    return this.simulationService.calculateRoundResult(input);
   }
 
   finalizeSession(sessionId: string) {
-  return this.simulationService.finalizeSession(sessionId);
-}
-
-
+    return this.sessionService.finalizeSession(sessionId);
+  }
 }
