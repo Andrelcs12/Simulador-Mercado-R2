@@ -1,23 +1,17 @@
-import {
-  Hash,
-  Wifi,
-  WifiOff,
-  Timer,
-  LogOut,
-  Shield,
-  Copy,
-} from "lucide-react";
+"use client";
 
+import { Copy, LogOut, Wifi, WifiOff, Users, Trophy, Shield } from "lucide-react";
 import { Session } from "../types";
+import toast from "react-hot-toast";
 
 interface HeaderProps {
-  session: Session | null;
-  connected: boolean;
-  gameStarted: boolean;
+  session:            Session | null;
+  connected:          boolean;
+  gameStarted:        boolean;
   currentRoundNumber: number;
-  playersCount: number;
-  adminName: string;
-  onEncerrar: () => void;
+  playersCount:       number;
+  adminName:          string;
+  onEncerrar:         () => void;
 }
 
 export const Header = ({
@@ -29,133 +23,127 @@ export const Header = ({
   adminName,
   onEncerrar,
 }: HeaderProps) => {
-  const copyCode = () => {
-    if (session?.code) {
-      navigator.clipboard.writeText(session.code);
-    }
+  const copyCode = async () => {
+    if (!session?.code) return;
+    await navigator.clipboard.writeText(session.code);
+    toast.success("Código copiado!");
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.06] bg-[#080D17]/90 backdrop-blur-2xl">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#080D17]/95 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
 
-        {/* LEFT */}
-        <div className="flex flex-col gap-3 w-full">
+          {/* ── ESQUERDA ── */}
+          <div className="flex flex-col gap-4">
 
-          {/* TITLE + STATUS */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div>
-              <h1 className="font-black uppercase tracking-tight text-xl md:text-2xl text-white leading-none">
-                Central Mestre
-              </h1>
+            {/* Título + conexão */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div>
+                <h1 className="text-2xl font-black text-white leading-none tracking-tight">
+                  Central Mestre
+                </h1>
+                <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500 mt-1 font-black">
+                  Gestão da Dinâmica
+                </p>
+              </div>
 
-              <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500 font-black mt-1">
-                Painel operacional da simulação
-              </p>
-            </div>
-
-            <div
-              className={`flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${
+              <span className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[11px] uppercase font-black tracking-widest ${
                 connected
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                  : "bg-red-500/10 border-red-500/20 text-red-400"
-              }`}
-            >
-              {connected ? <Wifi size={12} /> : <WifiOff size={12} />}
-              {connected ? "Online" : "Offline"}
+                  ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/10"
+                  : "text-red-400 border-red-500/20 bg-red-500/10"
+              }`}>
+                {connected ? <Wifi size={13} /> : <WifiOff size={13} />}
+                {connected ? "Online" : "Offline"}
+              </span>
             </div>
-          </div>
 
-          {/* ROOM CODE (HIGHLIGHTED) */}
-          <div className="flex items-stretch gap-3">
+            {/* Métricas */}
+            <div className="flex flex-wrap gap-3">
 
-            <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-orange-500/10 border border-orange-500/20">
-
-              <Hash size={14} className="text-orange-400" />
-
-              <div className="leading-tight">
-                <div className="text-[10px] uppercase tracking-[0.25em] text-orange-300 font-black">
-                  Código da sessão
+              {/* Código da sala — destaque */}
+              <div className="flex items-center gap-3 bg-orange-500 shadow-lg shadow-orange-500/20 px-5 py-3.5 rounded-2xl">
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest font-black text-orange-100">
+                    Código da Sala
+                  </p>
+                  <div className="text-2xl font-black text-white tracking-[0.3em] leading-none mt-0.5">
+                    {session?.code ?? "----"}
+                  </div>
                 </div>
+                <button
+                  onClick={copyCode}
+                  title="Copiar"
+                  className="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                >
+                  <Copy size={14} className="text-white" />
+                </button>
+              </div>
 
-                <div className="text-2xl md:text-3xl font-black tracking-[0.35em] text-white">
-                  {session?.code || "----"}
+              {/* Rodada */}
+              <div className="px-5 py-3.5 rounded-2xl bg-[#111827] border border-white/[0.06]">
+                <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black flex items-center gap-1.5">
+                  <Trophy size={11} className="text-orange-400" /> Rodada
+                </p>
+                <div className="text-xl font-black text-white mt-0.5">
+                  {currentRoundNumber}
+                  <span className="text-sm text-slate-500 font-bold ml-1">
+                    / {session?.totalRounds ?? 3}
+                  </span>
                 </div>
               </div>
 
+              {/* Participantes */}
+              <div className="px-5 py-3.5 rounded-2xl bg-[#111827] border border-white/[0.06]">
+                <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black flex items-center gap-1.5">
+                  <Users size={11} className="text-sky-400" /> Participantes
+                </p>
+                <div className="text-xl font-black text-white mt-0.5">
+                  {playersCount}
+                </div>
+              </div>
+
+              {/* Facilitador */}
+              <div className="px-5 py-3.5 rounded-2xl bg-[#111827] border border-white/[0.06]">
+                <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black flex items-center gap-1.5">
+                  <Shield size={11} className="text-violet-400" /> Facilitador
+                </p>
+                <div className="text-sm font-black text-white mt-0.5 truncate max-w-[180px]">
+                  {adminName}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── DIREITA ── */}
+          <div className="flex items-center gap-3">
+
+            {/* Status da rodada */}
+            <div className={`px-5 py-3.5 rounded-2xl border ${
+              gameStarted
+                ? "border-orange-500/25 bg-orange-500/10"
+                : "border-emerald-500/25 bg-emerald-500/10"
+            }`}>
+              <p className="text-[10px] uppercase tracking-widest font-black text-slate-500">
+                Status
+              </p>
+              <div className={`flex items-center gap-2 mt-0.5 ${gameStarted ? "text-orange-400" : "text-emerald-400"}`}>
+                <div className={`w-2 h-2 rounded-full ${gameStarted ? "bg-orange-400 animate-pulse" : "bg-emerald-400"}`} />
+                <span className="text-sm font-black">
+                  {gameStarted ? "Em andamento" : "Aguardando"}
+                </span>
+              </div>
             </div>
 
+            {/* Encerrar sessão */}
             <button
-              onClick={copyCode}
-              className="px-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition flex items-center gap-2"
+              onClick={onEncerrar}
+              className="group flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-red-500/10 hover:bg-red-500 border border-red-500/20 hover:border-transparent text-red-400 hover:text-white transition-all duration-200"
             >
-              <Copy size={14} className="text-slate-400" />
-              <span className="text-[10px] uppercase font-black text-slate-400">
-                copiar
-              </span>
+              <LogOut size={15} className="group-hover:-translate-x-0.5 transition-transform" />
+              <span className="text-[11px] uppercase font-black tracking-widest">Encerrar</span>
             </button>
-
           </div>
-
-          {/* COMPACT INFO ROW */}
-          <div className="flex flex-wrap gap-2">
-
-            {/* STATUS RODADA */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  gameStarted ? "bg-orange-500 animate-pulse" : "bg-emerald-400"
-                }`}
-              />
-              <span className="text-[10px] uppercase text-slate-400 font-black">
-                {gameStarted ? `Rodada ${currentRoundNumber}` : "Lobby"}
-              </span>
-            </div>
-
-            {/* PLAYERS */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-              <span className="text-[10px] uppercase text-slate-400 font-black">
-                {playersCount} jogadores
-              </span>
-            </div>
-
-            {/* ADMIN */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-              <Shield size={12} className="text-orange-400" />
-              <span className="text-[10px] uppercase text-slate-400 font-black truncate max-w-[140px]">
-                {adminName}
-              </span>
-            </div>
-
-          </div>
-        </div>
-
-        {/* RIGHT */}
-        <div className="flex items-center gap-3 w-full xl:w-auto">
-
-          {/* ROUND */}
-          <div className="hidden md:flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
-            <Timer size={16} className="text-orange-400" />
-
-            <div className="leading-tight">
-              <div className="text-[10px] uppercase text-slate-500 font-black">
-                Rodada atual
-              </div>
-              <div className="text-xl font-black text-white">
-                {currentRoundNumber}
-              </div>
-            </div>
-          </div>
-
-          {/* END BUTTON */}
-          <button
-            onClick={onEncerrar}
-            className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all font-black uppercase text-[11px]"
-          >
-            <LogOut size={14} />
-            Encerrar sessão
-          </button>
-
         </div>
       </div>
     </header>

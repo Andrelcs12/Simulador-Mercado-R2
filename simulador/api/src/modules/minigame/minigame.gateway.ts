@@ -15,6 +15,7 @@ import { Server, Socket } from "socket.io";
 import { PlayerGateway } from "./gateways/player.gateway";
 import { RoundGateway } from "./gateways/round.gateway";
 import { AdminGateway } from "./gateways/admin.gateway";
+import { SessionService } from "./services/session.service";
 
 @Injectable()
 @WebSocketGateway({
@@ -33,6 +34,7 @@ export class MinigameGateway implements OnGatewayInit {
     private readonly playerGateway: PlayerGateway,
     private readonly roundGateway: RoundGateway,
     private readonly adminGateway: AdminGateway,
+    private readonly sessionService: SessionService,
   ) {}
 
   // ======================================================
@@ -40,12 +42,17 @@ export class MinigameGateway implements OnGatewayInit {
   // ======================================================
 
   afterInit(server: Server) {
-    this.playerGateway.server = server;
-    this.roundGateway.server = server;
-    this.adminGateway.server = server;
+  this.server = server;
 
-    this.logger.log("Simulation websocket initialized");
-  }
+  this.playerGateway.server = server;
+  this.roundGateway.server = server;
+  this.adminGateway.server = server;
+
+  // 🔥 ESSENCIAL
+  this.sessionService.setServer(server);
+
+  this.logger.log("Simulation websocket initialized");
+}
 
   // ======================================================
   // SOCKET LIFECYCLE

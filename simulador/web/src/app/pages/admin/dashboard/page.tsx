@@ -63,7 +63,7 @@ const AdminMestre = () => {
   );
 
   const readyCount = useMemo(
-    () => players.filter((p: any) => p?.isReady === true).length,
+    () => players.filter((p) => p?.isReady).length,
     [players]
   );
 
@@ -80,7 +80,6 @@ const AdminMestre = () => {
 
   const ranking = dashboard?.ranking ?? [];
 
-  // ================= LOAD =================
   useEffect(() => {
     const sessionId = localStorage.getItem("admin_session_id");
     const admin = localStorage.getItem("admin_name");
@@ -124,7 +123,6 @@ const AdminMestre = () => {
     fetchAll();
   }, [API_URL, conectar, router, setPlayers, setSession]);
 
-  // ================= TIMER =================
   useEffect(() => {
     if (!endTime || !gameStarted) return;
 
@@ -138,7 +136,6 @@ const AdminMestre = () => {
     return () => clearInterval(interval);
   }, [endTime, gameStarted]);
 
-  // ================= ACTIONS =================
   const iniciarRodada = () => {
     emit("admin:start_round", {
       sessionId: session?.id,
@@ -173,7 +170,6 @@ const AdminMestre = () => {
     router.push("/pages/admin/setup");
   };
 
-  // ================= LOADING =================
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#080D17]">
@@ -184,7 +180,6 @@ const AdminMestre = () => {
 
   return (
     <div className="min-h-screen bg-[#080D17] text-white">
-
       <Toaster position="top-right" />
 
       <Header
@@ -197,14 +192,11 @@ const AdminMestre = () => {
         onEncerrar={() => setConfirmFinish(true)}
       />
 
-      {/* CONTAINER PRINCIPAL (SEM CARDS INTERNOS) */}
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
-          {/* LEFT */}
-          <div className="xl:col-span-8 space-y-6">
-
+          {/* MAIN */}
+          <div className="xl:col-span-9 space-y-6">
             <StatsCards
               session={session}
               players={players}
@@ -242,8 +234,8 @@ const AdminMestre = () => {
             />
           </div>
 
-          {/* RIGHT */}
-          <div className="xl:col-span-4">
+          {/* SIDE */}
+          <div className="xl:col-span-3">
             <div className="sticky top-24">
               <PlayersTable
                 players={players}

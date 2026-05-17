@@ -7,28 +7,27 @@ import toast from "react-hot-toast";
 import { PlayerData, RoundData, AppConfig } from "../types/onboarding";
 
 type SubmitPayload = {
-  playerId:  string;
+  playerId: string;
   sessionId: string;
-  roundId:   string;
-  storeId?:  string;
-  operatorsQty:        number;
+  roundId: string;
+  storeId?: string;
+  operatorsQty: number;
   serviceOperatorsQty: number;
-  quizScore:           number;
+  quizScore: number;
   stockInputs: {
-    categoryId:        string;
-    buyQty:            number;
-    commercialMargin:  number;
+    categoryId: string;
+    buyQty: number;
+    commercialMargin: number;
     expectedSellPrice: number;
   }[];
   capexSelections: { capexId: string }[];
 };
 
-// IDs que o backend espera — ajuste para bater com categoryMaster no banco
 const CATEGORY_ID_MAP: Record<string, string> = {
   pereciveis: "cat_pereciveis",
-  mercearia:  "cat_mercearia",
-  eletro:     "cat_eletro",
-  hipel:      "cat_hipel",
+  mercearia: "cat_mercearia",
+  eletro: "cat_eletro",
+  hipel: "cat_hipel",
 };
 
 function normalizeEndTime(raw: any): number | null {
@@ -39,35 +38,29 @@ function normalizeEndTime(raw: any): number | null {
 }
 
 export function useOnboardingSession(API_URL: string) {
-  const router    = useRouter();
+  const router = useRouter();
   const socketRef = useRef<Socket | null>(null);
-  const timerRef  = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [player,     setPlayer]     = useState<PlayerData | null>(null);
-  const [round,      setRound]      = useState<RoundData | null>(null);
-  const [timeLeft,   setTimeLeft]   = useState(0);
-  const [submitted,  setSubmitted]  = useState(false);
+  const [player, setPlayer] = useState<PlayerData | null>(null);
+  const [round, setRound] = useState<RoundData | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [timeUp,     setTimeUp]     = useState(false);
+  const [timeUp, setTimeUp] = useState(false);
 
-  // ── Timer ──────────────────────────────────────────────────
   const startTimer = useCallback((endTimeMs: number) => {
     if (timerRef.current) clearInterval(timerRef.current);
 
     const tick = () => {
       const diff = Math.max(0, Math.floor((endTimeMs - Date.now()) / 1000));
       setTimeLeft(diff);
-      if (diff <= 0) {
-        clearInterval(timerRef.current!);
-        setTimeUp(true);
-      }
     };
 
-    tick(); // executa imediatamente para evitar 00:00 inicial
+    tick();
     timerRef.current = setInterval(tick, 1000);
   }, []);
 
-  // ── Efeito principal ───────────────────────────────────────
   useEffect(() => {
     const saved = localStorage.getItem("player_data");
     if (!saved) {
@@ -78,168 +71,149 @@ export function useOnboardingSession(API_URL: string) {
     const p: PlayerData = JSON.parse(saved);
     setPlayer(p);
 
-    // Restaura round do localStorage para timer imediato
     const savedRound = localStorage.getItem("round_data");
     if (savedRound) {
-      try {
-        const r: RoundData = JSON.parse(savedRound);
-        const endMs = normalizeEndTime(r.endTime);
+      const r: RoundData = JSON.parse(savedRound);
+      const endMs = normalizeEndTime(r.endTime);
+      if (endMs) {
         setRound({ ...r, endTime: endMs });
-        if (endMs && endMs > Date.now()) startTimer(endMs);
-      } catch {}
+        if (endMs > Date.now()) startTimer(endMs);
+      }
     }
 
     const socket = io(`${API_URL}/simulation`, { reconnection: true });
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      socket.emit("join_session", { sessionId: p.sessionId, playerId: p.id });
-      // Sincroniza com servidor — recupera endTime real mesmo após reload
-      socket.emit("session:get_state", { sessionId: p.sessionId });
+      socket.emit("join_session", {
+        sessionId: p.sessionId,
+        playerId: p.id,
+      });
+
+      socket.emit("session:get_state", {
+        sessionId: p.sessionId,
+      });
     });
 
-    // ── session:state: fonte de verdade do timer ──
+    // STATE SYNC (backend source of truth)
     socket.on("session:state", (session: any) => {
-      if (!session) return;
-      const activeRound = Array.isArray(session.rounds)
-        ? session.rounds.find((r: any) => r.status === "OPEN")
-        : null;
+      const activeRound = session?.rounds?.find(
+        (r: any) => r.status === "OPEN"
+      );
+
       if (!activeRound?.endsAt) return;
 
-      const endsAtMs = new Date(activeRound.endsAt).getTime();
-      if (isNaN(endsAtMs)) return;
-
-      const duration = activeRound.startsAt
-        ? Math.round((endsAtMs - new Date(activeRound.startsAt).getTime()) / 1000)
-        : 0;
+      const endMs = new Date(activeRound.endsAt).getTime();
+      if (isNaN(endMs)) return;
 
       const synced: RoundData = {
-        roundId:     activeRound.id,
+        roundId: activeRound.id,
         roundNumber: session.currentRound ?? 0,
-        duration,
-        endTime:     endsAtMs,
+        duration: activeRound.startsAt
+          ? Math.round(
+              (new Date(activeRound.endsAt).getTime() -
+                new Date(activeRound.startsAt).getTime()) /
+                1000
+            )
+          : 0,
+        endTime: endMs,
       };
 
       localStorage.setItem("round_data", JSON.stringify(synced));
       setRound(synced);
-      if (endsAtMs > Date.now()) startTimer(endsAtMs);
+
+      if (endMs > Date.now()) startTimer(endMs);
     });
 
-    // ── Nova rodada iniciada (admin clicou iniciar) ──
+    // ROUND START
     socket.on("round:started", (data: any) => {
       const endMs = normalizeEndTime(data.endTime);
 
       const normalized: RoundData = {
-        roundId:     data.roundId,
+        roundId: data.roundId,
         roundNumber: data.roundNumber,
-        duration:    data.duration,
-        endTime:     endMs,
+        duration: data.duration,
+        endTime: endMs,
       };
 
       localStorage.setItem("round_data", JSON.stringify(normalized));
       setRound(normalized);
+
       setSubmitted(false);
       setSubmitting(false);
       setTimeUp(false);
 
-      if (endMs && endMs > Date.now()) startTimer(endMs);
-      toast.success(`▶ Rodada ${normalized.roundNumber} iniciada!`);
+      if (endMs) startTimer(endMs);
 
-      // Garante que o player está na página certa
+      toast.success(`Rodada ${data.roundNumber} iniciada`);
       router.push("/pages/onboarding");
     });
 
-    // ── Tempo esgotado pelo servidor ──
-    // Player não enviou — vai direto pro dashboard
-    socket.on("round:time_up", () => {
-      setTimeUp(true);
-      setTimeLeft(0);
-      if (timerRef.current) clearInterval(timerRef.current);
-      toast.error("⏱ Tempo esgotado");
-      setTimeout(() => router.push("/pages/dashboard"), 1500);
-    });
-
-    // ── Admin parou a rodada manualmente ──
-    socket.on("round:stopped", () => {
-      setTimeUp(true);
-      setSubmitting(false);
-      if (timerRef.current) clearInterval(timerRef.current);
-      toast("Rodada encerrada pelo facilitador", { icon: "⚠️" });
-      setTimeout(() => router.push("/pages/dashboard"), 1500);
-    });
-
-    // ── round:finished: encerramento geral ──
-    // Se player já submeteu → submit:success já redirecionou pro /processing
-    // Se não submeteu → vai pro /dashboard
+    // ROUND FINISHED (único evento real)
     socket.on("round:finished", () => {
-      if (timerRef.current) clearInterval(timerRef.current);
       setSubmitting(false);
 
-      // Lê o estado atual de submitted sem criar closure stale
-      setSubmitted((wasSubmitted) => {
-        if (!wasSubmitted) {
+      setSubmitted((was) => {
+        if (!was) {
           setTimeout(() => router.push("/pages/dashboard"), 800);
         }
-        return wasSubmitted;
+        return was;
       });
     });
 
-    // ── Submit com sucesso ──
-    // Fluxo: submit → processing (loading 5s) → dashboard
+    // SUBMIT SUCCESS
     socket.on("submit:success", () => {
       setSubmitted(true);
       setSubmitting(false);
-      toast.success("✅ Configuração enviada!");
-      setTimeout(() => router.push("/pages/processing"), 800);
+      toast.success("Enviado!");
+      router.push("/pages/processing");
     });
 
-    socket.on("submit:error", ({ message }: { message?: string }) => {
+    socket.on("submit:error", ({ message }) => {
       setSubmitting(false);
-      toast.error(message || "Erro ao enviar configuração");
+      toast.error(message || "Erro ao enviar");
     });
 
     return () => {
-      socket.removeAllListeners();
       socket.disconnect();
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [API_URL, router, startTimer]);
 
-  // ── Submit ─────────────────────────────────────────────────
   const submit = useCallback(
     (payload: {
-      playerId:  string;
+      playerId: string;
       sessionId: string;
-      roundId:   string;
-      storeId?:  string;
-      config:    AppConfig;
+      roundId: string;
+      storeId?: string;
+      config: AppConfig;
     }) => {
       if (!socketRef.current || submitting || submitted) return;
 
       const { config } = payload;
 
       const formatted: SubmitPayload = {
-        playerId:  payload.playerId,
+        playerId: payload.playerId,
         sessionId: payload.sessionId,
-        roundId:   payload.roundId,
-        storeId:   payload.storeId,
+        roundId: payload.roundId,
+        storeId: payload.storeId,
 
-        // SimulationService.calculateRoundResult usa:
-        //   operatorsQty = caixa + atendimento (total p/ custo operacional)
-        //   serviceOperatorsQty = só atendimento (p/ calcular SLA)
-        operatorsQty:        config.operadoresCaixa + config.operadoresAtendimento,
+        operatorsQty:
+          config.operadoresCaixa + config.operadoresAtendimento,
         serviceOperatorsQty: config.operadoresAtendimento,
-        quizScore:           config.quizScore,
+        quizScore: config.quizScore,
 
-        stockInputs: Object.entries(config.comercial).map(([key, val]) => ({
-          categoryId:        CATEGORY_ID_MAP[key] ?? key,
-          buyQty:            val.estoque,
-          commercialMargin:  val.margem,
-          expectedSellPrice: 0, // backend calcula via unitCost + margin
-        })),
+        stockInputs: Object.entries(config.comercial).map(
+          ([key, val]) => ({
+            categoryId: CATEGORY_ID_MAP[key] ?? key,
+            buyQty: val.estoque,
+            commercialMargin: val.margem,
+            expectedSellPrice: 0,
+          })
+        ),
 
         capexSelections: Object.entries(config.capex)
-          .filter(([, selected]) => selected)
+          .filter(([, v]) => v)
           .map(([capexId]) => ({ capexId })),
       };
 

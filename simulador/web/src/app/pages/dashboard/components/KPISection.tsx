@@ -10,46 +10,57 @@ import {
   ArrowDownRight,
 } from "lucide-react";
 
+type KPIs = {
+  ebitda: number;
+  revenue: number;
+  expenses: number;
+  cash: number;
+  csat: number;
+  sla: number;
+};
+
 interface Props {
-  results?: {
-    ebitda: number;
-    revenue: number;
-    expenses: number;
-    cash: number;
-    csat: number;
-    sla: number;
-  } | null;
+  results?: KPIs | null;
 }
 
 export default function KPISection({ results }: Props) {
+  const safe: KPIs = {
+    ebitda: results?.ebitda ?? 0,
+    revenue: results?.revenue ?? 0,
+    expenses: results?.expenses ?? 0,
+    cash: results?.cash ?? 0,
+    csat: results?.csat ?? 0,
+    sla: results?.sla ?? 0,
+  };
+
   const money = (v: number) =>
-    (v ?? 0).toLocaleString("pt-BR");
+    v.toLocaleString("pt-BR");
 
   const kpis = [
     {
       label: "EBITDA",
-      value: `R$ ${money(results?.ebitda ?? 0)}`,
+      value: `R$ ${money(safe.ebitda)}`,
       icon: <TrendingUp />,
       trend: "+0%",
       up: true,
     },
     {
       label: "Receita",
-      value: `R$ ${money(results?.revenue ?? 0)}`,
+      value: `R$ ${money(safe.revenue)}`,
       icon: <Target />,
       trend: "+0%",
       up: true,
     },
     {
       label: "Despesas",
-      value: `R$ ${money(results?.expenses ?? 0)}`,
+      value: `R$ ${money(safe.expenses)}`,
       icon: <AlertTriangle />,
       trend: "-0%",
       up: false,
     },
     {
       label: "CSAT",
-      value: (results?.csat ?? 0).toFixed(1),
+      value: safe.csat.toFixed(1),
       icon: <Smile />,
       trend: "Atual",
       up: true,
@@ -69,7 +80,11 @@ export default function KPISection({ results }: Props) {
               }`}
             >
               {kpi.trend}
-              {kpi.up ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+              {kpi.up ? (
+                <ArrowUpRight size={14} />
+              ) : (
+                <ArrowDownRight size={14} />
+              )}
             </span>
           </div>
 

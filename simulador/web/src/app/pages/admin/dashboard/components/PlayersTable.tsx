@@ -1,11 +1,14 @@
+"use client";
+
 import {
   Users,
   CheckCircle2,
-  Clock,
+  Clock3,
   UserMinus,
   ShieldCheck,
   Store,
   User2,
+  Briefcase,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,76 +20,82 @@ interface PlayersTableProps {
   onKick: (player: Player) => void;
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  STORE_MANAGER: "Gerente Loja",
+  SERVICE_MANAGER: "Serviços",
+  SUPPLY_MANAGER: "Abastecimento",
+  COMMERCIAL_MANAGER: "Comercial",
+  OPERATION_MANAGER: "Operacional",
+};
+
 export const PlayersTable = ({
   players,
   submittedCount,
   onKick,
 }: PlayersTableProps) => {
-  const readyCount = players.filter((p: any) => p.isReady).length;
-  
+  const readyCount = players.filter(
+    (p: any) => p.ready || p.isReady
+  ).length;
 
   return (
-    <aside className="bg-[#0F172A] border border-white/[0.06] rounded-[2rem] overflow-hidden h-fit">
+    <aside className="bg-[#111827] border border-white/[0.06] rounded-2xl overflow-hidden">
 
       {/* HEADER */}
-      <div className="border-b border-white/[0.06] px-5 py-5">
+      <div className="px-4 py-4 border-b border-white/[0.06]">
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between">
 
-          <div>
-            <div className="flex items-center gap-2">
-              <Users size={16} className="text-orange-500" />
+          <div className="flex items-center gap-2">
+            <Users size={16} className="text-orange-400" />
 
-              <h2 className="text-sm font-black uppercase tracking-[0.18em] text-white">
+            <div>
+              <h2 className="text-xs font-black uppercase tracking-widest text-white">
                 Participantes
               </h2>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest">
+                em tempo real
+              </p>
             </div>
-
-            <p className="text-[11px] text-slate-500 font-semibold mt-1">
-              Monitoramento em tempo real da sessão
-            </p>
           </div>
 
-          <div className="bg-orange-500 text-white min-w-[46px] h-[46px] rounded-2xl flex items-center justify-center text-sm font-black shadow-lg">
+          <div className="text-sm font-black text-white bg-orange-500/10 border border-orange-500/20 px-3 py-1 rounded-xl">
             {players.length}
           </div>
+
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-2 gap-3 mt-5">
+        <div className="grid grid-cols-2 gap-2 mt-4">
 
-          <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <CheckCircle2 size={15} className="text-emerald-400" />
-
-              <span className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500">
-                Enviaram
+          <div className="bg-[#0B1220] border border-white/[0.05] rounded-xl p-3">
+            <div className="flex items-center gap-2 text-emerald-400">
+              <CheckCircle2 size={12} />
+              <span className="text-[9px] uppercase tracking-widest text-slate-500">
+                enviados
               </span>
             </div>
-
-            <div className="text-2xl font-black text-white">
+            <div className="text-lg font-black text-white mt-1">
               {submittedCount}
             </div>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <ShieldCheck size={15} className="text-sky-400" />
-
-              <span className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500">
-                Prontos
+          <div className="bg-[#0B1220] border border-white/[0.05] rounded-xl p-3">
+            <div className="flex items-center gap-2 text-sky-400">
+              <ShieldCheck size={12} />
+              <span className="text-[9px] uppercase tracking-widest text-slate-500">
+                prontos
               </span>
             </div>
-
-            <div className="text-2xl font-black text-white">
+            <div className="text-lg font-black text-white mt-1">
               {readyCount}
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* PLAYERS */}
-      <div className="p-3 max-h-[72vh] overflow-y-auto">
+      {/* LIST */}
+      <div className="p-3 max-h-[74vh] overflow-y-auto">
 
         <AnimatePresence mode="popLayout">
 
@@ -94,147 +103,125 @@ export const PlayersTable = ({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="bg-white/[0.03] border border-dashed border-white/[0.08] rounded-3xl p-10 text-center"
+              className="text-center py-10 border border-dashed border-white/[0.06] rounded-xl bg-[#0B1220]"
             >
-              <Users
-                size={34}
-                className="mx-auto text-slate-700 mb-4"
-              />
+              <Users className="mx-auto text-slate-700 mb-3" size={28} />
 
-              <h3 className="font-black text-slate-300 text-sm uppercase tracking-wide">
-                Nenhum participante conectado
-              </h3>
+              <p className="text-sm font-black text-slate-300 uppercase">
+                sem jogadores
+              </p>
 
-              <p className="text-xs text-slate-600 mt-2">
-                Os jogadores aparecerão aqui ao entrar na sessão
+              <p className="text-[10px] text-slate-600 mt-2">
+                aguardando conexões
               </p>
             </motion.div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
 
-              {players.map((player: any, index) => (
-                <motion.div
-                  key={player.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.18 }}
-                  className="group relative overflow-hidden bg-[#111827] hover:bg-[#151D2E] border border-orange-500/20 rounded-[1.6rem] p-4 transition-all duration-300 shadow-lg"
-                >
+              {players.map((player: any, index) => {
+                const isReady = player.ready || player.isReady;
+                const submitted = !!player.submittedAt;
 
-                  {/* glow */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-orange-500/[0.03] via-transparent to-transparent pointer-events-none" />
+                const role =
+                  ROLE_LABELS[player.role] || "Participante";
 
-                  <div className="relative flex items-start justify-between gap-4">
+                return (
+                  <motion.div
+                    key={player.id}
+                    layout
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    className="bg-[#0B1220] border border-white/[0.05] hover:border-white/[0.12] rounded-xl p-3 transition"
+                  >
 
-                    {/* LEFT */}
-                    <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="flex justify-between gap-3">
 
-                      {/* avatar */}
-                      <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center shrink-0">
-                        <Store
-                          size={20}
-                          className="text-orange-400"
-                        />
-                      </div>
+                      {/* LEFT */}
+                      <div className="flex gap-3 min-w-0">
 
-                      {/* infos */}
-                      <div className="min-w-0 flex-1">
-
-                        <div className="flex items-center gap-2 flex-wrap">
-
-                          <h3 className="font-black text-white text-sm truncate">
-                            {player.storeName || "Loja não informada"}
-                          </h3>
-
-                          <span className="bg-white/[0.04] border border-white/[0.06] px-2 py-1 rounded-full text-[9px] uppercase tracking-[0.16em] font-black text-slate-400">
-                            #{index + 1}
-                          </span>
+                        {/* ICON */}
+                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center shrink-0">
+                          <Store size={16} className="text-orange-400" />
                         </div>
 
-                        <div className="flex items-center gap-2 mt-2 min-w-0">
+                        {/* INFO */}
+                        <div className="min-w-0">
 
-                          <User2
-                            size={13}
-                            className="text-slate-500 shrink-0"
-                          />
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-black text-white truncate">
+                              {player.storeName || "Sem loja"}
+                            </p>
 
-                          <p className="text-xs text-slate-400 font-semibold truncate">
-                            {player.name}
-                          </p>
-                        </div>
+                            <span className="text-[9px] text-slate-500">
+                              #{index + 1}
+                            </span>
+                          </div>
 
-                        {/* STATUS */}
-                        <div className="flex flex-wrap items-center gap-2 mt-3">
+                          <div className="flex items-center gap-2 mt-2 text-slate-400">
+                            <User2 size={12} />
+                            <p className="text-xs truncate">
+                              {player.name}
+                            </p>
+                          </div>
 
-                          {/* READY */}
-                          {player.ready ? (
-                            <div className="flex items-center gap-1.5 bg-sky-500/10 border border-sky-500/20 text-sky-400 px-2.5 py-1.5 rounded-xl">
-                              <ShieldCheck size={12} />
-                              <span className="text-[10px] font-black uppercase tracking-wide">
-                                Pronto
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.06] text-slate-500 px-2.5 py-1.5 rounded-xl">
-                              <Clock size={12} />
-                              <span className="text-[10px] font-black uppercase tracking-wide">
-                                Preparando
-                              </span>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-2 mt-1 text-orange-400">
+                            <Briefcase size={12} />
+                            <span className="text-[10px] uppercase tracking-widest font-black">
+                              {role}
+                            </span>
+                          </div>
 
-                          {/* SUBMITTED */}
-                          {player.submittedAt ? (
-                            <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2.5 py-1.5 rounded-xl">
-                              <CheckCircle2 size={12} />
-                              <span className="text-[10px] font-black uppercase tracking-wide">
-                                Enviado
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1.5 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 px-2.5 py-1.5 rounded-xl">
-                              <Clock size={12} />
-                              <span className="text-[10px] font-black uppercase tracking-wide">
-                                Aguardando
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                          {/* STATUS */}
+                          <div className="flex gap-2 mt-3 flex-wrap">
 
-                        {/* horário */}
-                        {player.submittedAt && (
-                          <p className="text-[10px] text-emerald-500/80 font-bold mt-3">
-                            Configuração enviada às{" "}
-                            {new Date(player.submittedAt).toLocaleTimeString(
-                              "pt-BR",
-                              {
+                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase border ${
+                              isReady
+                                ? "text-sky-400 border-sky-500/20 bg-sky-500/10"
+                                : "text-slate-500 border-white/[0.06] bg-white/[0.03]"
+                            }`}>
+                              {isReady ? "pronto" : "preparando"}
+                            </span>
+
+                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase border ${
+                              submitted
+                                ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/10"
+                                : "text-yellow-400 border-yellow-500/20 bg-yellow-500/10"
+                            }`}>
+                              {submitted ? "enviado" : "aguardando"}
+                            </span>
+
+                          </div>
+
+                          {submitted && (
+                            <p className="text-[9px] text-emerald-500 mt-2 uppercase tracking-widest">
+                              {new Date(player.submittedAt).toLocaleTimeString("pt-BR", {
                                 hour: "2-digit",
                                 minute: "2-digit",
-                              }
-                            )}
-                          </p>
-                        )}
+                              })}
+                            </p>
+                          )}
+
+                        </div>
                       </div>
-                    </div>
 
-                    {/* RIGHT */}
-                    <div className="flex flex-col items-center gap-2 shrink-0">
-
+                      {/* ACTION */}
                       <button
                         onClick={() => onKick(player)}
-                        className="transition-all duration-200 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/10 hover:border-red-500 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
-                        title="Remover jogador"
+                        className="w-9 h-9 rounded-lg bg-red-500/10 hover:bg-red-500 border border-red-500/20 hover:border-red-500 flex items-center justify-center text-red-400 hover:text-white transition"
                       >
-                        <UserMinus size={16} />
+                        <UserMinus size={14} />
                       </button>
+
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+
+                  </motion.div>
+                );
+              })}
+
             </div>
           )}
+
         </AnimatePresence>
       </div>
     </aside>

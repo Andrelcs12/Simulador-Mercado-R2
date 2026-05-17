@@ -27,10 +27,12 @@ export class RoundGateway {
 
     this.clearTimer(data.sessionId);
 
-    const session = await this.minigameService.getSessionById(data.sessionId);
+    const session = await this.minigameService.getSessionById(
+      data.sessionId,
+    );
 
     const startTime = Date.now();
-    const endTime = Date.now() + data.duration * 1000;
+    const endTime = startTime + data.duration * 1000;
 
     const payload = {
       sessionId: data.sessionId,
@@ -41,74 +43,62 @@ export class RoundGateway {
       endTime,
     };
 
-    // TIMER GLOBAL
     const timeout = setTimeout(async () => {
-      const result = await this.minigameService.finishRound(
-        data.sessionId,
-        "TIME_UP",
-      );
-
-      const sessionAfter = await this.minigameService.getSessionById(
-        data.sessionId,
-      );
-
-      this.server.to(data.sessionId).emit("round:finished", {
-        sessionId: data.sessionId,
-        roundId: result.roundId,
-        roundNumber: sessionAfter.currentRound,
-        reason: "TIME_UP",
-        results: result.results,
-      });
-
-      this.server.to(data.sessionId).emit("round:time_up", {
-        sessionId: data.sessionId,
-      });
-
-      this.server.to(data.sessionId).emit("session:state", sessionAfter);
-
-      this.clearTimer(data.sessionId);
+      await this.finishRoundInternal(data.sessionId, "TIME_UP");
     }, data.duration * 1000);
 
     this.timers.set(data.sessionId, timeout);
 
     this.server.to(data.sessionId).emit("round:started", payload);
-
-    this.server.to(data.sessionId).emit(
-      "session:state",
-      session,
-    );
+    this.server.to(data.sessionId).emit("session:state", session);
 
     return payload;
+  }
+
+  // =========================
+  // CENTRAL FINISH
+  // =========================
+  private async finishRoundInternal(
+    sessionId: string,
+    reason: "TIME_UP" | "ADMIN_STOP" | "MANUAL",
+  ) {
+    this.clearTimer(sessionId);
+
+    const result = await this.minigameService.finishRound(
+      sessionId,
+      reason,
+    );
+
+    const session = await this.minigameService.getSessionById(sessionId);
+
+    this.server.to(sessionId).emit("round:finished", {
+      sessionId,
+      roundId: result.roundId,
+      roundNumber: session.currentRound,
+      reason,
+      results: result.results,
+    });
+
+    this.server.to(sessionId).emit("session:state", session);
+
+    if (session.currentRound >= session.totalRounds) {
+      const final =
+        await this.minigameService.finalizeSession(sessionId);
+
+      this.server.to(sessionId).emit("session:finalized", {
+        sessionId,
+        ranking: final.ranking,
+      });
+    }
+
+    return result;
   }
 
   // =========================
   // FORCE STOP
   // =========================
   async forceStop(data: { sessionId: string }) {
-    this.clearTimer(data.sessionId);
-
-    const result = await this.minigameService.finishRound(
-      data.sessionId,
-      "ADMIN_STOP",
-    );
-
-    const session = await this.minigameService.getSessionById(data.sessionId);
-
-    this.server.to(data.sessionId).emit("round:stopped", {
-      sessionId: data.sessionId,
-    });
-
-    this.server.to(data.sessionId).emit("round:finished", {
-      sessionId: data.sessionId,
-      roundId: result.roundId,
-      roundNumber: session.currentRound,
-      reason: "ADMIN_STOP",
-      results: result.results,
-    });
-
-    this.server.to(data.sessionId).emit("session:state", session);
-
-    return result;
+    return this.finishRoundInternal(data.sessionId, "ADMIN_STOP");
   }
 
   // =========================
@@ -141,25 +131,6 @@ export class RoundGateway {
   // MANUAL FINISH
   // =========================
   async finishRoundManually(sessionId: string) {
-    this.clearTimer(sessionId);
-
-    const result = await this.minigameService.finishRound(
-      sessionId,
-      "MANUAL",
-    );
-
-    const session = await this.minigameService.getSessionById(sessionId);
-
-    this.server.to(sessionId).emit("round:finished", {
-      sessionId,
-      roundId: result.roundId,
-      roundNumber: session.currentRound,
-      reason: "MANUAL",
-      results: result.results,
-    });
-
-    this.server.to(sessionId).emit("session:state", session);
-
-    return result;
+    return this.finishRoundInternal(sessionId, "MANUAL");
   }
 }

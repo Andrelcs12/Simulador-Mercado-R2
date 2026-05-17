@@ -25,32 +25,21 @@ export default function DashboardPage() {
       try {
         const sessionId = localStorage.getItem("session_id");
 
-        if (!sessionId) {
-          setLoading(false);
-          return;
-        }
+        if (!sessionId) return;
 
         const res = await fetch(
           `${API_URL}/minigame/session/${sessionId}/dashboard/latest`
         );
 
-        if (!res.ok) throw new Error("Erro ao carregar dashboard");
+        if (!res.ok) throw new Error();
 
-        const json: DashboardResponse = await res.json();
+        const json = await res.json();
 
         setData(json);
 
-        toast.success(`Rodada ${json.roundNumber ?? "-"} sincronizada`, {
-          style: {
-            background: "#002350",
-            color: "#fff",
-            fontWeight: "bold",
-            borderRadius: "15px",
-          },
-        });
-      } catch (err) {
-        console.error(err);
-        toast.error("Falha ao carregar dashboard");
+        toast.success(`Rodada ${json.roundNumber ?? "-"} sincronizada`);
+      } catch {
+        toast.error("Erro ao carregar dashboard"); 
       } finally {
         setLoading(false);
       }
@@ -60,20 +49,19 @@ export default function DashboardPage() {
   }, [API_URL]);
 
   if (loading) return <WaitingStatus />;
-
   if (!data?.roundNumber) return <WaitingStatus />;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <Toaster position="top-right" />
+      <Toaster />
 
-      <div className="p-6 md:p-10 max-w-[1600px] mx-auto space-y-10">
+      <div className="p-6 max-w-[1600px] mx-auto space-y-10">
         <DashboardHeader
           roundNumber={data.roundNumber}
           totalRounds={data.totalRounds}
         />
 
-        <KPISection results={data.myStore?.kpis} />
+        <KPISection results={data.myStore?.kpis ?? null} />
 
         <div className="grid lg:grid-cols-3 gap-8">
           <RankingPanel ranking={data.ranking ?? []} />

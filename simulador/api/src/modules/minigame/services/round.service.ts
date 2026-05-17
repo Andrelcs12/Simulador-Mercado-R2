@@ -16,9 +16,6 @@ export class RoundService {
     private readonly ranking: RankingService,
   ) {}
 
-  private roundTimers = new Map<string, NodeJS.Timeout>();
-  private readyPlayers = new Map<string, Set<string>>();
-
   async startRound(sessionId: string, duration: number) {
     const session = await this.prisma.gameSession.findUnique({
       where: { id: sessionId },
@@ -93,9 +90,6 @@ export class RoundService {
       },
     });
 
-    this.clearTimer(sessionId);
-    this.readyPlayers.delete(sessionId);
-
     const results = await this.runRoundSimulation(sessionId, closed.id);
 
     await this.ranking.computeRoundRanking(sessionId, closed.id);
@@ -127,9 +121,6 @@ export class RoundService {
         data: { status: "FINISHED" },
       });
 
-      this.clearTimer(sessionId);
-      this.readyPlayers.delete(sessionId);
-
       return { sessionId, finished: true };
     }
 
@@ -157,141 +148,139 @@ export class RoundService {
     };
   }
 
-  private clearTimer(sessionId: string) {
-    const timer = this.roundTimers.get(sessionId);
-    if (timer) clearTimeout(timer);
-    this.roundTimers.delete(sessionId);
-  }
+  // =========================
+  // SIMULATION (CORRIGIDA)
+  // =========================
 
-  // =====================================================
-// SIMULATION FLOW CORRIGIDO
-// =====================================================
-
-async runRoundSimulation(sessionId: string, roundId: string) {
-  const round = await this.prisma.gameRound.findUnique({
-    where: { id: roundId },
-  });
-
-  if (!round) throw new NotFoundException("Rodada não encontrada");
-
-  const configs = await this.prisma.configuration.findMany({
-    where: { roundId },
-    include: {
-      stockInputs: true,
-      capexSelections: true,
-      store: true,
-    },
-  });
-
-  const categories = await this.prisma.categoryMaster.findMany();
-  const capex = await this.prisma.capexMaster.findMany();
-
-  // 1. métricas base (SEM mercado ainda)
-  const baseResults = configs.map((config) => {
-    const metrics = this.simulation.calculateBaseMetrics({
-      categories,
-      stockInputs: config.stockInputs,
-      operatorsQty: config.operatorsQty,
-      serviceOperatorsQty: config.serviceOperatorsQty,
-      quizScore: config.quizScore,
+  async runRoundSimulation(sessionId: string, roundId: string) {
+    const round = await this.prisma.gameRound.findUnique({
+      where: { id: roundId },
     });
 
-    return { config, metrics };
-  });
+    if (!round) throw new NotFoundException("Rodada não encontrada");
 
-  // 2. monta ranking INPUT (SEM calcular ainda dentro do ranking service)
-  const rankingInput = baseResults.map((r) => ({
-    storeId: r.config.storeId,
-    averagePrice: r.metrics.averagePrice,
-    availabilityRate: r.metrics.availabilityRate,
-    csat: r.metrics.csat,
-  }));
-
-  // 🔥 IMPORTANTE: ranking deve ser baseado nesses dados, não reconsultar DB
-  const ranking = this.ranking.buildRankingFromMetrics(rankingInput);
-
-  const totalScore =
-    ranking.reduce((acc, x) => acc + x.finalScore, 0) || 1;
-
-  // 3. execução final com marketShare REAL
-  const results = [];
-
-  for (const r of baseResults) {
-    const rankItem = ranking.find(
-      (x) => x.storeId === r.config.storeId,
-    );
-
-    const sim = this.simulation.calculateRoundResult({
-      categories,
-      capex,
-      stockInputs: r.config.stockInputs,
-      capexSelections: r.config.capexSelections,
-      storeCash: r.config.store.cashBalance,
-
-      operatorsQty: r.config.operatorsQty,
-      serviceOperatorsQty: r.config.serviceOperatorsQty,
-
-      quizScore: r.config.quizScore,
-
-      totalMarketCustomers: 1000,
-
-      // 🔥 AGORA CORRETO (SEM MOCK)
-      competitivenessScore: rankItem?.finalScore ?? 1,
-      competitorsTotalScore: totalScore,
-
-      averagePrice: r.metrics.averagePrice,
-      availabilityRate: r.metrics.availabilityRate,
-      csat: r.metrics.csat,
-      sla: r.metrics.sla,
+    const session = await this.prisma.gameSession.findUnique({
+      where: { id: sessionId },
+      include: { stores: true },
     });
 
-    const result = await this.prisma.roundResult.create({
-      data: {
-        sessionId,
-        roundId,
-        storeId: r.config.storeId,
-
-        marketShare: sim.marketShare,
-
-        customersReceived: sim.customersReceived,
-
-        totalRevenue: sim.totalRevenue,
-        totalTaxes: sim.totalTaxes,
-        totalCMV: sim.totalCMV,
-
-        operatingCosts: sim.operatingCosts,
-        capexCosts: sim.capexCosts,
-        licensingCosts: sim.licensingCosts,
-
-        agingCosts: sim.agingCosts,
-        interestCosts: sim.interestCosts,
-
-        totalExpenses: sim.totalExpenses,
-
-        ebitdaValue: sim.ebitdaValue,
-        ebitdaMargin: sim.ebitdaMargin,
-
-        finalCash: sim.finalCash,
-
-        remainingStockValue: sim.remainingStockValue,
-        stockBreakLoss: sim.stockBreakLoss,
-
-        csat: sim.csat,
-        sla: sim.sla,
-
-        averagePrice: sim.averagePrice,
-        availabilityRate: sim.availabilityRate,
+    const configs = await this.prisma.configuration.findMany({
+      where: { roundId },
+      include: {
+        stockInputs: true,
+        capexSelections: true,
       },
     });
 
-    results.push(result);
-  }
+    const categories = await this.prisma.categoryMaster.findMany();
+    const capex = await this.prisma.capexMaster.findMany();
 
-  return {
-    sessionId,
-    roundId,
-    roundNumber: round.roundNumber,
-    results,
-  };
-}
+    const configMap = new Map(configs.map((c) => [c.storeId, c]));
+
+    const baseResults = session.stores.map((store) => {
+      const config = configMap.get(store.id);
+
+      return {
+        store,
+        config,
+        metrics: this.simulation.calculateBaseMetrics({
+          categories,
+          stockInputs: config?.stockInputs ?? [],
+          operatorsQty: config?.operatorsQty ?? 0,
+          serviceOperatorsQty: config?.serviceOperatorsQty ?? 0,
+          quizScore: config?.quizScore ?? 0,
+        }),
+      };
+    });
+
+    const rankingInput = baseResults.map((r) => ({
+      storeId: r.store.id,
+      averagePrice: r.metrics.averagePrice,
+      availabilityRate: r.metrics.availabilityRate,
+      csat: r.metrics.csat,
+    }));
+
+    const ranking =
+      this.ranking.buildRankingFromMetrics(rankingInput);
+
+    const totalScore =
+      ranking.reduce((acc, x) => acc + x.finalScore, 0) || 1;
+
+    const results = [];
+
+    for (const r of baseResults) {
+      const rankItem = ranking.find(
+        (x) => x.storeId === r.store.id,
+      );
+
+      const sim = this.simulation.calculateRoundResult({
+        categories,
+        capex,
+        stockInputs: r.config?.stockInputs ?? [],
+        capexSelections: r.config?.capexSelections ?? [],
+        storeCash: r.store.cashBalance,
+
+        operatorsQty: r.config?.operatorsQty ?? 0,
+        serviceOperatorsQty: r.config?.serviceOperatorsQty ?? 0,
+        quizScore: r.config?.quizScore ?? 0,
+
+        totalMarketCustomers: 1000,
+
+        competitivenessScore: rankItem?.finalScore ?? 1,
+        competitorsTotalScore: totalScore,
+
+        averagePrice: r.metrics.averagePrice,
+        availabilityRate: r.metrics.availabilityRate,
+        csat: r.metrics.csat,
+        sla: r.metrics.sla,
+      });
+
+      const result = await this.prisma.roundResult.create({
+        data: {
+          sessionId,
+          roundId,
+          storeId: r.store.id,
+
+          marketShare: sim.marketShare,
+          customersReceived: sim.customersReceived,
+
+          totalRevenue: sim.totalRevenue,
+          totalTaxes: sim.totalTaxes,
+          totalCMV: sim.totalCMV,
+
+          operatingCosts: sim.operatingCosts,
+          capexCosts: sim.capexCosts,
+          licensingCosts: sim.licensingCosts,
+
+          agingCosts: sim.agingCosts,
+          interestCosts: sim.interestCosts,
+
+          totalExpenses: sim.totalExpenses,
+
+          ebitdaValue: sim.ebitdaValue,
+          ebitdaMargin: sim.ebitdaMargin,
+
+          finalCash: sim.finalCash,
+
+          remainingStockValue: sim.remainingStockValue,
+          stockBreakLoss: sim.stockBreakLoss,
+
+          csat: sim.csat,
+          sla: sim.sla,
+
+          averagePrice: sim.averagePrice,
+          availabilityRate: sim.availabilityRate,
+        },
+      });
+
+      results.push(result);
+    }
+
+    return {
+      sessionId,
+      roundId,
+      roundNumber: round.roundNumber,
+      results,
+    };
+  }
 }

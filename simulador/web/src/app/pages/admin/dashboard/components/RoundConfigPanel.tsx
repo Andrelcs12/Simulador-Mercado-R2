@@ -1,34 +1,26 @@
 "use client";
 
 import {
-  Settings,
-  ChevronUp,
-  ChevronDown,
-  Clock3,
-  TimerReset,
-  Layers3,
-  Sparkles,
+  Settings, ChevronUp, ChevronDown,
+  Clock3, Play, Square, SkipForward, Layers3,
 } from "lucide-react";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { RoundConfig } from "../types";
 
-const DURATION_PRESETS = [5, 10, 15, 20, 30, 45, 60];
-const INTERVAL_PRESETS = [0, 2, 5, 10, 15];
-
-const clamp = (v: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, v));
+const DURATION_PRESETS = [5, 10, 15, 20, 25, 30, 45, 60, 90];
 
 interface RoundConfigPanelProps {
-  config: RoundConfig;
-  gameStarted: boolean;
-  showConfig: boolean;
-  canGoNext: boolean;
-  onToggle: () => void;
-  onConfigChange: (patch: Partial<RoundConfig>) => void;
-  onIniciar: () => void;
-  onParar: () => void;
-  onProxima: () => void;
+  config:        RoundConfig;
+  gameStarted:   boolean;
+  showConfig:    boolean;
+  canGoNext:     boolean;
+  currentRound?: number;
+  totalRounds?:  number;
+  onToggle:      () => void;
+  onConfigChange:(patch: Partial<RoundConfig>) => void;
+  onIniciar:     () => void;
+  onParar:       () => void;
+  onProxima:     () => void;
 }
 
 export const RoundConfigPanel = ({
@@ -36,209 +28,149 @@ export const RoundConfigPanel = ({
   gameStarted,
   showConfig,
   canGoNext,
+  currentRound = 1,
+  totalRounds  = 3,
   onToggle,
   onConfigChange,
   onIniciar,
   onParar,
   onProxima,
-}: RoundConfigPanelProps) => {
-  return (
-    <section className="bg-[#111827] border border-white/[0.06] rounded-[2rem] overflow-hidden shadow-2xl">
+}: RoundConfigPanelProps) => (
+  <section className="bg-[#111827] border border-white/[0.06] rounded-3xl overflow-hidden">
 
-      {/* HEADER */}
-      <button
-        onClick={onToggle}
-        className="w-full px-5 py-5 flex items-center justify-between hover:bg-white/[0.02]"
-      >
-        <div className="flex items-center gap-3">
-          <Settings size={18} className="text-orange-400" />
-
-          <div className="text-left">
-            <h2 className="text-sm font-black uppercase text-white">
-              Configuração da Rodada
-            </h2>
-            <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em]">
-              controle operacional
-            </p>
-          </div>
+    {/* ── TOGGLE HEADER ── */}
+    <button
+      onClick={onToggle}
+      className="w-full px-7 py-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
+          <Settings size={17} className="text-orange-400" />
         </div>
-
-        <div className="flex items-center gap-2">
-          {gameStarted && (
-            <div className="flex items-center gap-1 text-[10px] text-orange-400 font-black uppercase">
-              <Sparkles size={12} />
-              ativa
-            </div>
-          )}
-
-          {showConfig ? (
-            <ChevronUp size={16} className="text-slate-400" />
-          ) : (
-            <ChevronDown size={16} className="text-slate-400" />
-          )}
+        <div className="text-left">
+          <h2 className="text-sm font-black uppercase text-white tracking-tight leading-none">
+            Configuração da Rodada
+          </h2>
+          <p className="text-[11px] uppercase tracking-widest text-slate-500 font-black mt-1">
+            Controle da simulação
+          </p>
         </div>
-      </button>
+      </div>
 
-      <AnimatePresence>
-        {showConfig && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="border-t border-white/[0.06] p-5 space-y-6">
+      {showConfig
+        ? <ChevronUp  size={18} className="text-slate-500 shrink-0" />
+        : <ChevronDown size={18} className="text-slate-500 shrink-0" />
+      }
+    </button>
 
-              {/* GRID */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    {/* ── CONTEÚDO ── */}
+    <AnimatePresence initial={false}>
+      {showConfig && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.22 }}
+          className="overflow-hidden"
+        >
+          <div className="border-t border-white/[0.06] p-7 space-y-6">
 
-                {/* DURAÇÃO */}
-                <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-4">
-
-                  <div className="flex items-center gap-2 mb-3">
-                    <Clock3 size={16} className="text-orange-400" />
-                    <span className="text-sm font-black uppercase text-white">
-                      duração
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    {DURATION_PRESETS.map((m) => {
-                      const active = config.durationMinutes === m;
-
-                      return (
-                        <button
-                          key={m}
-                          disabled={gameStarted}
-                          onClick={() =>
-                            onConfigChange({
-                              durationMinutes: m,
-                              durationSeconds: 0,
-                            })
-                          }
-                          className={`py-2 rounded-xl text-xs font-black border transition ${
-                            active
-                              ? "bg-orange-500 text-white border-orange-400"
-                              : "bg-white/[0.03] text-slate-300 border-white/[0.05]"
-                          }`}
-                        >
-                          {m}m
-                        </button>
-                      );
-                    })}
-                  </div>
+            {/* Info: rodada atual + duração selecionada */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
+                <div className="flex items-center gap-2 text-slate-500 mb-3">
+                  <Layers3 size={14} />
+                  <span className="text-[10px] uppercase tracking-widest font-black">
+                    Rodada
+                  </span>
                 </div>
-
-                {/* INTERVALO */}
-                <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-4">
-
-                  <div className="flex items-center gap-2 mb-3">
-                    <TimerReset size={16} className="text-sky-400" />
-                    <span className="text-sm font-black uppercase text-white">
-                      intervalo
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-5 gap-2">
-                    {INTERVAL_PRESETS.map((m) => {
-                      const active = config.intervalMinutes === m;
-
-                      return (
-                        <button
-                          key={m}
-                          disabled={gameStarted}
-                          onClick={() =>
-                            onConfigChange({ intervalMinutes: m })
-                          }
-                          className={`py-2 rounded-xl text-xs font-black border transition ${
-                            active
-                              ? "bg-sky-500 text-white border-sky-400"
-                              : "bg-white/[0.03] text-slate-300 border-white/[0.05]"
-                          }`}
-                        >
-                          {m}
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div className="text-3xl font-black text-white tabular-nums leading-none">
+                  {currentRound}
+                  <span className="text-slate-500 text-lg font-bold ml-1.5">
+                    / {totalRounds}
+                  </span>
                 </div>
-
-                {/* RODADA */}
-                <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-4">
-
-                  <div className="flex items-center gap-2 mb-3">
-                    <Layers3 size={16} className="text-emerald-400" />
-                    <span className="text-sm font-black uppercase text-white">
-                      rodada
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-5 gap-2">
-                    {[1, 2, 3, 4, 5].map((r) => {
-                      const active = config.roundNumber === r;
-                      const disabled = gameStarted || active;
-
-                      return (
-                        <button
-                          key={r}
-                          disabled={disabled}
-                          onClick={() =>
-                            onConfigChange({ roundNumber: r })
-                          }
-                          className={`py-2 rounded-xl text-xs font-black border transition ${
-                            active
-                              ? "bg-emerald-500 text-white border-emerald-400"
-                              : "bg-white/[0.03] text-slate-300 border-white/[0.05]"
-                          }`}
-                        >
-                          {r}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="mt-3 text-[10px] text-slate-500 uppercase tracking-[0.2em]">
-                    rodada atual: #{config.roundNumber}
-                  </div>
-                </div>
-
               </div>
 
-              {/* ACTIONS */}
-              <div className="flex gap-2">
+              <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
+                <div className="flex items-center gap-2 text-slate-500 mb-3">
+                  <Clock3 size={14} />
+                  <span className="text-[10px] uppercase tracking-widest font-black">
+                    Duração
+                  </span>
+                </div>
+                <div className="text-3xl font-black text-white tabular-nums leading-none">
+                  {config.durationMinutes}
+                  <span className="text-slate-500 text-lg font-bold ml-1.5">
+                    min
+                  </span>
+                </div>
+              </div>
+            </div>
 
+            {/* Presets de duração */}
+            <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
+              <p className="text-[11px] uppercase tracking-widest text-slate-500 font-black mb-4">
+                Tempo da Rodada
+              </p>
+              <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2">
+                {DURATION_PRESETS.map((minutes) => {
+                  const active = config.durationMinutes === minutes;
+                  return (
+                    <button
+                      key={minutes}
+                      disabled={gameStarted}
+                      onClick={() => onConfigChange({ durationMinutes: minutes, durationSeconds: 0 })}
+                      className={`h-11 rounded-xl text-xs font-black uppercase border transition-all ${
+                        active
+                          ? "bg-orange-500 border-orange-400 text-white shadow-lg shadow-orange-500/20"
+                          : "bg-white/[0.03] border-white/[0.06] text-slate-400 hover:bg-white/[0.07] hover:text-white"
+                      } ${gameStarted ? "opacity-40 cursor-not-allowed" : ""}`}
+                    >
+                      {minutes}m
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Botões de ação */}
+            <div className="flex flex-wrap gap-3">
+
+              {!gameStarted && (
                 <button
-                  disabled={gameStarted}
                   onClick={onIniciar}
-                  className="bg-orange-500 px-4 py-2 rounded-xl text-xs font-black uppercase"
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-400 transition-all text-sm font-black uppercase shadow-lg shadow-orange-500/20"
                 >
-                  iniciar
+                  <Play size={16} />
+                  Iniciar Rodada
                 </button>
+              )}
 
-                {gameStarted && (
-                  <button
-                    onClick={onParar}
-                    className="bg-yellow-500 text-black px-4 py-2 rounded-xl text-xs font-black uppercase"
-                  >
-                    encerrar
-                  </button>
-                )}
+              {gameStarted && (
+                <button
+                  onClick={onParar}
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-500/10 hover:bg-red-500 border border-red-500/20 hover:border-transparent text-red-400 hover:text-white transition-all text-sm font-black uppercase"
+                >
+                  <Square size={16} />
+                  Encerrar Rodada
+                </button>
+              )}
 
-                {!gameStarted && canGoNext && (
-                  <button
-                    onClick={onProxima}
-                    className="bg-sky-500/10 border border-sky-500/20 px-4 py-2 rounded-xl text-xs font-black uppercase text-sky-400"
-                  >
-                    próxima
-                  </button>
-                )}
-
-              </div>
+              {!gameStarted && canGoNext && (
+                <button
+                  onClick={onProxima}
+                  className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 text-sky-400 transition-all text-sm font-black uppercase"
+                >
+                  <SkipForward size={16} />
+                  Próxima Rodada
+                </button>
+              )}
 
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
-};
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </section>
+);

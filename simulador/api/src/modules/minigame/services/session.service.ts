@@ -8,10 +8,17 @@ import {
   GameRoundStatus,
   GameSessionStatus,
 } from "@/generated/prisma/enums";
+import { Server } from "socket.io";
 
 @Injectable()
 export class SessionService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private server: Server;
+
+  setServer(server: Server) {
+    this.server = server;
+  }
 
   private generateCode() {
     return Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -99,10 +106,7 @@ export class SessionService {
   });
 
   if (!results.length) {
-    return {
-      success: false,
-      message: "Nenhum resultado encontrado",
-    };
+    return { success: false, message: "Nenhum resultado encontrado" };
   }
 
   const grouped = results.reduce((acc, r) => {
@@ -118,7 +122,6 @@ export class SessionService {
 
     const totalRevenue = storeResults.reduce((a, r) => a + r.totalRevenue, 0);
     const totalExpenses = storeResults.reduce((a, r) => a + r.totalExpenses, 0);
-
     const finalEbitda = storeResults.reduce((a, r) => a + r.ebitdaValue, 0);
 
     const finalEbitdaMargin =
@@ -130,10 +133,7 @@ export class SessionService {
 
     await this.prisma.sessionResult.upsert({
       where: {
-        sessionId_storeId: {
-          sessionId,
-          storeId,
-        },
+        sessionId_storeId: { sessionId, storeId },
       },
       create: {
         sessionId,
@@ -161,7 +161,7 @@ export class SessionService {
     finalResults.push({ storeId, finalEbitdaMargin });
   }
 
-  const ranking = [...finalResults].sort(
+  const ranking = finalResults.sort(
     (a, b) => b.finalEbitdaMargin - a.finalEbitdaMargin,
   );
 
@@ -177,6 +177,14 @@ export class SessionService {
     });
   }
 
+  // 🔥 IMPORTANTE: emit só depois de ranking pronto
+  this.server?.to(sessionId).emit("session:finalized", {
+    sessionId,
+    ranking,
+  });
+
   return { success: true, ranking };
 }
+
+
 }
