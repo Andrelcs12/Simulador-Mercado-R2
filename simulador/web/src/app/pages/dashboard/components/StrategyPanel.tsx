@@ -2,52 +2,27 @@
 
 import React from "react";
 
-interface Props {
-  configurations?: {
-    store?: { name?: string };
-    capexSelections?: {
-      capexId: string;
-      capex?: {
-        name: string;
-        cost: number;
-      };
-    }[];
-  }[];
-}
-
-export default function StrategyPanel({ configurations = [] }: Props) {
-  const config = configurations[0];
-
+export default function StrategyPanel({ configurations = [] }: any) {
+  const config = configurations?.[0];
   const capex = config?.capexSelections ?? [];
 
   return (
-    <div className="bg-white p-6 rounded-2xl border space-y-4">
-      <h3 className="font-black text-[#002350] uppercase text-sm">
-        Estratégia (CAPEX)
-      </h3>
-
-      {!config && (
-        <p className="text-sm text-gray-400">
-          Sem dados de estratégia ainda
-        </p>
-      )}
+    <div>
+      <h2 className="text-sm font-black uppercase text-orange-400 mb-4">
+        Estratégia
+      </h2>
 
       {capex.length === 0 ? (
-        <p className="text-sm text-gray-400">
-          Nenhum CAPEX selecionado
-        </p>
+        <p className="text-slate-400 text-sm">Sem CAPEX</p>
       ) : (
-        capex.map((c) => (
+        capex.map((c: any) => (
           <div
             key={c.capexId}
-            className="flex justify-between text-sm"
+            className="flex justify-between text-sm border-b border-white/5 py-2"
           >
-            <span className="uppercase text-[#002350] font-medium">
-              {c.capex?.name ?? "CAPEX"}
-            </span>
-
-            <span className="font-bold text-gray-600">
-              R$ {(c.capex?.cost ?? 0).toLocaleString("pt-BR")}
+            <span>{c.capex?.name ?? "CAPEX"}</span>
+            <span className="text-slate-300">
+              R$ {c.capex?.cost?.toLocaleString("pt-BR") ?? 0}
             </span>
           </div>
         ))

@@ -163,7 +163,7 @@ const SetupAdmin = () => {
           <button
             onClick={handleCreateGame}
             disabled={loading || !adminName.trim()}
-            className="w-full h-[62px] mt-7 rounded-2xl bg-blue-950 hover:bg-blue-900 transition-all text-white font-black text-sm sm:text-base flex items-center justify-center gap-3 shadow-lg hover:shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99]"
+            className="w-full cursor-pointer h-[62px] mt-7 rounded-2xl bg-blue-950 hover:bg-blue-900 transition-all text-white font-black text-sm sm:text-base flex items-center justify-center gap-3 shadow-lg hover:shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99]"
           >
             {loading ? (
               <Loader2

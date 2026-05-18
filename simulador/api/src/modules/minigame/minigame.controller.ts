@@ -75,4 +75,9 @@ export class MinigameController {
   ) {
     return this.service.getDashboard(id, roundId);
   }
+
+  @Get("categories")
+getCategories() {
+  return this.service.getCategories();
+}
 }

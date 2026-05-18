@@ -18,10 +18,12 @@ export interface DashboardResponse {
     name: string;
 
     position: number | null;
+
+    // ✅ FORA DOS KPIS
     marketShare: number;
 
-    kpis: KPIs | null;
-  } | null;
+    kpis: KPIs;
+  };
 
   ranking: {
     storeId: string;
@@ -33,3 +35,33 @@ export interface DashboardResponse {
 
   configurations: any[];
 }
+
+export const EMPTY_DASHBOARD: DashboardResponse = {
+  sessionId: "",
+
+  roundNumber: 1,
+  totalRounds: 3,
+
+  myStore: {
+    storeId: "",
+    name: "Minha Loja",
+
+    position: null,
+
+    // ✅ AQUI
+    marketShare: 0,
+
+    kpis: {
+      ebitda: 0,
+      revenue: 0,
+      expenses: 0,
+      cash: 0,
+      csat: 0,
+      sla: 0,
+    },
+  },
+
+  ranking: [],
+
+  configurations: [],
+};

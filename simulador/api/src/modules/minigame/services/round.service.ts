@@ -16,6 +16,9 @@ export class RoundService {
     private readonly ranking: RankingService,
   ) {}
 
+  // =========================
+  // START ROUND
+  // =========================
   async startRound(sessionId: string, duration: number) {
     const session = await this.prisma.gameSession.findUnique({
       where: { id: sessionId },
@@ -24,8 +27,10 @@ export class RoundService {
 
     if (!session) throw new NotFoundException("Sessão não encontrada");
 
+    const nextRoundNumber = session.currentRound + 1;
+
     const round = session.rounds.find(
-      (r) => r.roundNumber === session.currentRound + 1,
+      (r) => r.roundNumber === nextRoundNumber,
     );
 
     if (!round) throw new BadRequestException("Nenhuma rodada disponível");
@@ -46,7 +51,7 @@ export class RoundService {
         where: { id: sessionId },
         data: {
           status: "IN_PROGRESS",
-          currentRound: round.roundNumber,
+          currentRound: nextRoundNumber,
         },
       }),
     ]);
@@ -61,6 +66,9 @@ export class RoundService {
     };
   }
 
+  // =========================
+  // FINISH ROUND
+  // =========================
   async finishRound(
     sessionId: string,
     reason: "TIME_UP" | "ADMIN_STOP" | "MANUAL" = "MANUAL",
@@ -79,6 +87,18 @@ export class RoundService {
         sessionId,
         success: true,
         message: "No active round",
+      };
+    }
+
+    const existing = await this.prisma.roundResult.findFirst({
+      where: { sessionId, roundId: round.id },
+    });
+
+    if (existing) {
+      return {
+        sessionId,
+        roundId: round.id,
+        message: "Round already simulated",
       };
     }
 
@@ -103,55 +123,63 @@ export class RoundService {
     };
   }
 
+  // =========================
+  // NEXT ROUND (FIXO 3)
+  // =========================
+  
   async startNextRound(sessionId: string) {
-    const session = await this.prisma.gameSession.findUnique({
-      where: { id: sessionId },
-      include: { rounds: true },
-    });
+  const session = await this.prisma.gameSession.findUnique({
+    where: { id: sessionId },
+    include: { rounds: true },
+  });
 
-    if (!session) throw new NotFoundException("Sessão não encontrada");
+  if (!session) throw new NotFoundException("Sessão não encontrada");
 
-    const next = session.rounds.find(
-      (r) => r.roundNumber === session.currentRound + 1,
-    );
+  const nextRoundNumber = session.currentRound + 1;
 
-    if (!next) {
-      await this.prisma.gameSession.update({
-        where: { id: sessionId },
-        data: { status: "FINISHED" },
-      });
+  const next = session.rounds.find(
+    (r) => r.roundNumber === nextRoundNumber,
+  );
 
-      return { sessionId, finished: true };
-    }
+  if (!next) return { sessionId, finished: true };
 
-    await this.prisma.gameSession.update({
-      where: { id: sessionId },
-      data: {
-        currentRound: next.roundNumber,
-        status: "IN_PROGRESS",
-      },
-    });
+  const duration =
+    next.endsAt && next.startsAt
+      ? Math.round(
+          (new Date(next.endsAt).getTime() -
+            new Date(next.startsAt).getTime()) / 1000,
+        )
+      : 300; // fallback
 
-    await this.prisma.gameRound.update({
-      where: { id: next.id },
-      data: {
-        status: "OPEN",
-        startsAt: new Date(),
-        endsAt: null,
-      },
-    });
+  await this.prisma.gameSession.update({
+    where: { id: sessionId },
+    data: {
+      currentRound: nextRoundNumber,
+      status: "IN_PROGRESS",
+    },
+  });
 
-    return {
-      sessionId,
-      roundId: next.id,
-      roundNumber: next.roundNumber,
-    };
-  }
+  await this.prisma.gameRound.update({
+    where: { id: next.id },
+    data: {
+      status: "OPEN",
+      startsAt: new Date(),
+      endsAt: new Date(Date.now() + duration * 1000),
+    },
+  });
+
+  return {
+    sessionId,
+    roundId: next.id,
+    roundNumber: next.roundNumber,
+    duration,
+  };
+}
+
 
   // =========================
-  // SIMULATION (CORRIGIDA)
+  // SIMULATION CORE
   // =========================
-
   async runRoundSimulation(sessionId: string, roundId: string) {
     const round = await this.prisma.gameRound.findUnique({
       where: { id: roundId },
@@ -163,6 +191,20 @@ export class RoundService {
       where: { id: sessionId },
       include: { stores: true },
     });
+
+    if (!session) throw new NotFoundException("Sessão não encontrada");
+
+    const already = await this.prisma.roundResult.findFirst({
+      where: { sessionId, roundId },
+    });
+
+    if (already) {
+      return {
+        sessionId,
+        roundId,
+        message: "Simulation already executed",
+      };
+    }
 
     const configs = await this.prisma.configuration.findMany({
       where: { roundId },
@@ -177,7 +219,7 @@ export class RoundService {
 
     const configMap = new Map(configs.map((c) => [c.storeId, c]));
 
-    const baseResults = session.stores.map((store) => {
+    const baseResults = session.stores?.map((store) => {
       const config = configMap.get(store.id);
 
       return {
@@ -191,7 +233,7 @@ export class RoundService {
           quizScore: config?.quizScore ?? 0,
         }),
       };
-    });
+    }) ?? [];
 
     const rankingInput = baseResults.map((r) => ({
       storeId: r.store.id,
@@ -200,12 +242,13 @@ export class RoundService {
       csat: r.metrics.csat,
     }));
 
-    const ranking =
-      this.ranking.buildRankingFromMetrics(rankingInput);
+    const ranking = this.ranking.buildRankingFromMetrics(rankingInput);
 
     const totalScore =
-      ranking.reduce((acc, x) => acc + x.finalScore, 0) || 1;
-
+  Math.max(
+    ranking.reduce((acc, x) => acc + x.finalScore, 0),
+    1,
+  );
     const results = [];
 
     for (const r of baseResults) {

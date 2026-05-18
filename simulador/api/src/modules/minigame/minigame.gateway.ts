@@ -1,5 +1,3 @@
-// minigame.gateway.ts
-
 import {
   ConnectedSocket,
   MessageBody,
@@ -19,9 +17,7 @@ import { SessionService } from "./services/session.service";
 
 @Injectable()
 @WebSocketGateway({
-  cors: {
-    origin: "*",
-  },
+  cors: { origin: "*" },
   namespace: "simulation",
 })
 export class MinigameGateway implements OnGatewayInit {
@@ -37,26 +33,17 @@ export class MinigameGateway implements OnGatewayInit {
     private readonly sessionService: SessionService,
   ) {}
 
-  // ======================================================
-  // INIT
-  // ======================================================
-
   afterInit(server: Server) {
-  this.server = server;
+    this.server = server;
 
-  this.playerGateway.server = server;
-  this.roundGateway.server = server;
-  this.adminGateway.server = server;
+    this.playerGateway.server = server;
+    this.roundGateway.server = server;
+    this.adminGateway.server = server;
 
-  // 🔥 ESSENCIAL
-  this.sessionService.setServer(server);
+    this.sessionService.setServer(server);
 
-  this.logger.log("Simulation websocket initialized");
-}
-
-  // ======================================================
-  // SOCKET LIFECYCLE
-  // ======================================================
+    this.logger.log("Simulation websocket initialized");
+  }
 
   handleConnection(client: Socket) {
     this.logger.log(`Socket connected: ${client.id}`);
@@ -66,32 +53,19 @@ export class MinigameGateway implements OnGatewayInit {
     this.logger.log(`Socket disconnected: ${client.id}`);
   }
 
-  // ======================================================
+  // =========================
   // JOIN SESSION
-  // ======================================================
-
+  // =========================
   @SubscribeMessage("join_session")
-  async join(
-    @ConnectedSocket() client: Socket,
-    @MessageBody()
-    data: {
-      sessionId: string;
-      playerId?: string;
-      isAdmin?: boolean;
-    },
-  ) {
+  async join(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     return this.playerGateway.join(client, data);
   }
 
-  // ======================================================
-  // PLAYER EVENTS
-  // ======================================================
-
+  // =========================
+  // PLAYER
+  // =========================
   @SubscribeMessage("player:submit_config")
-  async submitConfig(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ) {
+  async submitConfig(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     return this.playerGateway.submitConfiguration(client, data);
   }
 
@@ -100,18 +74,12 @@ export class MinigameGateway implements OnGatewayInit {
     return this.playerGateway.ready(data);
   }
 
-  // ======================================================
-  // ROUND EVENTS
-  // ======================================================
-
+  // =========================
+  // ROUND
+  // =========================
   @SubscribeMessage("admin:start_round")
   async startRound(@MessageBody() data: any) {
     return this.roundGateway.startRound(data);
-  }
-
-  @SubscribeMessage("admin:force_stop_round")
-  async forceStopRound(@MessageBody() data: any) {
-    return this.roundGateway.forceStop(data);
   }
 
   @SubscribeMessage("admin:start_next_round")
@@ -119,10 +87,14 @@ export class MinigameGateway implements OnGatewayInit {
     return this.roundGateway.startNextRound(data);
   }
 
-  // ======================================================
-  // ADMIN EVENTS
-  // ======================================================
+  @SubscribeMessage("admin:force_stop_round")
+  async forceStopRound(@MessageBody() data: any) {
+    return this.roundGateway.forceStop(data);
+  }
 
+  // =========================
+  // ADMIN
+  // =========================
   @SubscribeMessage("admin:finish_session")
   async finishSession(@MessageBody() data: any) {
     return this.adminGateway.finishSession(data);
@@ -133,15 +105,11 @@ export class MinigameGateway implements OnGatewayInit {
     return this.adminGateway.kickPlayer(data);
   }
 
-  // ======================================================
-  // SESSION STATE
-  // ======================================================
-
+  // =========================
+  // STATE
+  // =========================
   @SubscribeMessage("session:get_state")
-  async getState(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ) {
+  async getState(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     return this.playerGateway.getState(client, data);
   }
 }

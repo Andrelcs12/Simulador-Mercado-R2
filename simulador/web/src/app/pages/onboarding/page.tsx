@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Settings2,
@@ -9,7 +9,7 @@ import {
   BarChart3,
   Timer,
   CheckCircle2,
-  AlertTriangle,
+  Layers3,
 } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
@@ -19,6 +19,7 @@ import ComercialStep from "./components/ComercialStep";
 import EmployeeStep from "./components/EmployeeStep";
 import SummaryStep from "./components/SummaryStep";
 import { AppConfig } from "./types/onboarding";
+import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -31,12 +32,14 @@ const initialConfig: AppConfig = {
     selfcheckout: 0,
     melhoria: 0,
   },
+
   comercial: {
     pereciveis: { estoque: 0, margem: 30 },
     mercearia: { estoque: 0, margem: 20 },
     eletro: { estoque: 0, margem: 25 },
     hipel: { estoque: 0, margem: 18 },
   },
+
   operadoresCaixa: 5,
   operadoresAtendimento: 3,
   quizScore: 100,
@@ -51,20 +54,37 @@ const STEPS = [
 
 function formatTime(s: number) {
   if (!s || s <= 0) return "00:00";
+
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(
     s % 60
   ).padStart(2, "0")}`;
 }
 
 export default function OnboardingPage() {
-  const { player, round, timeLeft, submitted, submitting, timeUp, submit } =
-    useOnboardingSession(API_URL);
+  const router = useRouter();
+
+  const {
+    player,
+    round,
+    timeLeft,
+    submitted,
+    submitting,
+    timeUp,
+    submit,
+  } = useOnboardingSession(API_URL);
 
   const [step, setStep] = useState(1);
   const [config, setConfig] = useState<AppConfig>(initialConfig);
 
+  // trava total de navegação duplicada
+  const redirectedRef = useRef(false);
+
   const handleFinalize = () => {
-    if (!player || !round || submitted || timeUp || submitting) return;
+    if (!player) return;
+    if (!round) return;
+    if (submitted) return;
+    if (timeUp) return;
+    if (submitting) return;
 
     submit({
       playerId: player.id,
@@ -74,6 +94,41 @@ export default function OnboardingPage() {
       config,
     });
   };
+
+  // =========================
+  // TIMEOUT CONTROL
+  // =========================
+  useEffect(() => {
+    if (!round?.roundId) return;
+
+    if (!timeUp) return;
+
+    if (redirectedRef.current) return;
+
+    redirectedRef.current = true;
+
+    // se enviou → dashboard
+    if (submitted) {
+      router.replace("/pages/dashboard");
+      return;
+    }
+
+    // timeout sem submit → processing
+    router.replace("/pages/onboarding/processing");
+  }, [timeUp, submitted, round, router]);
+
+  // =========================
+  // SUBMIT SUCCESS
+  // =========================
+  useEffect(() => {
+    if (!submitted) return;
+
+    if (redirectedRef.current) return;
+
+    redirectedRef.current = true;
+
+    router.replace("/pages/dashboard");
+  }, [submitted, router]);
 
   const pct = round?.duration
     ? Math.min((timeLeft / round.duration) * 100, 100)
@@ -94,13 +149,14 @@ export default function OnboardingPage() {
       : "bg-red-500";
 
   const activeStep = (index: number) => step === index + 1;
+
   const doneStep = (index: number) => step > index + 1;
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
 
       <Toaster
-        position="top-right"
+        position="top-center"
         toastOptions={{
           style: {
             background: "#fff",
@@ -123,14 +179,37 @@ export default function OnboardingPage() {
                 <h1 className="text-2xl font-black text-slate-900">
                   Configuração da Rodada
                 </h1>
+
                 <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-bold mt-1">
                   Onboarding da simulação operacional
                 </p>
               </div>
 
-              <div className={`flex items-center gap-2 font-black ${timerColor}`}>
-                <Timer size={16} />
-                {formatTime(timeLeft)}
+              <div className="flex items-center gap-3">
+
+                {/* ROUND INFO */}
+                <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 bg-slate-50">
+                  <Layers3 size={15} className="text-orange-500" />
+
+                  <div className="flex flex-col leading-none">
+                    <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">
+                      Rodada
+                    </span>
+
+                    <span className="text-sm font-black text-slate-900">
+                      {round?.roundNumber || "--"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* TIMER */}
+                <div
+                  className={`flex items-center gap-2 font-black text-lg ${timerColor}`}
+                >
+                  <Timer size={18} />
+                  {formatTime(timeLeft)}
+                </div>
+
               </div>
             </div>
 
@@ -139,7 +218,10 @@ export default function OnboardingPage() {
               <motion.div
                 className={`h-full ${barColor}`}
                 animate={{ width: `${pct}%` }}
-                transition={{ duration: 0.6, ease: "linear" }}
+                transition={{
+                  duration: 0.6,
+                  ease: "linear",
+                }}
               />
             </div>
 
@@ -159,6 +241,7 @@ export default function OnboardingPage() {
                     }`}
                 >
                   {doneStep(i) ? <CheckCircle2 size={14} /> : i + 1}
+
                   {s.label}
                 </button>
               ))}
@@ -170,17 +253,29 @@ export default function OnboardingPage() {
 
       {/* ALERTS */}
       <AnimatePresence>
+
         {submitted && (
-          <motion.div className="bg-emerald-50 text-emerald-700 text-center py-2 text-xs font-bold border-b border-emerald-200">
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="bg-emerald-50 text-emerald-700 text-center py-2 text-xs font-bold border-b border-emerald-200"
+          >
             Configuração enviada com sucesso
           </motion.div>
         )}
 
         {timeUp && !submitted && (
-          <motion.div className="bg-red-50 text-red-600 text-center py-2 text-xs font-bold border-b border-red-200">
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="bg-red-50 text-red-600 text-center py-2 text-xs font-bold border-b border-red-200"
+          >
             Tempo esgotado
           </motion.div>
         )}
+
       </AnimatePresence>
 
       {/* MAIN */}
@@ -193,18 +288,37 @@ export default function OnboardingPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2 }}
               className="bg-white border border-slate-200 rounded-3xl p-6 md:p-10 shadow-sm"
             >
+
               {step === 1 && (
-                <SetupStep config={config} setConfig={setConfig} />
+                <SetupStep
+                  config={config}
+                  setConfig={setConfig}
+                />
               )}
+
               {step === 2 && (
-                <ComercialStep config={config} setConfig={setConfig} />
+                <ComercialStep
+                  config={config}
+                  setConfig={setConfig}
+                />
               )}
+
               {step === 3 && (
-                <EmployeeStep config={config} setConfig={setConfig} />
+                <EmployeeStep
+                  config={config}
+                  setConfig={setConfig}
+                />
               )}
-              {step === 4 && <SummaryStep config={config} />}
+
+              {step === 4 && (
+                <SummaryStep
+                  config={config}
+                />
+              )}
+
             </motion.div>
           </AnimatePresence>
 
@@ -229,7 +343,9 @@ export default function OnboardingPage() {
 
           {step < STEPS.length ? (
             <button
-              onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))}
+              onClick={() =>
+                setStep((s) => Math.min(STEPS.length, s + 1))
+              }
               className="px-6 py-2 rounded-xl bg-orange-500 text-white font-black"
             >
               Próximo →
@@ -240,7 +356,11 @@ export default function OnboardingPage() {
               disabled={submitting || timeUp || submitted}
               className="px-6 py-2 rounded-xl bg-emerald-500 text-white font-black disabled:opacity-40"
             >
-              {submitting ? "Enviando..." : submitted ? "Enviado" : "Finalizar"}
+              {submitting
+                ? "Enviando..."
+                : submitted
+                ? "Enviado"
+                : "Finalizar"}
             </button>
           )}
 

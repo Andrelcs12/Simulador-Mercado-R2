@@ -162,17 +162,42 @@ export class PlayerGateway {
     return result;
   }
 
-  async getState(
-    client: Socket,
-    data: { sessionId: string },
-  ) {
-    const session =
-      await this.minigameService.getSessionById(
-        data.sessionId,
-      );
+  
+  async getState(client: Socket, data: { sessionId: string }) {
+  const session = await this.minigameService.getSessionById(
+    data.sessionId,
+  );
 
-    client.emit("session:state", session);
+  if (!session) {
+    client.emit("session:state", {
+      error: true,
+      message: "Sessão não encontrada",
+      rounds: [],
+      activeRound: null,
+    });
 
-    return session;
+    return null;
   }
+
+  const activeRound = session.rounds?.find(
+    (r) => r.status === "OPEN",
+  );
+
+  const enriched = {
+    ...session,
+    activeRound: activeRound
+      ? {
+          ...activeRound,
+          endTime: activeRound.endsAt
+            ? new Date(activeRound.endsAt).getTime()
+            : null,
+        }
+      : null,
+  };
+
+  client.emit("session:state", enriched);
+
+  return enriched;
+}
+
 }

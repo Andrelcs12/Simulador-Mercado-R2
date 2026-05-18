@@ -1,11 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/prisma.service";
 import { Prisma } from "@/generated/prisma/client";
+import { SimulationRankingInput } from "../contracts/simulation-input";
 
 @Injectable()
 export class RankingService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // ======================================================
+  // COMPUTE ROUND RANKING (PERSISTIDO)
+  // ======================================================
   async computeRoundRanking(sessionId: string, roundId: string) {
     const results = await this.prisma.roundResult.findMany({
       where: { sessionId, roundId },
@@ -13,9 +17,9 @@ export class RankingService {
 
     if (results.length === 0) return [];
 
-    // =========================
-    // RANK HELPER
-    // =========================
+    // ======================================================
+    // RANK HELPER (1 = melhor, 4 = pior)
+    // ======================================================
     const rank = (
       items: { storeId: string; value: number }[],
       higherIsBetter = true,
@@ -33,41 +37,41 @@ export class RankingService {
       return map;
     };
 
-    // =========================
-    // SCORES
-    // =========================
-    const price = rank(
+    // ======================================================
+    // SCORES INDIVIDUAIS
+    // ======================================================
+    const priceRank = rank(
       results.map((r) => ({
         storeId: r.storeId,
-        value: r.averagePrice,
+        value: r.averagePrice ?? 0,
       })),
       false,
     );
 
-    const availability = rank(
+    const availabilityRank = rank(
       results.map((r) => ({
         storeId: r.storeId,
-        value: r.availabilityRate,
+        value: r.availabilityRate ?? 0,
       })),
       true,
     );
 
-    const csat = rank(
+    const csatRank = rank(
       results.map((r) => ({
         storeId: r.storeId,
-        value: r.csat,
+        value: r.csat ?? 0,
       })),
       true,
     );
 
-    // =========================
-    // COMPUTE FINAL
-    // =========================
+    // ======================================================
+    // FINAL SCORE
+    // ======================================================
     const computed = results
       .map((r) => {
-        const priceScore = price.get(r.storeId) ?? 1;
-        const availabilityScore = availability.get(r.storeId) ?? 1;
-        const csatScore = csat.get(r.storeId) ?? 1;
+        const priceScore = priceRank.get(r.storeId) ?? 1;
+        const availabilityScore = availabilityRank.get(r.storeId) ?? 1;
+        const csatScore = csatRank.get(r.storeId) ?? 1;
 
         return {
           storeId: r.storeId,
@@ -79,13 +83,14 @@ export class RankingService {
       })
       .sort((a, b) => b.finalScore - a.finalScore);
 
-    const total = computed.reduce((acc, r) => acc + r.finalScore, 0) || 1;
+    const totalScore =
+      computed.reduce((acc, r) => acc + r.finalScore, 0) || 1;
 
-    const output = [];
+    const output: any[] = [];
 
-    // =========================
-    // PERSISTÊNCIA (TIPADA CORRETO)
-    // =========================
+    // ======================================================
+    // PERSISTÊNCIA (UPSERT IDEMPOTENTE)
+    // ======================================================
     for (let i = 0; i < computed.length; i++) {
       const item = computed[i];
 
@@ -94,9 +99,11 @@ export class RankingService {
         roundId,
         storeId: item.storeId,
 
-        roundNumber: 0, // se não usa ainda, mantém ou remove do schema
+        // mantém compatibilidade caso você use depois
+        roundNumber: 0,
 
-        marketShare: item.finalScore / total,
+        // market share relativo do ranking
+        marketShare: item.finalScore / totalScore,
 
         priceScore: item.priceScore,
         availabilityScore: item.availabilityScore,
@@ -124,64 +131,63 @@ export class RankingService {
     return output;
   }
 
-  buildRankingFromMetrics(
-  input: {
-    storeId: string;
-    averagePrice: number;
-    availabilityRate: number;
-    csat: number;
-  }[],
-) {
-  const rank = (items: any[], higherIsBetter = true) => {
-    const sorted = [...items].sort((a, b) =>
-      higherIsBetter ? b.value - a.value : a.value - b.value,
+  // ======================================================
+  // BUILD RANKING FROM METRICS (USADO NO ROUND SERVICE)
+  // ======================================================
+  buildRankingFromMetrics(input: SimulationRankingInput[]) {
+    const rank = (
+      items: { storeId: string; value: number }[],
+      higherIsBetter = true,
+    ) => {
+      const sorted = [...items].sort((a, b) =>
+        higherIsBetter ? b.value - a.value : a.value - b.value,
+      );
+
+      const map = new Map<string, number>();
+
+      sorted.forEach((item, index) => {
+        map.set(item.storeId, Math.max(4 - index, 1));
+      });
+
+      return map;
+    };
+
+    const priceRank = rank(
+      input.map((r) => ({
+        storeId: r.storeId,
+        value: r.averagePrice,
+      })),
+      false,
     );
 
-    const map = new Map<string, number>();
+    const availabilityRank = rank(
+      input.map((r) => ({
+        storeId: r.storeId,
+        value: r.availabilityRate,
+      })),
+      true,
+    );
 
-    sorted.forEach((item, index) => {
-      map.set(item.storeId, Math.max(4 - index, 1));
+    const csatRank = rank(
+      input.map((r) => ({
+        storeId: r.storeId,
+        value: r.csat,
+      })),
+      true,
+    );
+
+    return input.map((r) => {
+      const priceScore = priceRank.get(r.storeId) ?? 1;
+      const availabilityScore = availabilityRank.get(r.storeId) ?? 1;
+      const csatScore = csatRank.get(r.storeId) ?? 1;
+
+      return {
+        storeId: r.storeId,
+        priceScore,
+        availabilityScore,
+        csatScore,
+        finalScore: priceScore + availabilityScore + csatScore,
+      };
     });
-
-    return map;
-  };
-
-  const price = rank(
-    input.map((r) => ({
-      storeId: r.storeId,
-      value: r.averagePrice,
-    })),
-    false,
-  );
-
-  const availability = rank(
-    input.map((r) => ({
-      storeId: r.storeId,
-      value: r.availabilityRate,
-    })),
-    true,
-  );
-
-  const csat = rank(
-    input.map((r) => ({
-      storeId: r.storeId,
-      value: r.csat,
-    })),
-    true,
-  );
-
-  return input.map((r) => {
-    const priceScore = price.get(r.storeId) ?? 1;
-    const availabilityScore = availability.get(r.storeId) ?? 1;
-    const csatScore = csat.get(r.storeId) ?? 1;
-
-    return {
-      storeId: r.storeId,
-      priceScore,
-      availabilityScore,
-      csatScore,
-      finalScore: priceScore + availabilityScore + csatScore,
-    };
-  });
-}
+  }
 }

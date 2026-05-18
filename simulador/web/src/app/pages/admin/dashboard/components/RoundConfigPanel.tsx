@@ -121,7 +121,7 @@ export const RoundConfigPanel = ({
                       key={minutes}
                       disabled={gameStarted}
                       onClick={() => onConfigChange({ durationMinutes: minutes, durationSeconds: 0 })}
-                      className={`h-11 rounded-xl text-xs font-black uppercase border transition-all ${
+                      className={`h-11 cursor-pointer rounded-xl text-xs font-black uppercase border transition-all ${
                         active
                           ? "bg-orange-500 border-orange-400 text-white shadow-lg shadow-orange-500/20"
                           : "bg-white/[0.03] border-white/[0.06] text-slate-400 hover:bg-white/[0.07] hover:text-white"

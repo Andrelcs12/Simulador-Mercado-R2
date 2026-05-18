@@ -13,21 +13,26 @@ import { StatsCards } from "./components/StatsCard";
 import { RoundTimer } from "./components/RoundTimer";
 import { RoundConfigPanel } from "./components/RoundConfigPanel";
 import { PlayersTable } from "./components/PlayersTable";
-import {
-  ModalEncerrarSessao,
-  ModalExpulsarJogador,
-} from "./components/Modals";
+import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
+import AdminRoundRanking from "./components/RoundRankingBoard";
 
 import { Player } from "./types";
-import AdminRoundRanking from "./components/RoundRankingBoard";
+
+type SessionState = {
+  id: string;
+  currentRound: number;
+  totalRounds: number;
+  status: string;
+  activeRound?: {
+    id: string;
+    endTime: number | null;
+  };
+};
 
 const AdminMestre = () => {
   const router = useRouter();
 
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
-  const [adminName, setAdminName] = useState("Administrador");
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const {
     connected,
@@ -41,6 +46,7 @@ const AdminMestre = () => {
     emit,
   } = useAdminSocket(API_URL);
 
+  const [adminName, setAdminName] = useState("Administrador");
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const [showConfig, setShowConfig] = useState(true);
@@ -80,6 +86,9 @@ const AdminMestre = () => {
 
   const ranking = dashboard?.ranking ?? [];
 
+  // =========================
+  // LOAD INITIAL
+  // =========================
   useEffect(() => {
     const sessionId = localStorage.getItem("admin_session_id");
     const admin = localStorage.getItem("admin_name");
@@ -123,6 +132,9 @@ const AdminMestre = () => {
     fetchAll();
   }, [API_URL, conectar, router, setPlayers, setSession]);
 
+  // =========================
+  // TIMER (CORRIGIDO)
+  // =========================
   useEffect(() => {
     if (!endTime || !gameStarted) return;
 
@@ -133,9 +145,13 @@ const AdminMestre = () => {
 
     tick();
     const interval = setInterval(tick, 500);
+
     return () => clearInterval(interval);
   }, [endTime, gameStarted]);
 
+  // =========================
+  // ACTIONS
+  // =========================
   const iniciarRodada = () => {
     emit("admin:start_round", {
       sessionId: session?.id,
@@ -170,6 +186,9 @@ const AdminMestre = () => {
     router.push("/pages/admin/setup");
   };
 
+  // =========================
+  // LOADING
+  // =========================
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#080D17]">
@@ -178,6 +197,9 @@ const AdminMestre = () => {
     );
   }
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="min-h-screen bg-[#080D17] text-white">
       <Toaster position="top-right" />
@@ -193,16 +215,24 @@ const AdminMestre = () => {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
-          {/* MAIN */}
-          <div className="xl:col-span-9 space-y-6">
-            <StatsCards
+        <div className="mb-4"> 
+          <StatsCards
               session={session}
               players={players}
               playersCount={players.length}
               submittedCount={submittedCount}
             />
+        </div>
+        
+
+
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+          
+          <div className="xl:col-span-8 space-y-6">
+
+            
 
             <RoundTimer
               gameStarted={gameStarted}
@@ -234,8 +264,7 @@ const AdminMestre = () => {
             />
           </div>
 
-          {/* SIDE */}
-          <div className="xl:col-span-3">
+          <div className="xl:col-span-4">
             <div className="sticky top-24">
               <PlayersTable
                 players={players}

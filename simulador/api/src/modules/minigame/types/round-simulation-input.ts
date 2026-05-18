@@ -7,13 +7,11 @@ export type RoundSimulationInput = {
 
   operatorsQty: number;
   serviceOperatorsQty: number;
-
   quizScore: number;
 
   totalMarketCustomers: number;
 
-  competitivenessScore: number;
-  competitorsTotalScore: number;
+  marketShare: number;
 
   averagePrice: number;
   availabilityRate: number;

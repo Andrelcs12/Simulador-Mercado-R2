@@ -19,82 +19,42 @@ type KPIs = {
   sla: number;
 };
 
-interface Props {
-  results?: KPIs | null;
-}
-
-export default function KPISection({ results }: Props) {
-  const safe: KPIs = {
-    ebitda: results?.ebitda ?? 0,
-    revenue: results?.revenue ?? 0,
-    expenses: results?.expenses ?? 0,
-    cash: results?.cash ?? 0,
-    csat: results?.csat ?? 0,
-    sla: results?.sla ?? 0,
+export default function KPISection({ results }: { results?: KPIs | null }) {
+  const k = results ?? {
+    ebitda: 0,
+    revenue: 0,
+    expenses: 0,
+    cash: 0,
+    csat: 0,
+    sla: 0,
   };
 
-  const money = (v: number) =>
-    v.toLocaleString("pt-BR");
+  const money = (v: number) => v.toLocaleString("pt-BR");
 
-  const kpis = [
-    {
-      label: "EBITDA",
-      value: `R$ ${money(safe.ebitda)}`,
-      icon: <TrendingUp />,
-      trend: "+0%",
-      up: true,
-    },
-    {
-      label: "Receita",
-      value: `R$ ${money(safe.revenue)}`,
-      icon: <Target />,
-      trend: "+0%",
-      up: true,
-    },
-    {
-      label: "Despesas",
-      value: `R$ ${money(safe.expenses)}`,
-      icon: <AlertTriangle />,
-      trend: "-0%",
-      up: false,
-    },
-    {
-      label: "CSAT",
-      value: safe.csat.toFixed(1),
-      icon: <Smile />,
-      trend: "Atual",
-      up: true,
-    },
+  const items = [
+    { label: "EBITDA", value: `R$ ${money(k.ebitda)}`, icon: TrendingUp },
+    { label: "Receita", value: `R$ ${money(k.revenue)}`, icon: Target },
+    { label: "Despesas", value: `R$ ${money(k.expenses)}`, icon: AlertTriangle },
+    { label: "CSAT", value: k.csat.toFixed(1), icon: Smile },
   ];
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {kpis.map((kpi, i) => (
-        <div key={i} className="bg-white p-6 rounded-2xl border">
-          <div className="flex justify-between items-center mb-4 text-[#002350]">
-            {kpi.icon}
-
-            <span
-              className={`flex items-center gap-1 text-sm font-bold ${
-                kpi.up ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {kpi.trend}
-              {kpi.up ? (
-                <ArrowUpRight size={14} />
-              ) : (
-                <ArrowDownRight size={14} />
-              )}
-            </span>
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {items.map((i, idx) => (
+        <div
+          key={idx}
+          className="bg-[#0B1220]/70 border border-white/5 rounded-2xl p-5 backdrop-blur-xl"
+        >
+          <div className="flex justify-between text-white">
+            <i.icon size={18} />
+            <ArrowUpRight size={14} className="text-orange-400" />
           </div>
 
-          <p className="text-[10px] uppercase text-gray-400 font-black">
-            {kpi.label}
+          <p className="text-[10px] text-slate-400 uppercase mt-3">
+            {i.label}
           </p>
 
-          <h3 className="text-2xl font-black text-[#002350] mt-2">
-            {kpi.value}
-          </h3>
+          <p className="text-xl font-black mt-1">{i.value}</p>
         </div>
       ))}
     </div>

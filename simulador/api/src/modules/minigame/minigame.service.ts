@@ -8,8 +8,8 @@ import { DashboardService } from "./services/dashboard.service";
 import { SimulationService } from "./simulation.service";
 
 import { PlayerRole } from "@/generated/prisma/enums";
-import { SubmitConfigurationDTO } from "./contracts/submission.dto";
-import { RoundSimulationInput } from "./types/round-simulation-input";
+import { SimulationRoundInput } from "./contracts/simulation-input";
+import { PrismaService } from "@/prisma.service";
 
 @Injectable()
 export class MinigameService {
@@ -20,6 +20,7 @@ export class MinigameService {
     private readonly submissionService: SubmissionService,
     private readonly dashboardService: DashboardService,
     private readonly simulationService: SimulationService,
+    private readonly prisma: PrismaService
   ) {}
 
   // ================= SESSION =================
@@ -74,6 +75,15 @@ export class MinigameService {
 
   // ================= ROUND =================
 
+  async getCategories() {
+  return this.prisma.categoryMaster.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+}
+
   startRound(sessionId: string, duration: number) {
     return this.roundService.startRound(sessionId, duration);
   }
@@ -91,7 +101,7 @@ export class MinigameService {
 
   // ================= SUBMISSION =================
 
-  submitConfiguration(data: SubmitConfigurationDTO) {
+  submitConfiguration(data: any) {
     return this.submissionService.submitConfiguration(data);
   }
 
@@ -121,7 +131,6 @@ export class MinigameService {
     );
   }
 
-  // 🔥 NOVO: dashboard automático (SEM roundId)
   getLatestDashboard(sessionId: string, storeId?: string) {
     return this.dashboardService.getLatestDashboard(sessionId, storeId);
   }
@@ -138,9 +147,11 @@ export class MinigameService {
     return this.simulationService.calculateBaseMetrics(input);
   }
 
-  calculateRoundResult(input: RoundSimulationInput) {
+  calculateRoundResult(input: SimulationRoundInput) {
     return this.simulationService.calculateRoundResult(input);
   }
+
+  // ================= SESSION FINAL =================
 
   finalizeSession(sessionId: string) {
     return this.sessionService.finalizeSession(sessionId);

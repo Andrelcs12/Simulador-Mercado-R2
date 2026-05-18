@@ -31,6 +31,10 @@ export class RoundGateway {
       data.sessionId,
     );
 
+    if (!session) {
+      throw new Error("Session not found on startRound");
+    }
+
     const startTime = Date.now();
     const endTime = startTime + data.duration * 1000;
 
@@ -43,14 +47,24 @@ export class RoundGateway {
       endTime,
     };
 
-    const timeout = setTimeout(async () => {
-      await this.finishRoundInternal(data.sessionId, "TIME_UP");
-    }, data.duration * 1000);
-
-    this.timers.set(data.sessionId, timeout);
+    this.timers.set(
+      data.sessionId,
+      setTimeout(() => {
+        this.finishRoundInternal(data.sessionId, "TIME_UP");
+      }, data.duration * 1000),
+    );
 
     this.server.to(data.sessionId).emit("round:started", payload);
-    this.server.to(data.sessionId).emit("session:state", session);
+
+    const updatedSession = await this.minigameService.getSessionById(
+      data.sessionId,
+    );
+
+    if (updatedSession) {
+      this.server
+        .to(data.sessionId)
+        .emit("session:state", updatedSession);
+    }
 
     return payload;
   }
@@ -71,6 +85,10 @@ export class RoundGateway {
 
     const session = await this.minigameService.getSessionById(sessionId);
 
+    if (!session) {
+      return result;
+    }
+
     this.server.to(sessionId).emit("round:finished", {
       sessionId,
       roundId: result.roundId,
@@ -82,8 +100,7 @@ export class RoundGateway {
     this.server.to(sessionId).emit("session:state", session);
 
     if (session.currentRound >= session.totalRounds) {
-      const final =
-        await this.minigameService.finalizeSession(sessionId);
+      const final = await this.minigameService.finalizeSession(sessionId);
 
       this.server.to(sessionId).emit("session:finalized", {
         sessionId,
@@ -113,18 +130,46 @@ export class RoundGateway {
       data.sessionId,
     );
 
-    this.server.to(data.sessionId).emit("round:started", {
+    if (!session) {
+      throw new Error("Session not found on startNextRound");
+    }
+
+    const duration = 300;
+
+    const startTime = Date.now();
+    const endTime = startTime + duration * 1000;
+
+    this.clearTimer(data.sessionId);
+
+    this.timers.set(
+      data.sessionId,
+      setTimeout(() => {
+        this.finishRoundInternal(data.sessionId, "TIME_UP");
+      }, duration * 1000),
+    );
+
+    const payload = {
       sessionId: data.sessionId,
-      ...result,
+      roundId: result.roundId,
       roundNumber: session.currentRound,
-      duration: 0,
-      startTime: Date.now(),
-      endTime: null,
-    });
+      duration,
+      startTime,
+      endTime,
+    };
 
-    this.server.to(data.sessionId).emit("session:state", session);
+    this.server.to(data.sessionId).emit("round:started", payload);
 
-    return result;
+    const updatedSession = await this.minigameService.getSessionById(
+      data.sessionId,
+    );
+
+    if (updatedSession) {
+      this.server
+        .to(data.sessionId)
+        .emit("session:state", updatedSession);
+    }
+
+    return payload;
   }
 
   // =========================

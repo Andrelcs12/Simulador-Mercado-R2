@@ -71,20 +71,26 @@ export const StatsCards = ({
           transition={{ delay: i * 0.06 }}
           className="bg-[#111827] border border-white/[0.06] rounded-3xl p-7 hover:border-white/[0.12] transition-all duration-200"
         >
+
+          <div>
+            
+          </div>
           {/* Cabeçalho */}
           <div className="flex items-start justify-between gap-4">
+
+             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${tone.bg}`}>
+              <Icon size={20} className={tone.text} />
+            </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] uppercase tracking-widest text-slate-500 font-black">
+              <p className="text-[12px] uppercase tracking-widest text-slate-500 font-black">
                 {label}
               </p>
-              <p className="text-[10px] text-slate-600 mt-1 font-medium">
+              <p className="text-[13px] text-slate-600 mt-1 font-medium">
                 {subtitle}
               </p>
             </div>
 
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${tone.bg}`}>
-              <Icon size={20} className={tone.text} />
-            </div>
+           
           </div>
 
           {/* Valor */}

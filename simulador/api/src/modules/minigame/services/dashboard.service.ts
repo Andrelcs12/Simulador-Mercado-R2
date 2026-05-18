@@ -6,6 +6,26 @@ export class DashboardService {
   constructor(private prisma: PrismaService) {}
 
   // ======================================================
+  // EMPTY FALLBACK (NUNCA NULL PRO FRONT)
+  // ======================================================
+  private emptyMyStore() {
+    return {
+      storeId: "",
+      name: "Minha Loja",
+      position: null,
+      marketShare: 0,
+      kpis: {
+        ebitda: 0,
+        revenue: 0,
+        expenses: 0,
+        cash: 0,
+        csat: 0,
+        sla: 0,
+      },
+    };
+  }
+
+  // ======================================================
   // DASHBOARD POR ROUND ID (BASE)
   // ======================================================
   async getRoundDashboard(
@@ -75,30 +95,32 @@ export class DashboardService {
             storeId: myResult.storeId,
             name: myResult.store.name,
             position: myRanking?.position ?? null,
-            marketShare: myResult.marketShare,
+            marketShare: myResult.marketShare ?? 0,
             kpis: {
-              ebitda: myResult.ebitdaValue,
-              revenue: myResult.totalRevenue,
-              expenses: myResult.totalExpenses,
-              cash: myResult.finalCash,
-              csat: myResult.csat,
-              sla: myResult.sla,
+              ebitda: myResult.ebitdaValue ?? 0,
+              revenue: myResult.totalRevenue ?? 0,
+              expenses: myResult.totalExpenses ?? 0,
+              cash: myResult.finalCash ?? 0,
+              csat: myResult.csat ?? 0,
+              sla: myResult.sla ?? 0,
             },
           }
-        : null,
+        : this.emptyMyStore(),
 
       ranking: ranking.map((r) => ({
         storeId: r.storeId,
         name: r.store.name,
         position: r.position,
         finalScore: r.finalScore,
-        marketShare: r.marketShare,
+        marketShare: r.marketShare ?? 0,
       })),
+
+      configurations: [],
     };
   }
 
   // ======================================================
-  // 🔥 DASHBOARD AUTOMÁTICO (SEM ROUND ID)
+  // DASHBOARD AUTOMÁTICO (SEM ROUND ID)
   // ======================================================
   async getLatestDashboard(sessionId: string, storeId?: string) {
     const session = await this.prisma.gameSession.findUnique({
@@ -115,7 +137,7 @@ export class DashboardService {
         sessionId,
         roundNumber: 0,
         totalRounds: 0,
-        myStore: null,
+        myStore: this.emptyMyStore(),
         ranking: [],
         configurations: [],
       };
@@ -133,7 +155,7 @@ export class DashboardService {
         sessionId,
         roundNumber: session.currentRound,
         totalRounds: session.totalRounds,
-        myStore: null,
+        myStore: this.emptyMyStore(),
         ranking: [],
         configurations: [],
       };

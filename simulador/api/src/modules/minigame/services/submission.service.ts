@@ -4,8 +4,7 @@ import {
 } from "@nestjs/common";
 
 import { PrismaService } from "@/prisma.service";
-import { SubmitConfigurationDTO } from "../contracts/submission.dto";
-
+import { PlayerConfigurationInput } from "../contracts/simulation-input";
 
 @Injectable()
 export class SubmissionService {
@@ -17,39 +16,58 @@ export class SubmissionService {
   // CONFIG SUBMISSION
   // =========================
 
-  async submitConfiguration(data: SubmitConfigurationDTO) {
-    await this.validateSubmissionWindow(data.roundId);
+  async submitConfiguration(data: PlayerConfigurationInput) {
+  await this.validateSubmissionWindow(data.roundId);
 
-    const storeId = await this.getStoreId(data.playerId);
+  const storeId = await this.getStoreId(data.playerId);
+  await this.ensureUniqueConfig(data.roundId, storeId);
 
-    await this.ensureUniqueConfig(data.roundId, storeId);
+  // 🔥 valida categorias reais antes de salvar
+  const categories = await this.prisma.categoryMaster.findMany({
+    select: { id: true, name: true },
+  });
 
-    const config = await this.prisma.configuration.create({
-      data: {
-        sessionId: data.sessionId,
-        roundId: data.roundId,
-        storeId,
+  const map = new Map(categories.map(c => [c.name, c.id]));
 
-        operatorsQty: data.operatorsQty,
-        serviceOperatorsQty: data.serviceOperatorsQty,
-        quizScore: data.quizScore,
+  const config = await this.prisma.configuration.create({
+    data: {
+      sessionId: data.sessionId,
+      roundId: data.roundId,
+      storeId,
 
-        stockInputs: {
-          create: data.stockInputs,
-        },
+      operatorsQty: data.operatorsQty,
+      serviceOperatorsQty: data.serviceOperatorsQty,
+      quizScore: data.quizScore,
 
-        capexSelections: {
-          create: data.capexSelections,
-        },
+      stockInputs: {
+        create: data.stockInputs.map(s => {
+          const realId = map.get(s.categoryId);
+
+          if (!realId) {
+            throw new Error(`Categoria inválida: ${s.categoryId}`);
+          }
+
+          return {
+            categoryId: realId,
+            buyQty: s.buyQty,
+            commercialMargin: s.commercialMargin,
+            expectedSellPrice: s.expectedSellPrice,
+          };
+        }),
       },
-    });
 
-    return {
-      success: true,
-      configId: config.id,
-      submittedAt: config.submittedAt,
-    };
-  }
+      capexSelections: {
+        create: data.capexSelections,
+      },
+    },
+  });
+
+  return {
+    success: true,
+    configId: config.id,
+    submittedAt: config.submittedAt,
+  };
+}
 
   // =========================
   // HELPERS
@@ -80,7 +98,7 @@ export class SubmissionService {
   }
 
   // =========================
-  // READY SYSTEM (SIMPLIFICADO)
+  // READY SYSTEM
   // =========================
 
   markPlayerReady(sessionId: string, playerId: string) {

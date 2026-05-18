@@ -70,7 +70,7 @@ export function RoundTimer({
               ? "bg-orange-500/10 border-orange-500/20 text-orange-400"
               : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
           }`}>
-            {gameStarted ? "Em andamento" : "Aguardando início"}
+            {gameStarted ? "Rodada em andamento" : "Aguardando início da rodada"}
           </span>
         </div>
 
@@ -79,7 +79,7 @@ export function RoundTimer({
 
           {/* Timer */}
           <div>
-            <div className={`text-6xl md:text-7xl font-black tabular-nums leading-none tracking-tighter ${
+            <div className={`text-6xl md:text-8xl font-black tabular-nums leading-none tracking-tighter ${
               gameStarted
                 ? timeLeft < 30 ? "text-red-400" : timeLeft < 120 ? "text-yellow-400" : "text-white"
                 : "text-slate-700"
@@ -91,26 +91,7 @@ export function RoundTimer({
             </p>
           </div>
 
-          {/* Mini cards */}
-          <div className="grid grid-cols-3 gap-3 w-full sm:w-auto sm:min-w-[280px]">
-            {[
-              { Icon: Users,        label: "Jogadores", value: playersCount,   color: "text-sky-400",    bg: "bg-sky-500/10"    },
-              { Icon: ShieldCheck,  label: "Prontos",   value: readyCount,     color: "text-violet-400", bg: "bg-violet-500/10" },
-              { Icon: CheckCircle2, label: "Enviados",  value: submittedCount, color: "text-emerald-400",bg: "bg-emerald-500/10"},
-            ].map(({ Icon, label, value, color, bg }) => (
-              <div key={label} className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-4">
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
-                  <Icon size={15} className={color} />
-                </div>
-                <div className="text-2xl font-black text-white tabular-nums leading-none">
-                  {value}
-                </div>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mt-1.5">
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
+        
         </div>
 
         {/* ── BARRA DE PROGRESSO ── */}

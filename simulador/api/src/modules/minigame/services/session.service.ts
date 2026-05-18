@@ -27,6 +27,11 @@ export class SessionService {
   private async getSessionOrThrow(sessionId: string) {
     const session = await this.prisma.gameSession.findUnique({
       where: { id: sessionId },
+      include: {
+        rounds: true,
+        players: true,
+        stores: true,
+      },
     });
 
     if (!session) {
@@ -36,6 +41,9 @@ export class SessionService {
     return session;
   }
 
+  // =========================
+  // CREATE SESSION
+  // =========================
   async createSession(totalRounds = 5) {
     const session = await this.prisma.gameSession.create({
       data: {
@@ -57,15 +65,26 @@ export class SessionService {
     return session;
   }
 
-  getSessionById(sessionId: string) {
-    return this.prisma.gameSession.findUnique({
+  // =========================
+  // SAFE GET SESSION (IMPORTANTE)
+  // =========================
+  async getSessionById(sessionId: string) {
+    const session = await this.prisma.gameSession.findUnique({
       where: { id: sessionId },
       include: {
-        rounds: { orderBy: { roundNumber: "asc" } },
+        rounds: {
+          orderBy: { roundNumber: "asc" },
+        },
         players: true,
         stores: true,
       },
     });
+
+    if (!session) {
+      return null; // NÃO CRASHA GATEWAY
+    }
+
+    return session;
   }
 
   getSessionByCode(code: string) {
@@ -85,10 +104,13 @@ export class SessionService {
     });
   }
 
-  updateSessionState(sessionId: string, data: {
-    status?: GameSessionStatus;
-    currentRound?: number;
-  }) {
+  updateSessionState(
+    sessionId: string,
+    data: {
+      status?: GameSessionStatus;
+      currentRound?: number;
+    },
+  ) {
     return this.prisma.gameSession.update({
       where: { id: sessionId },
       data,
@@ -99,92 +121,126 @@ export class SessionService {
     return this.getSessionOrThrow(sessionId);
   }
 
-
+  // =========================
+  // FINALIZE SESSION (CORRIGIDO)
+  // =========================
   async finalizeSession(sessionId: string) {
-  const results = await this.prisma.roundResult.findMany({
-    where: { sessionId },
-  });
+    const session = await this.getSessionOrThrow(sessionId);
 
-  if (!results.length) {
-    return { success: false, message: "Nenhum resultado encontrado" };
-  }
+    const REQUIRED_ROUNDS = 3;
 
-  const grouped = results.reduce((acc, r) => {
-    if (!acc[r.storeId]) acc[r.storeId] = [];
-    acc[r.storeId].push(r);
-    return acc;
-  }, {} as Record<string, typeof results>);
+    // 🔥 CORRETO: rounds finalizados de verdade
+    const completedRounds = session.rounds.filter(
+      (r) => r.status === "PROCESSED" || r.status === "CLOSED",
+    );
 
-  const finalResults: any[] = [];
+    if (completedRounds.length < REQUIRED_ROUNDS) {
+      return {
+        success: false,
+        message: `Jogo ainda não finalizado (${completedRounds.length}/${REQUIRED_ROUNDS})`,
+      };
+    }
 
-  for (const storeId of Object.keys(grouped)) {
-    const storeResults = grouped[storeId];
-
-    const totalRevenue = storeResults.reduce((a, r) => a + r.totalRevenue, 0);
-    const totalExpenses = storeResults.reduce((a, r) => a + r.totalExpenses, 0);
-    const finalEbitda = storeResults.reduce((a, r) => a + r.ebitdaValue, 0);
-
-    const finalEbitdaMargin =
-      totalRevenue > 0 ? (finalEbitda / totalRevenue) * 100 : 0;
-
-    const finalMarketShare =
-      storeResults.reduce((a, r) => a + r.marketShare, 0) /
-      storeResults.length;
-
-    await this.prisma.sessionResult.upsert({
-      where: {
-        sessionId_storeId: { sessionId, storeId },
-      },
-      create: {
-        sessionId,
-        storeId,
-        totalRevenue,
-        totalExpenses,
-        finalCash: storeResults.at(-1)?.finalCash || 0,
-        finalEbitda,
-        finalEbitdaMargin,
-        finalMarketShare,
-        finalScore: finalEbitdaMargin,
-        position: 0,
-      },
-      update: {
-        totalRevenue,
-        totalExpenses,
-        finalCash: storeResults.at(-1)?.finalCash || 0,
-        finalEbitda,
-        finalEbitdaMargin,
-        finalMarketShare,
-        finalScore: finalEbitdaMargin,
-      },
+    const results = await this.prisma.roundResult.findMany({
+      where: { sessionId },
     });
 
-    finalResults.push({ storeId, finalEbitdaMargin });
-  }
+    if (!results.length) {
+      return {
+        success: false,
+        message: "Nenhum resultado encontrado",
+      };
+    }
 
-  const ranking = finalResults.sort(
-    (a, b) => b.finalEbitdaMargin - a.finalEbitdaMargin,
-  );
+    const grouped = results.reduce((acc, r) => {
+      if (!acc[r.storeId]) acc[r.storeId] = [];
+      acc[r.storeId].push(r);
+      return acc;
+    }, {} as Record<string, typeof results>);
 
-  for (let i = 0; i < ranking.length; i++) {
-    await this.prisma.sessionResult.update({
-      where: {
-        sessionId_storeId: {
-          sessionId,
-          storeId: ranking[i].storeId,
-        },
+    const finalResults = Object.entries(grouped).map(
+      ([storeId, storeResults]) => {
+        const totalRevenue = storeResults.reduce(
+          (a, r) => a + r.totalRevenue,
+          0,
+        );
+
+        const totalExpenses = storeResults.reduce(
+          (a, r) => a + r.totalExpenses,
+          0,
+        );
+
+        const finalEbitda = storeResults.reduce(
+          (a, r) => a + r.ebitdaValue,
+          0,
+        );
+
+        return {
+          storeId,
+          totalRevenue,
+          totalExpenses,
+          finalEbitda,
+          finalEbitdaMargin: totalRevenue
+            ? (finalEbitda / totalRevenue) * 100
+            : 0,
+          finalMarketShare:
+            storeResults.reduce((a, r) => a + r.marketShare, 0) /
+            storeResults.length,
+          finalCash: storeResults.at(-1)?.finalCash ?? 0,
+        };
       },
-      data: { position: i + 1 },
+    );
+
+    const ranking = [...finalResults].sort(
+      (a, b) => b.finalEbitdaMargin - a.finalEbitdaMargin,
+    );
+
+    await Promise.all(
+      ranking.map((r, index) =>
+        this.prisma.sessionResult.upsert({
+          where: {
+            sessionId_storeId: {
+              sessionId,
+              storeId: r.storeId,
+            },
+          },
+          create: {
+            sessionId,
+            storeId: r.storeId,
+            totalRevenue: r.totalRevenue,
+            totalExpenses: r.totalExpenses,
+            finalCash: r.finalCash,
+            finalEbitda: r.finalEbitda,
+            finalEbitdaMargin: r.finalEbitdaMargin,
+            finalMarketShare: r.finalMarketShare,
+            finalScore: r.finalEbitdaMargin,
+            position: index + 1,
+          },
+          update: {
+            totalRevenue: r.totalRevenue,
+            totalExpenses: r.totalExpenses,
+            finalCash: r.finalCash,
+            finalEbitda: r.finalEbitda,
+            finalEbitdaMargin: r.finalEbitdaMargin,
+            finalMarketShare: r.finalMarketShare,
+            finalScore: r.finalEbitdaMargin,
+            position: index + 1,
+          },
+        }),
+      ),
+    );
+
+    this.server?.to(sessionId).emit("session:finalized", {
+      sessionId,
+      rounds: REQUIRED_ROUNDS,
+      ranking,
     });
+
+    return {
+      success: true,
+      sessionId,
+      rounds: REQUIRED_ROUNDS,
+      ranking,
+    };
   }
-
-  // 🔥 IMPORTANTE: emit só depois de ranking pronto
-  this.server?.to(sessionId).emit("session:finalized", {
-    sessionId,
-    ranking,
-  });
-
-  return { success: true, ranking };
-}
-
-
 }
