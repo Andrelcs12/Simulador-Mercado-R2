@@ -201,31 +201,6 @@ export default function ComercialStep({ config, setConfig }: Props) {
         </div>
       </div>
 
-      {/* METRICAS DE PROJEÇÃO DE PERFORMANCE DE SERVIÇO */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="border border-slate-200/60 rounded-2xl p-4 bg-white shadow-sm">
-          <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-            Projeção CSAT
-          </p>
-          <p className="text-2xl font-black text-emerald-600 mt-1">{csat}%</p>
-        </div>
-
-        <div className="border border-slate-200/60 rounded-2xl p-4 bg-white shadow-sm">
-          <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-            Projeção SLA
-          </p>
-          <p className="text-2xl font-black text-slate-900 mt-1">{sla}%</p>
-        </div>
-
-        <div className="border border-slate-200/60 rounded-2xl p-4 bg-white shadow-sm col-span-2">
-          <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-            Capital Alocado em Estoque
-          </p>
-          <p className="text-2xl font-black text-orange-500 mt-1">
-            R$ {estoqueTotal.toLocaleString("pt-BR")}
-          </p>
-        </div>
-      </div>
 
       {/* CARDS DE CATEGORIAS */}
       <div className="grid gap-5">

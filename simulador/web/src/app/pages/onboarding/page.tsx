@@ -235,26 +235,46 @@ export default function OnboardingPage() {
         </div>
       </div>
 
+      
       {/* STEPS */}
-      <div className="flex flex-wrap gap-2">
-        {STEPS.map((s, i) => (
-          <button
-            key={s.label}
-            onClick={() => doneStep(i) && setStep(i + 1)}
-            className={`px-4 py-2 rounded-xl text-xs font-black uppercase border transition flex items-center gap-2
-              ${
-                activeStep(i)
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : doneStep(i)
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                  : "bg-white text-slate-400 border-slate-200"
-              }`}
-          >
-            {doneStep(i) ? <CheckCircle2 size={14} /> : i + 1}
-            {s.label}
-          </button>
-        ))}
+<div className="flex gap-4 w-full">
+  {STEPS.map((s, i) => {
+    const isActive = activeStep(i);
+    const isDone = doneStep(i);
+
+    return (
+      <div key={s.label} className="flex flex-col gap-1.5 flex-1">
+        {/* Indicador de Etapa Superior */}
+        <span className={`text-[12px] font-bold uppercase tracking-wider ${
+          isActive ? "text-orange-500" : isDone ? "text-emerald-600" : "text-slate-400"
+        }`}>
+          Etapa {i + 1}
+        </span>
+
+        {/* Card/Botão Individual */}
+        <button
+          type="button"
+          onClick={() => {
+            if (isDone) {
+              setStep(i + 1);
+            }
+          }}
+          className={`px-4 py-3 w-full justify-center rounded-xl text-xs font-black uppercase border transition flex items-center gap-2 shadow-sm
+            ${
+              isActive
+                ? "bg-orange-500 text-white border-orange-500"
+                : isDone
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/50"
+                : "bg-gray-300 text-slate-400 border-slate-200 cursor-not-allowed"
+            }`}
+        >
+          {isDone ? <CheckCircle2 size={14} /> : null }
+          {s.label}
+        </button>
       </div>
+    );
+  })}
+</div>
 
     </div>
   </div>

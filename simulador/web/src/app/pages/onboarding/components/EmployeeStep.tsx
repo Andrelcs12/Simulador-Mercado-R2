@@ -108,32 +108,7 @@ export default function EmployeeStep({ config, setConfig }: EmployeeStepProps) {
         </p>
       </div>
 
-      {/* KPI CARDS */}
-      <div className="grid md:grid-cols-2 gap-5">
-        {/* CSAT */}
-        <div className="bg-white border-2 border-slate-100 rounded-2xl p-5">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="text-sky-500" size={16} />
-            <p className="text-xs uppercase font-black text-slate-400">CSAT</p>
-          </div>
-          <p className={`text-4xl font-black mt-3 ${csatColor}`}>{csat}%</p>
-          <p className="text-xs text-slate-500 mt-2">
-            (Caixa / 10) × Quiz
-          </p>
-        </div>
-
-        {/* SLA */}
-        <div className={`border-2 rounded-2xl p-5 transition-colors duration-200 ${slaInfo.bg}`}>
-          <div className="flex items-center gap-2">
-            <Headphones className={slaInfo.color} size={16} />
-            <p className="text-xs uppercase font-black text-slate-400">SLA</p>
-          </div>
-          <p className={`text-4xl font-black mt-3 ${slaInfo.color}`}>{sla}%</p>
-          <p className={`text-xs mt-2 font-medium ${slaInfo.color}`}>
-            {slaInfo.label}
-          </p>
-        </div>
-      </div>
+     
 
       {/* QUIZ */}
       <div className="bg-white border-2 border-slate-100 rounded-2xl p-5">
@@ -245,6 +220,33 @@ export default function EmployeeStep({ config, setConfig }: EmployeeStepProps) {
               Equipe total: {totalOps} | CSAT: {csat}% | SLA: {sla}%
             </p>
           </div>
+        </div>
+      </div>
+
+       {/* KPI CARDS */}
+      <div className="grid md:grid-cols-2 gap-5">
+        {/* CSAT */}
+        <div className="bg-white border-2 border-slate-100 rounded-2xl p-5">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="text-sky-500" size={16} />
+            <p className="text-xs uppercase font-black text-slate-400">CSAT</p>
+          </div>
+          <p className={`text-4xl font-black mt-3 ${csatColor}`}>{csat}%</p>
+          <p className="text-xs text-slate-500 mt-2">
+            (Caixa / 10) × Quiz
+          </p>
+        </div>
+
+        {/* SLA */}
+        <div className={`border-2 rounded-2xl p-5 transition-colors duration-200 ${slaInfo.bg}`}>
+          <div className="flex items-center gap-2">
+            <Headphones className={slaInfo.color} size={16} />
+            <p className="text-xs uppercase font-black text-slate-400">SLA</p>
+          </div>
+          <p className={`text-4xl font-black mt-3 ${slaInfo.color}`}>{sla}%</p>
+          <p className={`text-xs mt-2 font-medium ${slaInfo.color}`}>
+            {slaInfo.label}
+          </p>
         </div>
       </div>
     </div>
