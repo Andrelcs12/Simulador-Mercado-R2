@@ -10,40 +10,20 @@ import {
   Timer,
   CheckCircle2,
   Layers3,
+  Wallet,
 } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
 import { useOnboardingSession } from "./hooks/useOnboardingSession";
+import { useOnboarding } from "./context/OnboardingContext";
+
 import SetupStep from "./components/SetupStep";
 import ComercialStep from "./components/ComercialStep";
 import EmployeeStep from "./components/EmployeeStep";
 import SummaryStep from "./components/SummaryStep";
-import { AppConfig } from "./types/onboarding";
+
 import { useRouter } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
-const initialConfig: AppConfig = {
-  capex: {
-    seguranca: 0,
-    equipamentos: 0,
-    redes: 0,
-    site: 0,
-    selfcheckout: 0,
-    melhoria: 0,
-  },
-
-  comercial: {
-    pereciveis: { estoque: 0, margem: 30 },
-    mercearia: { estoque: 0, margem: 20 },
-    eletro: { estoque: 0, margem: 25 },
-    hipel: { estoque: 0, margem: 18 },
-  },
-
-  operadoresCaixa: 5,
-  operadoresAtendimento: 3,
-  quizScore: 100,
-};
 
 const STEPS = [
   { label: "CAPEX", Icon: Settings2 },
@@ -64,69 +44,69 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   const {
-    player,
+    config,
+    setConfig,
     round,
     timeLeft,
     submitted,
     submitting,
-    timeUp,
-    submit,
-  } = useOnboardingSession(API_URL);
+    budget,
+    player,
+    remainingBudget // ✅ FIX CRÍTICO
+  } = useOnboarding();
+
+  const { submit, categoriesLoaded } = useOnboardingSession(
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+  );
 
   const [step, setStep] = useState(1);
-  const [config, setConfig] = useState<AppConfig>(initialConfig);
-
-  // trava total de navegação duplicada
   const redirectedRef = useRef(false);
 
-  const handleFinalize = () => {
-    if (!player) return;
-    if (!round) return;
-    if (submitted) return;
-    if (timeUp) return;
-    if (submitting) return;
+  // =========================
+  // FINAL SUBMIT (SAFE)
+  // =========================
+  const handleFinalize = async () => {
+    if (!round?.roundId) return;
+    if (!player?.id || !player?.sessionId) return;
+    if (submitted || submitting) return;
 
-    submit({
+    if (!categoriesLoaded) {
+      return;
+    }
+
+    await submit({
       playerId: player.id,
       sessionId: player.sessionId,
       roundId: round.roundId,
-      storeId: player.store?.id,
-      config,
+      storeId: undefined,
     });
   };
 
   // =========================
-  // TIMEOUT CONTROL
+  // TIMEOUT ROUTE
   // =========================
   useEffect(() => {
     if (!round?.roundId) return;
-
-    if (!timeUp) return;
-
+    if (timeLeft > 0) return;
     if (redirectedRef.current) return;
 
     redirectedRef.current = true;
 
-    // se enviou → dashboard
-    if (submitted) {
-      router.replace("/pages/dashboard");
-      return;
-    }
-
-    // timeout sem submit → processing
-    router.replace("/pages/onboarding/processing");
-  }, [timeUp, submitted, round, router]);
+    router.replace(
+      submitted
+        ? "/pages/dashboard"
+        : "/pages/onboarding/processing"
+    );
+  }, [timeLeft, submitted, round, router]);
 
   // =========================
-  // SUBMIT SUCCESS
+  // SUCCESS ROUTE
   // =========================
   useEffect(() => {
     if (!submitted) return;
-
     if (redirectedRef.current) return;
 
     redirectedRef.current = true;
-
     router.replace("/pages/dashboard");
   }, [submitted, router]);
 
@@ -148,13 +128,14 @@ export default function OnboardingPage() {
       ? "bg-amber-400"
       : "bg-red-500";
 
-  const activeStep = (index: number) => step === index + 1;
+  const activeStep = (i: number) => step === i + 1;
+  const doneStep = (i: number) => step > i + 1;
 
-  const doneStep = (index: number) => step > index + 1;
-
+  // ─────────────────────────────
+  // RENDER
+  // ─────────────────────────────
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
-
       <Toaster
         position="top-center"
         toastOptions={{
@@ -166,169 +147,166 @@ export default function OnboardingPage() {
         }}
       />
 
-      {/* HEADER */}
-      <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-6 py-5">
+     
+     {/* HEADER */}
+<header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+  <div className="max-w-6xl mx-auto px-6 py-5">
+    <div className="flex flex-col gap-5">
 
-          <div className="flex flex-col gap-5">
+      {/* TOP */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-slate-900">
+            Configuração da Rodada
+          </h1>
 
-            {/* TOP */}
-            <div className="flex items-center justify-between">
+          <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-bold mt-1">
+            Onboarding da simulação operacional
+          </p>
+        </div>
 
-              <div>
-                <h1 className="text-2xl font-black text-slate-900">
-                  Configuração da Rodada
-                </h1>
+        <div className="flex items-center gap-3">
 
-                <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-bold mt-1">
-                  Onboarding da simulação operacional
-                </p>
+          {/* ROUND */}
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 bg-slate-50">
+            <Layers3 size={15} className="text-orange-500" />
+
+            <div className="flex flex-col leading-none">
+              <span className="text-[10px] uppercase font-black text-slate-400">
+                Rodada
+              </span>
+
+              <span className="text-sm font-black text-slate-900">
+                {round?.roundNumber || "--"}
+              </span>
+            </div>
+          </div>
+
+          {/* TIMER */}
+          <div className={`flex items-center gap-2 font-black text-lg ${timerColor}`}>
+            <Timer size={18} />
+            {formatTime(timeLeft)}
+          </div>
+
+        </div>
+      </div>
+
+      {/* PROGRESS */}
+      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+        <motion.div
+          className={`h-full ${barColor}`}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.6, ease: "linear" }}
+        />
+      </div>
+
+      {/* 💰 ORÇAMENTO (HERO CENTER CARD) */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-md">
+
+          <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg shadow-orange-500/20">
+
+            <div className="flex items-center gap-3">
+              <Wallet size={20} className="text-white" />
+
+              <div className="flex flex-col leading-none">
+                <span className="text-[10px] uppercase text-orange-100 font-black tracking-widest">
+                  Orçamento da Loja
+                </span>
+
+                <span className="text-lg font-black text-white">
+                  Capital Disponível
+                </span>
               </div>
-
-              <div className="flex items-center gap-3">
-
-                {/* ROUND INFO */}
-                <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 bg-slate-50">
-                  <Layers3 size={15} className="text-orange-500" />
-
-                  <div className="flex flex-col leading-none">
-                    <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">
-                      Rodada
-                    </span>
-
-                    <span className="text-sm font-black text-slate-900">
-                      {round?.roundNumber || "--"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* TIMER */}
-                <div
-                  className={`flex items-center gap-2 font-black text-lg ${timerColor}`}
-                >
-                  <Timer size={18} />
-                  {formatTime(timeLeft)}
-                </div>
-
-              </div>
             </div>
 
-            {/* PROGRESS */}
-            <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-              <motion.div
-                className={`h-full ${barColor}`}
-                animate={{ width: `${pct}%` }}
-                transition={{
-                  duration: 0.6,
-                  ease: "linear",
-                }}
-              />
-            </div>
+            <div className="text-right">
+  <div className="text-xl font-black text-white">
+    R$ {remainingBudget.toLocaleString("pt-BR")}
+  </div>
 
-            {/* STEPS */}
-            <div className="flex flex-wrap gap-2">
-              {STEPS.map((s, i) => (
-                <button
-                  key={s.label}
-                  onClick={() => doneStep(i) && setStep(i + 1)}
-                  className={`px-4 py-2 rounded-xl text-xs font-black uppercase border transition flex items-center gap-2
-                    ${
-                      activeStep(i)
-                        ? "bg-orange-500 text-white border-orange-500"
-                        : doneStep(i)
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        : "bg-white text-slate-400 border-slate-200"
-                    }`}
-                >
-                  {doneStep(i) ? <CheckCircle2 size={14} /> : i + 1}
-
-                  {s.label}
-                </button>
-              ))}
-            </div>
+  <div className="text-[10px] text-orange-100 uppercase font-bold tracking-widest">
+    Base inicial: R$ {budget.toLocaleString("pt-BR")}
+  </div>
+</div>
 
           </div>
+
         </div>
-      </header>
+      </div>
+
+      {/* STEPS */}
+      <div className="flex flex-wrap gap-2">
+        {STEPS.map((s, i) => (
+          <button
+            key={s.label}
+            onClick={() => doneStep(i) && setStep(i + 1)}
+            className={`px-4 py-2 rounded-xl text-xs font-black uppercase border transition flex items-center gap-2
+              ${
+                activeStep(i)
+                  ? "bg-orange-500 text-white border-orange-500"
+                  : doneStep(i)
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-white text-slate-400 border-slate-200"
+              }`}
+          >
+            {doneStep(i) ? <CheckCircle2 size={14} /> : i + 1}
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+    </div>
+  </div>
+</header>
 
       {/* ALERTS */}
       <AnimatePresence>
-
         {submitted && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="bg-emerald-50 text-emerald-700 text-center py-2 text-xs font-bold border-b border-emerald-200"
-          >
+          <motion.div className="bg-emerald-50 text-emerald-700 text-center py-2 text-xs font-bold border-b border-emerald-200">
             Configuração enviada com sucesso
           </motion.div>
         )}
 
-        {timeUp && !submitted && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="bg-red-50 text-red-600 text-center py-2 text-xs font-bold border-b border-red-200"
-          >
+        {timeLeft <= 0 && !submitted && (
+          <motion.div className="bg-red-50 text-red-600 text-center py-2 text-xs font-bold border-b border-red-200">
             Tempo esgotado
           </motion.div>
         )}
-
       </AnimatePresence>
 
       {/* MAIN */}
       <main className="flex-1 flex justify-center p-6">
         <div className="w-full max-w-6xl">
-
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2 }}
               className="bg-white border border-slate-200 rounded-3xl p-6 md:p-10 shadow-sm"
             >
-
               {step === 1 && (
-                <SetupStep
-                  config={config}
-                  setConfig={setConfig}
-                />
+                <SetupStep config={config} setConfig={setConfig} />
               )}
 
               {step === 2 && (
-                <ComercialStep
-                  config={config}
-                  setConfig={setConfig}
-                />
+                <ComercialStep config={config} setConfig={setConfig} />
               )}
 
               {step === 3 && (
-                <EmployeeStep
-                  config={config}
-                  setConfig={setConfig}
-                />
+                <EmployeeStep config={config} setConfig={setConfig} />
               )}
 
-              {step === 4 && (
-                <SummaryStep
-                  config={config}
-                />
-              )}
-
+              {step === 4 && <SummaryStep config={config} />}
             </motion.div>
           </AnimatePresence>
-
         </div>
       </main>
 
       {/* FOOTER */}
       <footer className="sticky bottom-0 bg-white border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-
           <button
             disabled={step === 1}
             onClick={() => setStep((s) => Math.max(1, s - 1))}
@@ -343,18 +321,16 @@ export default function OnboardingPage() {
 
           {step < STEPS.length ? (
             <button
-              onClick={() =>
-                setStep((s) => Math.min(STEPS.length, s + 1))
-              }
-              className="px-6 py-2 rounded-xl bg-orange-500 text-white font-black"
+              onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))}
+              className="px-6 cursor-pointer py-2 rounded-xl bg-orange-500 text-white font-black"
             >
               Próximo →
             </button>
           ) : (
             <button
               onClick={handleFinalize}
-              disabled={submitting || timeUp || submitted}
-              className="px-6 py-2 rounded-xl bg-emerald-500 text-white font-black disabled:opacity-40"
+              disabled={submitting || timeLeft <= 0 || submitted}
+              className="px-6 py-2 cursor-pointer rounded-xl bg-emerald-500 text-white font-black disabled:opacity-40"
             >
               {submitting
                 ? "Enviando..."
@@ -363,10 +339,10 @@ export default function OnboardingPage() {
                 : "Finalizar"}
             </button>
           )}
-
         </div>
       </footer>
-
     </div>
   );
 }
+
+

@@ -1,3 +1,5 @@
+"use client";
+
 import { Users, CheckCircle2, Wifi, WifiOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { Player } from "../types";
@@ -16,87 +18,102 @@ export const StatsMetrics = ({ players, connected }: StatsMetricsProps) => {
       : 0;
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
 
       {/* PLAYERS */}
-      <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm">
+      <div className="bg-[#111827] border border-white/[0.06] rounded-3xl p-6">
+
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
-            <Users className="text-emerald-500" size={28} />
+
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+            <Users className="text-emerald-400" size={20} />
           </div>
 
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-400 font-black">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black">
               Jogadores
-            </div>
+            </p>
 
-            <div className="text-3xl font-black text-[#001F3F]">
+            <p className="text-2xl font-black text-white mt-1 tabular-nums">
               {players.length}
-            </div>
+            </p>
           </div>
+
         </div>
+
       </div>
 
       {/* READY */}
-      <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm">
+      <div className="bg-[#111827] border border-white/[0.06] rounded-3xl p-6">
+
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center">
-            <CheckCircle2 className="text-orange-500" size={28} />
+
+          <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+            <CheckCircle2 className="text-orange-400" size={20} />
           </div>
 
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-400 font-black">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black">
               Confirmados
-            </div>
+            </p>
 
-            <div className="text-3xl font-black text-[#001F3F]">
+            <p className="text-2xl font-black text-white mt-1 tabular-nums">
               {readyCount}
-            </div>
+            </p>
           </div>
+
         </div>
 
-        <div className="mt-4 h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div className="mt-5 h-2 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
           <motion.div
             className="h-full bg-orange-500 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.4 }}
           />
         </div>
 
-        <div className="mt-2 text-[11px] text-slate-400 font-bold">
-          {readyCount} de {players.length} prontos
-        </div>
+        <p className="mt-2 text-[11px] text-slate-500 font-black uppercase tracking-[0.2em]">
+          {readyCount} / {players.length}
+        </p>
+
       </div>
 
       {/* CONNECTION */}
-      <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm">
+      <div className="bg-[#111827] border border-white/[0.06] rounded-3xl p-6">
+
         <div className="flex items-center gap-4">
+
           <div
-            className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
-              connected ? "bg-emerald-100" : "bg-red-100"
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${
+              connected
+                ? "bg-emerald-500/10 border-emerald-500/20"
+                : "bg-red-500/10 border-red-500/20"
             }`}
           >
             {connected ? (
-              <Wifi className="text-emerald-500" size={28} />
+              <Wifi className="text-emerald-400" size={20} />
             ) : (
-              <WifiOff className="text-red-500" size={28} />
+              <WifiOff className="text-red-400" size={20} />
             )}
           </div>
 
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-400 font-black">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black">
               Conexão
-            </div>
+            </p>
 
-            <div
-              className={`text-xl font-black uppercase ${
-                connected ? "text-emerald-500" : "text-red-500"
+            <p
+              className={`text-lg font-black mt-1 uppercase ${
+                connected ? "text-emerald-400" : "text-red-400"
               }`}
             >
-              {connected ? "ONLINE" : "OFFLINE"}
-            </div>
+              {connected ? "Online" : "Offline"}
+            </p>
           </div>
+
         </div>
+
       </div>
 
     </section>

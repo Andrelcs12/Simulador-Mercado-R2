@@ -28,100 +28,122 @@ const LobbyPage = () => {
   const readyCount = players.filter((p) => p.isReady).length;
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-white relative overflow-hidden">
+  <div className="min-h-screen bg-[#0B1220] text-white relative overflow-hidden">
 
-      {/* GRID BACKGROUND (PADRÃO SAAS) */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
-            backgroundSize: "36px 36px",
-          }}
-        />
-      </div>
+    {/* GRID BACKGROUND */}
+    <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
+      <div
+        className="w-full h-full"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, #1f2937 1px, transparent 1px), linear-gradient(to bottom, #1f2937 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+        }}
+      />
+    </div>
 
-      {/* ROUND OVERLAY */}
-      <RoundStartOverlay
+    {/* ROUND OVERLAY */}
+    <RoundStartOverlay
+      isGameStarted={isGameStarted}
+      roundLabel={roundLabel}
+      tempoRestante={tempoRestante}
+    />
+
+    {/* CONTAINER */}
+    <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+      {/* HEADER */}
+      <LobbyHeader
+        sessionCode={sessionCode}
         isGameStarted={isGameStarted}
-        roundLabel={roundLabel}
         tempoRestante={tempoRestante}
+        connected={connected}
       />
 
-      {/* CONTAINER PRINCIPAL */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 space-y-6">
+      {/* MAIN GRID */}
+      <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-        {/* ================= HEADER ================= */}
-        <LobbyHeader
-          sessionCode={sessionCode}
-          isGameStarted={isGameStarted}
-          tempoRestante={tempoRestante}
-          connected={connected}
-        />
+        {/* LEFT */}
+        <div className="xl:col-span-2 space-y-6">
 
-        {/* ================= STATUS DO JOGADOR ================= */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <InfoCards
+            myPlayerData={myPlayerData}
+            config={config}
+            connected={connected}
+            roundLabel={roundLabel}
+            isReady={isReady}
+          />
 
-          <div className="lg:col-span-2 space-y-5">
+          <StatsMetrics
+            players={players}
+            connected={connected}
+          />
 
-            <InfoCards
-              myPlayerData={myPlayerData}
-              config={config}
-              connected={connected}
-              roundLabel={roundLabel}
-              isReady={isReady}
-            />
+        </div>
 
-            <StatsMetrics
-  players={players}
-  connected={connected}
-/>
-          </div>
+        {/* RIGHT SIDEBAR */}
+        <aside className="space-y-6">
 
-          {/* SIDEBAR FIXA DE AÇÃO */}
-          <aside className="space-y-5">
+          {/* SESSION STATUS */}
+          <div className="bg-[#111827] border border-white/[0.06] rounded-3xl p-5 space-y-4">
 
-            <div className="bg-[#111827] border border-white/10 rounded-2xl p-5">
-              <h3 className="text-xs uppercase tracking-widest text-slate-400 mb-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-black">
                 Status da Sessão
               </h3>
 
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Conexão</span>
-                  <span className={connected ? "text-emerald-400" : "text-red-400"}>
-                    {connected ? "Ativo" : "Offline"}
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Jogadores</span>
-                  <span>{players.length}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Prontos</span>
-                  <span>{readyCount}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Status</span>
-                  <span>{isGameStarted ? "Rodando" : "Lobby"}</span>
-                </div>
-              </div>
+              <div
+                className={`w-2.5 h-2.5 rounded-full ${
+                  connected ? "bg-emerald-400" : "bg-red-400"
+                }`}
+              />
             </div>
 
-            <ReadyBanner
-              isReady={isReady}
-              onConfirm={confirmarPronto}
-            />
-          </aside>
-        </section>
+            <div className="space-y-3 text-sm">
 
-      </div>
+              <div className="flex justify-between text-slate-300">
+                <span>Conexão</span>
+                <span className={connected ? "text-emerald-400" : "text-red-400"}>
+                  {connected ? "Ativo" : "Offline"}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-slate-300">
+                <span>Jogadores</span>
+                <span className="text-white font-semibold">
+                  {players.length}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-slate-300">
+                <span>Prontos</span>
+                <span className="text-white font-semibold">
+                  {readyCount}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-slate-300">
+                <span>Status</span>
+                <span className="text-white font-semibold">
+                  {isGameStarted ? "Rodando" : "Lobby"}
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          {/* READY BANNER */}
+          <ReadyBanner
+            isReady={isReady}
+            onConfirm={confirmarPronto}
+          />
+
+        </aside>
+
+      </section>
     </div>
-  );
+  </div>
+);
 };
 
 export default LobbyPage;

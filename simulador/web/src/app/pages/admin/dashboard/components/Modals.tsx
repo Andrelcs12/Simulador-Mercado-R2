@@ -36,7 +36,7 @@ const Modal = ({
       {/* close */}
       <button
         onClick={onClose}
-        className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center transition"
+        className="absolute cursor-pointer top-3 right-3 w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center transition"
       >
         <X size={14} className="text-slate-400" />
       </button>
@@ -86,14 +86,14 @@ export const ModalEncerrarSessao = ({
 
             <button
               onClick={onClose}
-              className="flex-1 h-11 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs uppercase font-black transition"
+              className="flex-1 cursor-pointer h-11 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs uppercase font-black transition"
             >
               Cancelar
             </button>
 
             <button
               onClick={onConfirm}
-              className="flex-1 h-11 rounded-xl bg-red-500/90 hover:bg-red-500 text-white text-xs uppercase font-black transition"
+              className="flex-1 cursor-pointer h-11 rounded-xl bg-red-500/90 hover:bg-red-500 text-white text-xs uppercase font-black transition"
             >
               Encerrar
             </button>
@@ -163,14 +163,14 @@ export const ModalExpulsarJogador = ({
 
             <button
               onClick={onClose}
-              className="flex-1 h-11 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs uppercase font-black transition"
+              className="flex-1 cursor-pointer h-11 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs uppercase font-black transition"
             >
               Cancelar
             </button>
 
             <button
               onClick={() => onConfirm(player)}
-              className="flex-1 h-11 rounded-xl bg-orange-500/90 hover:bg-orange-500 text-white text-xs uppercase font-black transition"
+              className="flex-1 cursor-pointer h-11 rounded-xl bg-orange-500/90 hover:bg-orange-500 text-white text-xs uppercase font-black transition"
             >
               Remover
             </button>

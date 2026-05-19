@@ -176,4 +176,8 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     myPlayerData,
     confirmarPronto,
   };
+
+  console.log(
+    "loja é", myPlayerData
+  )
 };

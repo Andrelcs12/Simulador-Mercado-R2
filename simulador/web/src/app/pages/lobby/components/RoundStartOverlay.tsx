@@ -1,3 +1,5 @@
+"use client";
+
 import { motion, AnimatePresence } from "framer-motion";
 
 function formatTime(seconds: number): string {
@@ -25,36 +27,42 @@ export const RoundStartOverlay = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#001B36]/90 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1220]/90 backdrop-blur-xl"
         >
           <motion.div
-            initial={{ scale: 0.85, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
+            initial={{ scale: 0.9, y: 20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="text-center px-6"
+            className="text-center px-6 max-w-md w-full"
           >
-            <div className="text-7xl mb-6">🚀</div>
 
-            <h2 className="text-4xl md:text-5xl font-black uppercase italic text-white">
-              Rodada iniciada
-            </h2>
+            <div className="bg-[#111827] border border-white/[0.06] rounded-3xl p-8">
 
-            <p className="text-orange-400 font-black uppercase tracking-[0.35em] mt-4 text-sm">
-              {roundLabel}
-            </p>
+              <div className="text-5xl mb-5">🚀</div>
 
-            <div className="mt-10 flex justify-center">
-              <div className="bg-white/10 border border-white/10 px-10 py-5 rounded-3xl min-w-[240px]">
-                <div className="text-xs uppercase tracking-widest text-white/50 font-black mb-2">
+              <h2 className="text-2xl sm:text-3xl font-black text-white uppercase">
+                Rodada iniciada
+              </h2>
+
+              <p className="text-orange-400 font-black uppercase tracking-[0.3em] mt-3 text-xs">
+                {roundLabel}
+              </p>
+
+              <div className="mt-8">
+
+                <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black mb-3">
                   Tempo restante
-                </div>
+                </p>
 
-                <div className="text-5xl font-black text-white font-mono">
+                <div className="text-4xl sm:text-5xl font-black text-white font-mono tabular-nums">
                   {formatTime(tempoRestante)}
                 </div>
+
               </div>
+
             </div>
+
           </motion.div>
         </motion.div>
       )}

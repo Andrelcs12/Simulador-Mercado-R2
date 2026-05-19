@@ -1,501 +1,252 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import {
-  Users,
-  Headphones,
-  Target,
-  ShieldCheck,
-} from "lucide-react";
-
+import { Users, Headphones, Target, ShieldCheck, Minus, Plus } from "lucide-react";
 import { AppConfig } from "../types/onboarding";
 
-interface Props {
+interface EmployeeStepProps {
   config: AppConfig;
   setConfig: React.Dispatch<React.SetStateAction<AppConfig>>;
 }
 
-const MAX_OP = 20;
+const MAX_OPERATORS = 20;
 
-// CSAT:
-// (operadores caixa / 10) * quiz
-function calcCSAT(caixa: number, quiz: number) {
-  const operatorFactor = Math.min(caixa / 10, 1);
-
-  return Math.round(operatorFactor * quiz);
+/**
+ * Calcula o CSAT garantindo precisão decimal antes do arredondamento.
+ * Formula: (Caixa / 10) * QuizScore
+ */
+function calculateCSAT(operadoresCaixa: number, quizScore: number): number {
+  const factor = Math.min(operadoresCaixa / 10, 1);
+  return Math.round(factor * quizScore);
 }
 
-// SLA baseado SOMENTE operadores de atendimento
-function calcSLA(serviceOps: number) {
-  if (serviceOps >= 8) return 95;
-  if (serviceOps >= 6) return 85;
-  if (serviceOps >= 4) return 75;
-  if (serviceOps >= 2) return 60;
-
-  return 40;
-}
-
-function slaLabel(sla: number) {
-  if (sla >= 95) {
-    return {
-      label: "Excelência operacional",
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-    };
-  }
-
-  if (sla >= 85) {
-    return {
-      label: "Alta eficiência",
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-    };
-  }
-
-  if (sla >= 75) {
-    return {
-      label: "Boa operação",
-      color: "text-yellow-600",
-      bg: "bg-yellow-50",
-    };
-  }
-
-  if (sla >= 60) {
-    return {
-      label: "Operação limitada",
-      color: "text-orange-600",
-      bg: "bg-orange-50",
-    };
-  }
-
-  return {
-    label: "Operação crítica",
-    color: "text-red-600",
-    bg: "bg-red-50",
+/**
+ * Retorna o percentual de SLA baseado no número de operadores de atendimento.
+ */
+function calculateSLA(serviceOps: number): number {
+  if (serviceOps >= 10) return 100;
+  if (serviceOps <= 0) return 20;
+  
+  const slaMapping: Record<number, number> = {
+    1: 30,
+    2: 40,
+    3: 50,
+    4: 60,
+    5: 70,
+    6: 80,
+    7: 85,
+    8: 90,
+    9: 95,
   };
+
+  return slaMapping[serviceOps] ?? 20;
 }
 
-export default function EmployeeStep({
-  config,
-  setConfig,
-}: Props) {
+interface SLAMetaInfo {
+  label: string;
+  color: string;
+  bg: string;
+}
+
+function getSLAMeta(sla: number): SLAMetaInfo {
+  if (sla >= 85) {
+    return { label: "Excelência operacional", color: "text-emerald-600", bg: "bg-emerald-50" };
+  }
+  if (sla >= 70) {
+    return { label: "Boa operação", color: "text-yellow-600", bg: "bg-yellow-50" };
+  }
+  if (sla >= 50) {
+    return { label: "Operação limitada", color: "text-orange-600", bg: "bg-orange-50" };
+  }
+  return { label: "Operação crítica", color: "text-red-600", bg: "bg-red-50" };
+}
+
+export default function EmployeeStep({ config, setConfig }: EmployeeStepProps) {
   const opCaixa = config.operadoresCaixa ?? 5;
-
-  const opAtendimento =
-    config.operadoresAtendimento ?? 3;
-
+  const opAtendimento = config.operadoresAtendimento ?? 3;
   const quiz = config.quizScore ?? 100;
 
-  const totalOps = opCaixa + opAtendimento;
+  // Cálculos memoizados para evitar recalculação desnecessária em re-renders
+  const totalOps = useMemo(() => opCaixa + opAtendimento, [opCaixa, opAtendimento]);
+  const csat = useMemo(() => calculateCSAT(opCaixa, quiz), [opCaixa, quiz]);
+  const sla = useMemo(() => calculateSLA(opAtendimento), [opAtendimento]);
+  const slaInfo = useMemo(() => getSLAMeta(sla), [sla]);
 
-  const csat = calcCSAT(opCaixa, quiz);
+  const csatColor = useMemo(() => {
+    if (csat >= 80) return "text-emerald-600";
+    if (csat >= 60) return "text-yellow-600";
+    return "text-red-500";
+  }, [csat]);
 
-  const sla = calcSLA(opAtendimento);
-
-  const slaInfo = slaLabel(sla);
-
-  const csatColor =
-    csat >= 80
-      ? "text-emerald-600"
-      : csat >= 60
-      ? "text-yellow-600"
-      : "text-red-500";
-
-  const update = (
-    field:
-      | "operadoresCaixa"
-      | "operadoresAtendimento",
-    val: number
-  ) => {
+  const updateOperators = (field: "operadoresCaixa" | "operadoresAtendimento", value: number) => {
     setConfig((prev) => ({
       ...prev,
-      [field]: Math.max(
-        0,
-        Math.min(MAX_OP, val)
-      ),
+      [field]: Math.max(0, Math.min(MAX_OPERATORS, value)),
     }));
   };
 
-  const updateQuiz = (val: number) => {
-  setConfig((prev) => ({
-    ...prev,
-    quizScore: Math.max(
-      0,
-      Math.min(100, val)
-    ),
-  }));
-};
+  const updateQuizScore = (value: number) => {
+    setConfig((prev) => ({
+      ...prev,
+      quizScore: Math.max(0, Math.min(100, value)),
+    }));
+  };
 
   return (
-    <div className="space-y-6">
-
+    <div className="space-y-10">
       {/* HEADER */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+      <div className="border-l-4 border-orange-500 pl-5">
+        <p className="text-[10px] uppercase tracking-[0.3em] font-black text-orange-500">
+          Operação
+        </p>
+        <h2 className="text-3xl font-black text-slate-900">
+          Gestão de <span className="text-orange-500">Equipe</span>
+        </h2>
+        <p className="text-sm text-slate-500 mt-1">
+          CSAT, SLA e impacto operacional da loja.
+        </p>
+      </div>
 
-        <div className="pl-4 border-l-[3px] border-orange-500">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-orange-500">
-            Passo 3 de 4
-          </p>
-
-          <h2 className="text-2xl md:text-3xl font-black text-slate-900 mt-2">
-            Gestão de{" "}
-            <span className="text-orange-500">
-              Equipe
-            </span>
-          </h2>
-
-          <p className="text-sm text-slate-500 mt-2">
-            Configure equipe operacional e nível de
-            conhecimento da loja.
+      {/* KPI CARDS */}
+      <div className="grid md:grid-cols-2 gap-5">
+        {/* CSAT */}
+        <div className="bg-white border-2 border-slate-100 rounded-2xl p-5">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="text-sky-500" size={16} />
+            <p className="text-xs uppercase font-black text-slate-400">CSAT</p>
+          </div>
+          <p className={`text-4xl font-black mt-3 ${csatColor}`}>{csat}%</p>
+          <p className="text-xs text-slate-500 mt-2">
+            (Caixa / 10) × Quiz
           </p>
         </div>
 
-        {/* KPIS */}
-        <div className="flex gap-3">
-
-          {/* CSAT */}
-          <div className="bg-white rounded-2xl px-5 py-4 shadow-sm min-w-[130px]">
-            <div className="flex items-center gap-2 mb-2">
-              <ShieldCheck
-                size={14}
-                className="text-sky-500"
-              />
-
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">
-                CSAT
-              </p>
-            </div>
-
-            <p
-              className={`text-3xl font-black ${csatColor}`}
-            >
-              {csat}%
-            </p>
+        {/* SLA */}
+        <div className={`border-2 rounded-2xl p-5 transition-colors duration-200 ${slaInfo.bg}`}>
+          <div className="flex items-center gap-2">
+            <Headphones className={slaInfo.color} size={16} />
+            <p className="text-xs uppercase font-black text-slate-400">SLA</p>
           </div>
-
-          {/* SLA */}
-          <div
-            className={`rounded-2xl px-5 py-4 shadow-sm min-w-[130px] ${slaInfo.bg}`}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Headphones
-                size={14}
-                className={slaInfo.color}
-              />
-
-              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">
-                SLA
-              </p>
-            </div>
-
-            <p
-              className={`text-3xl font-black ${slaInfo.color}`}
-            >
-              {sla}%
-            </p>
-          </div>
-
+          <p className={`text-4xl font-black mt-3 ${slaInfo.color}`}>{sla}%</p>
+          <p className={`text-xs mt-2 font-medium ${slaInfo.color}`}>
+            {slaInfo.label}
+          </p>
         </div>
       </div>
 
       {/* QUIZ */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm">
-
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-
+      <div className="bg-white border-2 border-slate-100 rounded-2xl p-5">
+        <div className="flex justify-between items-center flex-wrap gap-3">
           <div>
             <p className="text-sm font-black text-slate-900">
-              Resultado do Quiz
+              Conhecimento operacional (Quiz)
             </p>
-
-            <p className="text-xs text-slate-500 mt-1">
-              Percentual de acertos no questionário
-              operacional.
+            <p className="text-xs text-slate-500">
+              Impacta diretamente o CSAT
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-
-            
+          <div className="flex items-center gap-2">
             <input
-  type="number"
-  min={0}
-  max={100}
-  value={quiz === 0 ? "" : quiz}
-  onChange={(e) => {
-    const raw = e.target.value;
-
-    // permite apagar completamente
-    if (raw === "") {
-      updateQuiz(0);
-      return;
-    }
-
-    const value = Number(raw);
-
-    // impede negativo
-    if (value < 0) return;
-
-    updateQuiz(value);
-  }}
-  className="w-24 h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-center text-lg font-black outline-none focus:border-orange-400"
-/>
-
-            <span className="text-sm font-black text-slate-500">
-              %
-            </span>
-
+              type="number"
+              min={0}
+              max={100}
+              value={quiz === 0 ? "" : quiz}
+              onChange={(e) => {
+                const val = e.target.value;
+                updateQuizScore(val === "" ? 0 : Number(val));
+              }}
+              className="w-24 h-11 text-center font-black rounded-xl border-2 border-slate-100 bg-slate-50 focus:border-orange-400 focus:bg-white outline-none transition-all cursor-text"
+            />
+            <span className="font-black text-slate-500">%</span>
           </div>
-
         </div>
       </div>
 
-      {/* CARDS */}
-      <div className="grid lg:grid-cols-2 gap-5">
-
+      {/* OPERADORES */}
+      <div className="grid md:grid-cols-2 gap-5">
         {/* CAIXA */}
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-5 shadow-sm"
+          className="bg-white border-2 border-slate-100 rounded-2xl p-5"
         >
-
-          <div className="flex items-start gap-3">
-
-            <div className="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
-              <Users
-                className="text-sky-600"
-                size={20}
-              />
-            </div>
-
+          <div className="flex items-center gap-3">
+            <Users className="text-sky-600" />
             <div>
-              <h3 className="text-lg font-black text-slate-900">
-                Operadores de Caixa
-              </h3>
-
-              <p className="text-xs text-slate-500 mt-1">
-                Impactam diretamente o CSAT da loja.
-              </p>
+              <p className="font-black text-slate-900">Caixa</p>
+              <p className="text-xs text-slate-500">Influência no CSAT</p>
             </div>
           </div>
 
-          {/* COUNTER */}
-          <div className="flex items-center justify-between mt-7">
-
+          <div className="flex justify-between items-center mt-6">
             <button
-              onClick={() =>
-                update(
-                  "operadoresCaixa",
-                  opCaixa - 1
-                )
-              }
-              className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-xl font-black transition"
+              type="button"
+              onClick={() => updateOperators("operadoresCaixa", opCaixa - 1)}
+              className="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition-all cursor-pointer"
             >
-              −
+              <Minus size={16} className="text-slate-700 stroke-[3]" />
             </button>
-
-            <div className="text-center">
-              <p className="text-5xl font-black text-slate-900">
-                {opCaixa}
-              </p>
-
-              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mt-1">
-                operadores
-              </p>
-            </div>
-
+            <p className="text-4xl font-black select-none">{opCaixa}</p>
             <button
-              onClick={() =>
-                update(
-                  "operadoresCaixa",
-                  opCaixa + 1
-                )
-              }
-              className="w-11 h-11 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xl font-black transition"
+              type="button"
+              onClick={() => updateOperators("operadoresCaixa", opCaixa + 1)}
+              className="w-11 h-11 flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white transition-all cursor-pointer"
             >
-              +
+              <Plus size={16} className="stroke-[3]" />
             </button>
-
           </div>
-
-          {/* RESULT */}
-          <div className="mt-6 rounded-xl bg-sky-50 p-4">
-
-            <div className="flex items-center justify-between">
-
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] font-black text-sky-600">
-                  Impacto no CSAT
-                </p>
-
-                <p className="text-xs text-slate-500 mt-2">
-                  (operadores / 10) × quiz
-                </p>
-              </div>
-
-              <div
-                className={`text-3xl font-black ${csatColor}`}
-              >
-                {csat}%
-              </div>
-
-            </div>
-          </div>
-
         </motion.div>
 
         {/* ATENDIMENTO */}
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-5 shadow-sm"
+          className="bg-white border-2 border-slate-100 rounded-2xl p-5"
         >
-
-          <div className="flex items-start gap-3">
-
-            <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-              <Headphones
-                className="text-orange-500"
-                size={20}
-              />
-            </div>
-
+          <div className="flex items-center gap-3">
+            <Headphones className="text-orange-500" />
             <div>
-              <h3 className="text-lg font-black text-slate-900">
-                Atendimento
-              </h3>
-
-              <p className="text-xs text-slate-500 mt-1">
-                Define SLA operacional da loja.
-              </p>
+              <p className="font-black text-slate-900">Atendimento</p>
+              <p className="text-xs text-slate-500">Define SLA operacional</p>
             </div>
           </div>
 
-          {/* COUNTER */}
-          <div className="flex items-center justify-between mt-7">
-
+          <div className="flex justify-between items-center mt-6">
             <button
-              onClick={() =>
-                update(
-                  "operadoresAtendimento",
-                  opAtendimento - 1
-                )
-              }
-              className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-xl font-black transition"
+              type="button"
+              onClick={() => updateOperators("operadoresAtendimento", opAtendimento - 1)}
+              className="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition-all cursor-pointer"
             >
-              −
+              <Minus size={16} className="text-slate-700 stroke-[3]" />
             </button>
-
-            <div className="text-center">
-              <p className="text-5xl font-black text-slate-900">
-                {opAtendimento}
-              </p>
-
-              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mt-1">
-                operadores
-              </p>
-            </div>
-
+            <p className="text-4xl font-black select-none">{opAtendimento}</p>
             <button
-              onClick={() =>
-                update(
-                  "operadoresAtendimento",
-                  opAtendimento + 1
-                )
-              }
-              className="w-11 h-11 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xl font-black transition"
+              type="button"
+              onClick={() => updateOperators("operadoresAtendimento", opAtendimento + 1)}
+              className="w-11 h-11 flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white transition-all cursor-pointer"
             >
-              +
+              <Plus size={16} className="stroke-[3]" />
             </button>
-
           </div>
-
-          {/* RESULT */}
-          <div
-            className={`mt-6 rounded-xl p-4 ${slaInfo.bg}`}
-          >
-
-            <div className="flex items-center justify-between">
-
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500">
-                  SLA operacional
-                </p>
-
-                <p
-                  className={`text-sm font-black mt-2 ${slaInfo.color}`}
-                >
-                  {slaInfo.label}
-                </p>
-              </div>
-
-              <div
-                className={`text-3xl font-black ${slaInfo.color}`}
-              >
-                {sla}%
-              </div>
-
-            </div>
-          </div>
-
         </motion.div>
       </div>
 
-      {/* IMPACTO */}
-      <div className="bg-gradient-to-r from-slate-50 to-orange-50 rounded-2xl p-5">
-
-        <div className="flex items-start gap-3">
-
-          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0">
-            <Target
-              size={18}
-              className="text-orange-500"
-            />
-          </div>
-
-          <div className="flex-1">
-
-            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500">
-              Impacto competitivo
+      {/* IMPACTO FINAL */}
+      <div className="bg-gradient-to-r from-slate-50 to-orange-50 border-2 border-slate-100 rounded-2xl p-5">
+        <div className="flex items-center gap-3">
+          <Target className="text-orange-500" />
+          <div>
+            <p className="text-xs uppercase font-black text-slate-400">
+              Impacto geral
             </p>
-
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-              O sistema distribui demanda entre as
-              lojas usando preço, disponibilidade e
-              CSAT. Melhor operação recebe maior
-              participação nas vendas.
+            <p className="text-sm font-medium text-slate-600 mt-1">
+              Equipe total: {totalOps} | CSAT: {csat}% | SLA: {sla}%
             </p>
-
-            <div className="flex gap-3 mt-4 flex-wrap">
-
-              <div className="bg-white rounded-xl px-4 py-3 shadow-sm">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-black text-slate-400">
-                  Equipe Total
-                </p>
-
-                <p className="text-2xl font-black text-slate-900 mt-1">
-                  {totalOps}
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl px-4 py-3 shadow-sm">
-                <p className="text-[10px] uppercase tracking-[0.18em] font-black text-slate-400">
-                  Quiz
-                </p>
-
-                <p className="text-2xl font-black text-slate-900 mt-1">
-                  {quiz}%
-                </p>
-              </div>
-
-            </div>
-
           </div>
         </div>
       </div>
-
     </div>
   );
 }

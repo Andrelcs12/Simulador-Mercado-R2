@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
 } from "@nestjs/common";
 
 import { PrismaService } from "@/prisma.service";
@@ -12,88 +13,241 @@ export class SubmissionService {
 
   private readyPlayers = new Map<string, Set<string>>();
 
+  // logger nest
+  private readonly logger = new Logger(SubmissionService.name);
+
   // =========================
   // CONFIG SUBMISSION
   // =========================
 
   async submitConfiguration(data: PlayerConfigurationInput) {
-  await this.validateSubmissionWindow(data.roundId);
+    this.logger.log("====================================");
+    this.logger.log("NOVA SUBMISSÃO RECEBIDA");
+    this.logger.log("====================================");
 
-  const storeId = await this.getStoreId(data.playerId);
-  await this.ensureUniqueConfig(data.roundId, storeId);
+    // DEBUG PAYLOAD COMPLETO
+    this.logger.debug(
+      JSON.stringify(
+        {
+          playerId: data.playerId,
+          sessionId: data.sessionId,
+          roundId: data.roundId,
+          operatorsQty: data.operatorsQty,
+          serviceOperatorsQty: data.serviceOperatorsQty,
+          stockInputs: data.stockInputs,
+          capexSelections: data.capexSelections,
+        },
+        null,
+        2,
+      ),
+    );
 
-  // 🔥 valida categorias reais antes de salvar
-  const categories = await this.prisma.categoryMaster.findMany({
-    select: { id: true, name: true },
-  });
+    await this.validateSubmissionWindow(data.roundId);
 
-  const map = new Map(categories.map(c => [c.name, c.id]));
+    const storeId = await this.getStoreId(data.playerId);
 
-  const config = await this.prisma.configuration.create({
-    data: {
-      sessionId: data.sessionId,
-      roundId: data.roundId,
-      storeId,
+    this.logger.debug(`STORE ID: ${storeId}`);
 
-      operatorsQty: data.operatorsQty,
-      serviceOperatorsQty: data.serviceOperatorsQty,
-      quizScore: data.quizScore,
+    await this.ensureUniqueConfig(data.roundId, storeId);
 
-      stockInputs: {
-        create: data.stockInputs.map(s => {
-          const realId = map.get(s.categoryId);
+    // =========================
+    // BUSCA CATEGORIAS REAIS
+    // =========================
 
-          if (!realId) {
-            throw new Error(`Categoria inválida: ${s.categoryId}`);
-          }
-
-          return {
-            categoryId: realId,
-            buyQty: s.buyQty,
-            commercialMargin: s.commercialMargin,
-            expectedSellPrice: s.expectedSellPrice,
-          };
-        }),
+    const categories = await this.prisma.categoryMaster.findMany({
+      select: {
+        id: true,
+        name: true,
       },
+    });
 
-      capexSelections: {
-        create: data.capexSelections,
-      },
-    },
-  });
+    this.logger.debug(
+      `CATEGORIAS ENCONTRADAS: ${categories.length}`,
+    );
 
-  return {
-    success: true,
-    configId: config.id,
-    submittedAt: config.submittedAt,
-  };
-}
+    this.logger.debug(
+      JSON.stringify(categories, null, 2),
+    );
+
+    // SET DE IDS VÁLIDOS
+    const validCategoryIds = new Set(
+      categories.map((c) => c.id),
+    );
+
+    // =========================
+    // VALIDAÇÃO STOCK INPUTS
+    // =========================
+
+    const parsedStockInputs = data.stockInputs.map((s, index) => {
+      this.logger.debug(
+        `[STOCK ${index}] categoryId recebido: ${s.categoryId}`,
+      );
+
+      const exists = validCategoryIds.has(s.categoryId);
+
+      this.logger.debug(
+        `[STOCK ${index}] categoria existe? ${exists}`,
+      );
+
+      if (!exists) {
+        this.logger.error(
+          `Categoria inválida detectada: ${s.categoryId}`,
+        );
+
+        this.logger.error(
+          "Categorias válidas disponíveis:",
+        );
+
+        this.logger.error(
+          JSON.stringify(
+            categories.map((c) => ({
+              id: c.id,
+              name: c.name,
+            })),
+            null,
+            2,
+          ),
+        );
+
+        throw new BadRequestException(
+          `Categoria inválida: ${s.categoryId}`,
+        );
+      }
+
+      return {
+        categoryId: s.categoryId,
+        buyQty: s.buyQty,
+        commercialMargin: s.commercialMargin,
+        expectedSellPrice: s.expectedSellPrice,
+      };
+    });
+
+    // =========================
+    // DEBUG FINAL
+    // =========================
+
+    this.logger.debug(
+      "STOCK INPUTS PARSEADOS:",
+    );
+
+    this.logger.debug(
+      JSON.stringify(parsedStockInputs, null, 2),
+    );
+
+    // =========================
+    // CREATE CONFIG
+    // =========================
+
+    try {
+      const config = await this.prisma.configuration.create({
+        data: {
+          sessionId: data.sessionId,
+          roundId: data.roundId,
+          storeId,
+
+          operatorsQty: data.operatorsQty,
+          serviceOperatorsQty: data.serviceOperatorsQty,
+          quizScore: data.quizScore,
+
+          stockInputs: {
+            create: parsedStockInputs,
+          },
+
+          capexSelections: {
+            create: data.capexSelections,
+          },
+        },
+
+        include: {
+          stockInputs: true,
+          capexSelections: true,
+        },
+      });
+
+      this.logger.log(
+        `CONFIGURAÇÃO CRIADA COM SUCESSO: ${config.id}`,
+      );
+
+      return {
+        success: true,
+        configId: config.id,
+        submittedAt: config.submittedAt,
+      };
+    } catch (error) {
+      this.logger.error(
+        "ERRO AO CRIAR CONFIGURAÇÃO",
+      );
+
+      this.logger.error(error);
+
+      if (error instanceof Error) {
+        this.logger.error(error.message);
+        this.logger.error(error.stack);
+      }
+
+      throw error;
+    }
+  }
 
   // =========================
   // HELPERS
   // =========================
 
   private async getStoreId(playerId: string) {
+    this.logger.debug(
+      `Buscando store do player: ${playerId}`,
+    );
+
     const player = await this.prisma.player.findUnique({
-      where: { id: playerId },
-      select: { storeId: true },
+      where: {
+        id: playerId,
+      },
+
+      select: {
+        storeId: true,
+      },
     });
 
     if (!player?.storeId) {
-      throw new BadRequestException("Player sem store vinculada");
+      this.logger.error(
+        `Player sem store vinculada: ${playerId}`,
+      );
+
+      throw new BadRequestException(
+        "Player sem store vinculada",
+      );
     }
 
     return player.storeId;
   }
 
-  private async ensureUniqueConfig(roundId: string, storeId: string) {
+  private async ensureUniqueConfig(
+    roundId: string,
+    storeId: string,
+  ) {
+    this.logger.debug(
+      `Validando config única | round=${roundId} | store=${storeId}`,
+    );
+
     const exists = await this.prisma.configuration.findFirst({
-      where: { roundId, storeId },
-      select: { id: true },
+      where: {
+        roundId,
+        storeId,
+      },
+
+      select: {
+        id: true,
+      },
     });
 
     if (exists) {
-      throw new BadRequestException("Config já enviada nesta rodada");
+      this.logger.error(
+        `Config duplicada encontrada: ${exists.id}`,
+      );
+
+      throw new BadRequestException(
+        "Config já enviada nesta rodada",
+      );
     }
   }
 
@@ -120,8 +274,13 @@ export class SubmissionService {
 
   async allPlayersReady(sessionId: string) {
     const players = await this.prisma.player.findMany({
-      where: { sessionId },
-      select: { id: true },
+      where: {
+        sessionId,
+      },
+
+      select: {
+        id: true,
+      },
     });
 
     const ready = this.readyPlayers.get(sessionId);
@@ -140,17 +299,38 @@ export class SubmissionService {
   // =========================
 
   async validateSubmissionWindow(roundId: string) {
+    this.logger.debug(
+      `Validando janela de submissão da rodada: ${roundId}`,
+    );
+
     const round = await this.prisma.gameRound.findUnique({
-      where: { id: roundId },
-      select: { status: true },
+      where: {
+        id: roundId,
+      },
+
+      select: {
+        status: true,
+      },
     });
 
     if (!round) {
-      throw new BadRequestException("Round não encontrado");
+      this.logger.error(
+        `Round não encontrado: ${roundId}`,
+      );
+
+      throw new BadRequestException(
+        "Round não encontrado",
+      );
     }
 
+    this.logger.debug(
+      `Status da rodada: ${round.status}`,
+    );
+
     if (round.status !== "OPEN") {
-      throw new BadRequestException("Round não está aberta");
+      throw new BadRequestException(
+        "Round não está aberta",
+      );
     }
 
     return true;
