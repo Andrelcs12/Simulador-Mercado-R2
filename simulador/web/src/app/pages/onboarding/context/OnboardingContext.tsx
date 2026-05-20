@@ -15,7 +15,7 @@ import { AppConfig, PlayerData, RoundData } from "../types/onboarding";
 // ─────────────────────────────────────────────
 
 const GAME_RULES = {
-  budget: 700000,            // Caixa inicial de R$ 700 mil
+  budget: 700000,           // Caixa inicial de R$ 700 mil
   idealCaixaOperators: 10,   // Quadro ideal de operados de caixa para o CSAT
 };
 
@@ -53,6 +53,14 @@ type OnboardingContextType = {
   capexTotal: number;
   comercialTotal: number;
   remainingBudget: number;
+  
+  // ANÁLISE DE ESTOQUE INTEGRADA
+  estoqueAnalysis: Record<string, {
+    qtd: number;
+    maxDisponivel: number;
+    pctGasto: number;
+    custoTotal: number;
+  }>;
 
   // ROUND
   round: RoundData | null;
@@ -143,17 +151,34 @@ export function OnboardingProvider({
   }, [config.capex]);
 
   // ─────────────────────────────
+  // 🔥 ANÁLISE DETALHADA E REATIVA DO ESTOQUE
+  // ─────────────────────────────
+
+  const estoqueAnalysis = useMemo(() => {
+    const categorias = ["pereciveis", "mercearia", "eletro", "hipel"];
+    
+    return categorias.reduce((acc, cat) => {
+      const qtd = config.comercial?.[cat as keyof typeof config.comercial]?.estoque ?? 0;
+      const maxDisponivel = COMERCIAL_MAX_STOCK[cat] || 0;
+      const custoUnitario = COMERCIAL_PRICES[cat] || 0;
+      
+      acc[cat] = {
+        qtd,
+        maxDisponivel,
+        pctGasto: maxDisponivel > 0 ? (qtd / maxDisponivel) * 100 : 0,
+        custoTotal: qtd * custoUnitario,
+      };
+      return acc;
+    }, {} as Record<string, { qtd: number; maxDisponivel: number; pctGasto: number; custoTotal: number }>);
+  }, [config.comercial]);
+
+  // ─────────────────────────────
   // 🔥 COMERCIAL TOTAL (ESTOQUE REALTIME)
   // ─────────────────────────────
 
   const comercialTotal = useMemo(() => {
-    if (!config.comercial) return 0;
-    return Object.entries(config.comercial).reduce((acc, [key, item]) => {
-      const custoUnitario = COMERCIAL_PRICES[key] || 0;
-      const quantidade = item?.estoque || 0;
-      return acc + (quantidade * custoUnitario);
-    }, 0);
-  }, [config.comercial]);
+    return Object.values(estoqueAnalysis).reduce((acc, item) => acc + item.custoTotal, 0);
+  }, [estoqueAnalysis]);
 
   // ─────────────────────────────
   // 🔥 SALDO REAL INTEGRADO (GLOBAL)
@@ -188,6 +213,7 @@ export function OnboardingProvider({
         capexTotal,
         comercialTotal,
         remainingBudget,
+        estoqueAnalysis,
 
         round,
         setRound,

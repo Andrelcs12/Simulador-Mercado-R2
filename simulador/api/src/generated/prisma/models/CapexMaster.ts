@@ -28,18 +28,18 @@ export type AggregateCapexMaster = {
 
 export type CapexMasterAvgAggregateOutputType = {
   cost: number | null
-  recurringLicenseCost: number | null
-  slaImpact: number | null
   csatImpact: number | null
   productivityImpact: number | null
+  recurringLicenseCost: number | null
+  slaImpact: number | null
 }
 
 export type CapexMasterSumAggregateOutputType = {
   cost: number | null
-  recurringLicenseCost: number | null
-  slaImpact: number | null
   csatImpact: number | null
   productivityImpact: number | null
+  recurringLicenseCost: number | null
+  slaImpact: number | null
 }
 
 export type CapexMasterMinAggregateOutputType = {
@@ -47,10 +47,10 @@ export type CapexMasterMinAggregateOutputType = {
   name: string | null
   description: string | null
   cost: number | null
-  recurringLicenseCost: number | null
-  slaImpact: number | null
   csatImpact: number | null
   productivityImpact: number | null
+  recurringLicenseCost: number | null
+  slaImpact: number | null
 }
 
 export type CapexMasterMaxAggregateOutputType = {
@@ -58,10 +58,10 @@ export type CapexMasterMaxAggregateOutputType = {
   name: string | null
   description: string | null
   cost: number | null
-  recurringLicenseCost: number | null
-  slaImpact: number | null
   csatImpact: number | null
   productivityImpact: number | null
+  recurringLicenseCost: number | null
+  slaImpact: number | null
 }
 
 export type CapexMasterCountAggregateOutputType = {
@@ -69,28 +69,28 @@ export type CapexMasterCountAggregateOutputType = {
   name: number
   description: number
   cost: number
-  recurringLicenseCost: number
-  slaImpact: number
   csatImpact: number
   productivityImpact: number
+  recurringLicenseCost: number
+  slaImpact: number
   _all: number
 }
 
 
 export type CapexMasterAvgAggregateInputType = {
   cost?: true
-  recurringLicenseCost?: true
-  slaImpact?: true
   csatImpact?: true
   productivityImpact?: true
+  recurringLicenseCost?: true
+  slaImpact?: true
 }
 
 export type CapexMasterSumAggregateInputType = {
   cost?: true
-  recurringLicenseCost?: true
-  slaImpact?: true
   csatImpact?: true
   productivityImpact?: true
+  recurringLicenseCost?: true
+  slaImpact?: true
 }
 
 export type CapexMasterMinAggregateInputType = {
@@ -98,10 +98,10 @@ export type CapexMasterMinAggregateInputType = {
   name?: true
   description?: true
   cost?: true
-  recurringLicenseCost?: true
-  slaImpact?: true
   csatImpact?: true
   productivityImpact?: true
+  recurringLicenseCost?: true
+  slaImpact?: true
 }
 
 export type CapexMasterMaxAggregateInputType = {
@@ -109,10 +109,10 @@ export type CapexMasterMaxAggregateInputType = {
   name?: true
   description?: true
   cost?: true
-  recurringLicenseCost?: true
-  slaImpact?: true
   csatImpact?: true
   productivityImpact?: true
+  recurringLicenseCost?: true
+  slaImpact?: true
 }
 
 export type CapexMasterCountAggregateInputType = {
@@ -120,10 +120,10 @@ export type CapexMasterCountAggregateInputType = {
   name?: true
   description?: true
   cost?: true
-  recurringLicenseCost?: true
-  slaImpact?: true
   csatImpact?: true
   productivityImpact?: true
+  recurringLicenseCost?: true
+  slaImpact?: true
   _all?: true
 }
 
@@ -218,10 +218,10 @@ export type CapexMasterGroupByOutputType = {
   name: string
   description: string
   cost: number
-  recurringLicenseCost: number
-  slaImpact: number
   csatImpact: number
   productivityImpact: number
+  recurringLicenseCost: number
+  slaImpact: number
   _count: CapexMasterCountAggregateOutputType | null
   _avg: CapexMasterAvgAggregateOutputType | null
   _sum: CapexMasterSumAggregateOutputType | null
@@ -252,10 +252,10 @@ export type CapexMasterWhereInput = {
   name?: Prisma.StringFilter<"CapexMaster"> | string
   description?: Prisma.StringFilter<"CapexMaster"> | string
   cost?: Prisma.FloatFilter<"CapexMaster"> | number
-  recurringLicenseCost?: Prisma.FloatFilter<"CapexMaster"> | number
-  slaImpact?: Prisma.FloatFilter<"CapexMaster"> | number
   csatImpact?: Prisma.FloatFilter<"CapexMaster"> | number
   productivityImpact?: Prisma.FloatFilter<"CapexMaster"> | number
+  recurringLicenseCost?: Prisma.FloatFilter<"CapexMaster"> | number
+  slaImpact?: Prisma.FloatFilter<"CapexMaster"> | number
   storeCapexes?: Prisma.StoreCapexListRelationFilter
 }
 
@@ -264,10 +264,10 @@ export type CapexMasterOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
-  recurringLicenseCost?: Prisma.SortOrder
-  slaImpact?: Prisma.SortOrder
   csatImpact?: Prisma.SortOrder
   productivityImpact?: Prisma.SortOrder
+  recurringLicenseCost?: Prisma.SortOrder
+  slaImpact?: Prisma.SortOrder
   storeCapexes?: Prisma.StoreCapexOrderByRelationAggregateInput
 }
 
@@ -279,10 +279,10 @@ export type CapexMasterWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"CapexMaster"> | string
   description?: Prisma.StringFilter<"CapexMaster"> | string
   cost?: Prisma.FloatFilter<"CapexMaster"> | number
-  recurringLicenseCost?: Prisma.FloatFilter<"CapexMaster"> | number
-  slaImpact?: Prisma.FloatFilter<"CapexMaster"> | number
   csatImpact?: Prisma.FloatFilter<"CapexMaster"> | number
   productivityImpact?: Prisma.FloatFilter<"CapexMaster"> | number
+  recurringLicenseCost?: Prisma.FloatFilter<"CapexMaster"> | number
+  slaImpact?: Prisma.FloatFilter<"CapexMaster"> | number
   storeCapexes?: Prisma.StoreCapexListRelationFilter
 }, "id">
 
@@ -291,10 +291,10 @@ export type CapexMasterOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
-  recurringLicenseCost?: Prisma.SortOrder
-  slaImpact?: Prisma.SortOrder
   csatImpact?: Prisma.SortOrder
   productivityImpact?: Prisma.SortOrder
+  recurringLicenseCost?: Prisma.SortOrder
+  slaImpact?: Prisma.SortOrder
   _count?: Prisma.CapexMasterCountOrderByAggregateInput
   _avg?: Prisma.CapexMasterAvgOrderByAggregateInput
   _max?: Prisma.CapexMasterMaxOrderByAggregateInput
@@ -310,10 +310,10 @@ export type CapexMasterScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"CapexMaster"> | string
   description?: Prisma.StringWithAggregatesFilter<"CapexMaster"> | string
   cost?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
-  recurringLicenseCost?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
-  slaImpact?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
   csatImpact?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
   productivityImpact?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
+  recurringLicenseCost?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
+  slaImpact?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
 }
 
 export type CapexMasterCreateInput = {
@@ -321,10 +321,10 @@ export type CapexMasterCreateInput = {
   name: string
   description: string
   cost: number
-  recurringLicenseCost?: number
-  slaImpact?: number
   csatImpact?: number
   productivityImpact?: number
+  recurringLicenseCost?: number
+  slaImpact?: number
   storeCapexes?: Prisma.StoreCapexCreateNestedManyWithoutCapexInput
 }
 
@@ -333,10 +333,10 @@ export type CapexMasterUncheckedCreateInput = {
   name: string
   description: string
   cost: number
-  recurringLicenseCost?: number
-  slaImpact?: number
   csatImpact?: number
   productivityImpact?: number
+  recurringLicenseCost?: number
+  slaImpact?: number
   storeCapexes?: Prisma.StoreCapexUncheckedCreateNestedManyWithoutCapexInput
 }
 
@@ -345,10 +345,10 @@ export type CapexMasterUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
-  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
-  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   csatImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   productivityImpact?: Prisma.FloatFieldUpdateOperationsInput | number
+  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
+  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   storeCapexes?: Prisma.StoreCapexUpdateManyWithoutCapexNestedInput
 }
 
@@ -357,10 +357,10 @@ export type CapexMasterUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
-  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
-  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   csatImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   productivityImpact?: Prisma.FloatFieldUpdateOperationsInput | number
+  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
+  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   storeCapexes?: Prisma.StoreCapexUncheckedUpdateManyWithoutCapexNestedInput
 }
 
@@ -369,10 +369,10 @@ export type CapexMasterCreateManyInput = {
   name: string
   description: string
   cost: number
-  recurringLicenseCost?: number
-  slaImpact?: number
   csatImpact?: number
   productivityImpact?: number
+  recurringLicenseCost?: number
+  slaImpact?: number
 }
 
 export type CapexMasterUpdateManyMutationInput = {
@@ -380,10 +380,10 @@ export type CapexMasterUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
-  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
-  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   csatImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   productivityImpact?: Prisma.FloatFieldUpdateOperationsInput | number
+  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
+  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type CapexMasterUncheckedUpdateManyInput = {
@@ -391,10 +391,10 @@ export type CapexMasterUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
-  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
-  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   csatImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   productivityImpact?: Prisma.FloatFieldUpdateOperationsInput | number
+  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
+  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type CapexMasterCountOrderByAggregateInput = {
@@ -402,18 +402,18 @@ export type CapexMasterCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
-  recurringLicenseCost?: Prisma.SortOrder
-  slaImpact?: Prisma.SortOrder
   csatImpact?: Prisma.SortOrder
   productivityImpact?: Prisma.SortOrder
+  recurringLicenseCost?: Prisma.SortOrder
+  slaImpact?: Prisma.SortOrder
 }
 
 export type CapexMasterAvgOrderByAggregateInput = {
   cost?: Prisma.SortOrder
-  recurringLicenseCost?: Prisma.SortOrder
-  slaImpact?: Prisma.SortOrder
   csatImpact?: Prisma.SortOrder
   productivityImpact?: Prisma.SortOrder
+  recurringLicenseCost?: Prisma.SortOrder
+  slaImpact?: Prisma.SortOrder
 }
 
 export type CapexMasterMaxOrderByAggregateInput = {
@@ -421,10 +421,10 @@ export type CapexMasterMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
-  recurringLicenseCost?: Prisma.SortOrder
-  slaImpact?: Prisma.SortOrder
   csatImpact?: Prisma.SortOrder
   productivityImpact?: Prisma.SortOrder
+  recurringLicenseCost?: Prisma.SortOrder
+  slaImpact?: Prisma.SortOrder
 }
 
 export type CapexMasterMinOrderByAggregateInput = {
@@ -432,18 +432,18 @@ export type CapexMasterMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
-  recurringLicenseCost?: Prisma.SortOrder
-  slaImpact?: Prisma.SortOrder
   csatImpact?: Prisma.SortOrder
   productivityImpact?: Prisma.SortOrder
+  recurringLicenseCost?: Prisma.SortOrder
+  slaImpact?: Prisma.SortOrder
 }
 
 export type CapexMasterSumOrderByAggregateInput = {
   cost?: Prisma.SortOrder
-  recurringLicenseCost?: Prisma.SortOrder
-  slaImpact?: Prisma.SortOrder
   csatImpact?: Prisma.SortOrder
   productivityImpact?: Prisma.SortOrder
+  recurringLicenseCost?: Prisma.SortOrder
+  slaImpact?: Prisma.SortOrder
 }
 
 export type CapexMasterScalarRelationFilter = {
@@ -470,10 +470,10 @@ export type CapexMasterCreateWithoutStoreCapexesInput = {
   name: string
   description: string
   cost: number
-  recurringLicenseCost?: number
-  slaImpact?: number
   csatImpact?: number
   productivityImpact?: number
+  recurringLicenseCost?: number
+  slaImpact?: number
 }
 
 export type CapexMasterUncheckedCreateWithoutStoreCapexesInput = {
@@ -481,10 +481,10 @@ export type CapexMasterUncheckedCreateWithoutStoreCapexesInput = {
   name: string
   description: string
   cost: number
-  recurringLicenseCost?: number
-  slaImpact?: number
   csatImpact?: number
   productivityImpact?: number
+  recurringLicenseCost?: number
+  slaImpact?: number
 }
 
 export type CapexMasterCreateOrConnectWithoutStoreCapexesInput = {
@@ -508,10 +508,10 @@ export type CapexMasterUpdateWithoutStoreCapexesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
-  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
-  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   csatImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   productivityImpact?: Prisma.FloatFieldUpdateOperationsInput | number
+  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
+  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type CapexMasterUncheckedUpdateWithoutStoreCapexesInput = {
@@ -519,10 +519,10 @@ export type CapexMasterUncheckedUpdateWithoutStoreCapexesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
-  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
-  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   csatImpact?: Prisma.FloatFieldUpdateOperationsInput | number
   productivityImpact?: Prisma.FloatFieldUpdateOperationsInput | number
+  recurringLicenseCost?: Prisma.FloatFieldUpdateOperationsInput | number
+  slaImpact?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 
@@ -561,10 +561,10 @@ export type CapexMasterSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   name?: boolean
   description?: boolean
   cost?: boolean
-  recurringLicenseCost?: boolean
-  slaImpact?: boolean
   csatImpact?: boolean
   productivityImpact?: boolean
+  recurringLicenseCost?: boolean
+  slaImpact?: boolean
   storeCapexes?: boolean | Prisma.CapexMaster$storeCapexesArgs<ExtArgs>
   _count?: boolean | Prisma.CapexMasterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["capexMaster"]>
@@ -574,10 +574,10 @@ export type CapexMasterSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   description?: boolean
   cost?: boolean
-  recurringLicenseCost?: boolean
-  slaImpact?: boolean
   csatImpact?: boolean
   productivityImpact?: boolean
+  recurringLicenseCost?: boolean
+  slaImpact?: boolean
 }, ExtArgs["result"]["capexMaster"]>
 
 export type CapexMasterSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -585,10 +585,10 @@ export type CapexMasterSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   name?: boolean
   description?: boolean
   cost?: boolean
-  recurringLicenseCost?: boolean
-  slaImpact?: boolean
   csatImpact?: boolean
   productivityImpact?: boolean
+  recurringLicenseCost?: boolean
+  slaImpact?: boolean
 }, ExtArgs["result"]["capexMaster"]>
 
 export type CapexMasterSelectScalar = {
@@ -596,13 +596,13 @@ export type CapexMasterSelectScalar = {
   name?: boolean
   description?: boolean
   cost?: boolean
-  recurringLicenseCost?: boolean
-  slaImpact?: boolean
   csatImpact?: boolean
   productivityImpact?: boolean
+  recurringLicenseCost?: boolean
+  slaImpact?: boolean
 }
 
-export type CapexMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "cost" | "recurringLicenseCost" | "slaImpact" | "csatImpact" | "productivityImpact", ExtArgs["result"]["capexMaster"]>
+export type CapexMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "cost" | "csatImpact" | "productivityImpact" | "recurringLicenseCost" | "slaImpact", ExtArgs["result"]["capexMaster"]>
 export type CapexMasterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   storeCapexes?: boolean | Prisma.CapexMaster$storeCapexesArgs<ExtArgs>
   _count?: boolean | Prisma.CapexMasterCountOutputTypeDefaultArgs<ExtArgs>
@@ -620,10 +620,10 @@ export type $CapexMasterPayload<ExtArgs extends runtime.Types.Extensions.Interna
     name: string
     description: string
     cost: number
-    recurringLicenseCost: number
-    slaImpact: number
     csatImpact: number
     productivityImpact: number
+    recurringLicenseCost: number
+    slaImpact: number
   }, ExtArgs["result"]["capexMaster"]>
   composites: {}
 }
@@ -1052,10 +1052,10 @@ export interface CapexMasterFieldRefs {
   readonly name: Prisma.FieldRef<"CapexMaster", 'String'>
   readonly description: Prisma.FieldRef<"CapexMaster", 'String'>
   readonly cost: Prisma.FieldRef<"CapexMaster", 'Float'>
-  readonly recurringLicenseCost: Prisma.FieldRef<"CapexMaster", 'Float'>
-  readonly slaImpact: Prisma.FieldRef<"CapexMaster", 'Float'>
   readonly csatImpact: Prisma.FieldRef<"CapexMaster", 'Float'>
   readonly productivityImpact: Prisma.FieldRef<"CapexMaster", 'Float'>
+  readonly recurringLicenseCost: Prisma.FieldRef<"CapexMaster", 'Float'>
+  readonly slaImpact: Prisma.FieldRef<"CapexMaster", 'Float'>
 }
     
 

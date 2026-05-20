@@ -86,9 +86,9 @@ export const GameSessionScalarFieldEnum = {
   code: 'code',
   status: 'status',
   totalRounds: 'totalRounds',
-  currentRound: 'currentRound',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  currentRound: 'currentRound'
 } as const
 
 export type GameSessionScalarFieldEnum = (typeof GameSessionScalarFieldEnum)[keyof typeof GameSessionScalarFieldEnum]
@@ -110,11 +110,11 @@ export type GameRoundScalarFieldEnum = (typeof GameRoundScalarFieldEnum)[keyof t
 export const PlayerScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  role: 'role',
   socketId: 'socketId',
   sessionId: 'sessionId',
+  createdAt: 'createdAt',
   storeId: 'storeId',
-  createdAt: 'createdAt'
+  role: 'role'
 } as const
 
 export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof PlayerScalarFieldEnum]
@@ -123,14 +123,14 @@ export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof 
 export const StoreScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  sessionId: 'sessionId',
   cashBalance: 'cashBalance',
-  accumulatedRevenue: 'accumulatedRevenue',
-  accumulatedProfit: 'accumulatedProfit',
+  createdAt: 'createdAt',
   accumulatedEbitda: 'accumulatedEbitda',
+  accumulatedProfit: 'accumulatedProfit',
+  accumulatedRevenue: 'accumulatedRevenue',
   currentCSAT: 'currentCSAT',
   currentSLA: 'currentSLA',
-  createdAt: 'createdAt'
+  sessionId: 'sessionId'
 } as const
 
 export type StoreScalarFieldEnum = (typeof StoreScalarFieldEnum)[keyof typeof StoreScalarFieldEnum]
@@ -153,10 +153,10 @@ export const CapexMasterScalarFieldEnum = {
   name: 'name',
   description: 'description',
   cost: 'cost',
-  recurringLicenseCost: 'recurringLicenseCost',
-  slaImpact: 'slaImpact',
   csatImpact: 'csatImpact',
-  productivityImpact: 'productivityImpact'
+  productivityImpact: 'productivityImpact',
+  recurringLicenseCost: 'recurringLicenseCost',
+  slaImpact: 'slaImpact'
 } as const
 
 export type CapexMasterScalarFieldEnum = (typeof CapexMasterScalarFieldEnum)[keyof typeof CapexMasterScalarFieldEnum]
@@ -164,17 +164,17 @@ export type CapexMasterScalarFieldEnum = (typeof CapexMasterScalarFieldEnum)[key
 
 export const ConfigurationScalarFieldEnum = {
   id: 'id',
-  sessionId: 'sessionId',
-  roundId: 'roundId',
   storeId: 'storeId',
   operatorsQty: 'operatorsQty',
   serviceOperatorsQty: 'serviceOperatorsQty',
   quizScore: 'quizScore',
+  createdAt: 'createdAt',
+  roundId: 'roundId',
+  sessionId: 'sessionId',
+  submittedAt: 'submittedAt',
   calculatedCSAT: 'calculatedCSAT',
   calculatedSLA: 'calculatedSLA',
-  totalInvestment: 'totalInvestment',
-  submittedAt: 'submittedAt',
-  createdAt: 'createdAt'
+  totalInvestment: 'totalInvestment'
 } as const
 
 export type ConfigurationScalarFieldEnum = (typeof ConfigurationScalarFieldEnum)[keyof typeof ConfigurationScalarFieldEnum]
@@ -182,12 +182,12 @@ export type ConfigurationScalarFieldEnum = (typeof ConfigurationScalarFieldEnum)
 
 export const StockInputScalarFieldEnum = {
   id: 'id',
-  configurationId: 'configurationId',
   categoryId: 'categoryId',
   buyQty: 'buyQty',
   commercialMargin: 'commercialMargin',
-  expectedSellPrice: 'expectedSellPrice',
-  createdAt: 'createdAt'
+  configurationId: 'configurationId',
+  createdAt: 'createdAt',
+  expectedSellPrice: 'expectedSellPrice'
 } as const
 
 export type StockInputScalarFieldEnum = (typeof StockInputScalarFieldEnum)[keyof typeof StockInputScalarFieldEnum]
@@ -195,9 +195,9 @@ export type StockInputScalarFieldEnum = (typeof StockInputScalarFieldEnum)[keyof
 
 export const StoreCapexScalarFieldEnum = {
   id: 'id',
-  configurationId: 'configurationId',
   capexId: 'capexId',
   approved: 'approved',
+  configurationId: 'configurationId',
   createdAt: 'createdAt'
 } as const
 
@@ -209,14 +209,14 @@ export const RoundRankingScalarFieldEnum = {
   sessionId: 'sessionId',
   roundId: 'roundId',
   storeId: 'storeId',
-  roundNumber: 'roundNumber',
-  marketShare: 'marketShare',
   priceScore: 'priceScore',
   availabilityScore: 'availabilityScore',
   csatScore: 'csatScore',
   finalScore: 'finalScore',
   position: 'position',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  marketShare: 'marketShare',
+  roundNumber: 'roundNumber'
 } as const
 
 export type RoundRankingScalarFieldEnum = (typeof RoundRankingScalarFieldEnum)[keyof typeof RoundRankingScalarFieldEnum]
@@ -224,30 +224,30 @@ export type RoundRankingScalarFieldEnum = (typeof RoundRankingScalarFieldEnum)[k
 
 export const RoundResultScalarFieldEnum = {
   id: 'id',
-  sessionId: 'sessionId',
-  roundId: 'roundId',
   storeId: 'storeId',
-  marketShare: 'marketShare',
-  customersReceived: 'customersReceived',
   totalRevenue: 'totalRevenue',
-  totalTaxes: 'totalTaxes',
   totalCMV: 'totalCMV',
   operatingCosts: 'operatingCosts',
-  capexCosts: 'capexCosts',
-  licensingCosts: 'licensingCosts',
   agingCosts: 'agingCosts',
-  interestCosts: 'interestCosts',
-  totalExpenses: 'totalExpenses',
   ebitdaValue: 'ebitdaValue',
   ebitdaMargin: 'ebitdaMargin',
+  createdAt: 'createdAt',
+  roundId: 'roundId',
+  sessionId: 'sessionId',
   finalCash: 'finalCash',
-  remainingStockValue: 'remainingStockValue',
-  stockBreakLoss: 'stockBreakLoss',
+  capexCosts: 'capexCosts',
   csat: 'csat',
+  customersReceived: 'customersReceived',
+  interestCosts: 'interestCosts',
+  licensingCosts: 'licensingCosts',
+  remainingStockValue: 'remainingStockValue',
   sla: 'sla',
-  averagePrice: 'averagePrice',
+  stockBreakLoss: 'stockBreakLoss',
+  totalExpenses: 'totalExpenses',
+  totalTaxes: 'totalTaxes',
+  marketShare: 'marketShare',
   availabilityRate: 'availabilityRate',
-  createdAt: 'createdAt'
+  averagePrice: 'averagePrice'
 } as const
 
 export type RoundResultScalarFieldEnum = (typeof RoundResultScalarFieldEnum)[keyof typeof RoundResultScalarFieldEnum]
@@ -258,14 +258,14 @@ export const SessionResultScalarFieldEnum = {
   sessionId: 'sessionId',
   storeId: 'storeId',
   totalRevenue: 'totalRevenue',
-  totalExpenses: 'totalExpenses',
-  finalEbitda: 'finalEbitda',
-  finalEbitdaMargin: 'finalEbitdaMargin',
-  finalCash: 'finalCash',
   finalScore: 'finalScore',
   position: 'position',
-  finalMarketShare: 'finalMarketShare',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  finalCash: 'finalCash',
+  finalEbitda: 'finalEbitda',
+  finalEbitdaMargin: 'finalEbitdaMargin',
+  totalExpenses: 'totalExpenses',
+  finalMarketShare: 'finalMarketShare'
 } as const
 
 export type SessionResultScalarFieldEnum = (typeof SessionResultScalarFieldEnum)[keyof typeof SessionResultScalarFieldEnum]

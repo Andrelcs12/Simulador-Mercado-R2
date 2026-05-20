@@ -7,9 +7,213 @@ datasource db {
   provider = "postgresql"
 }
 
-// ===============================
-// ENUMS
-// ===============================
+model GameSession {
+  id             String            @id @default(cuid())
+  code           String            @unique
+  status         GameSessionStatus @default(LOBBY)
+  totalRounds    Int               @default(3)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  currentRound   Int               @default(0)
+  configurations Configuration[]
+  rounds         GameRound[]
+  players        Player[]
+  roundRankings  RoundRanking[]
+  roundResults   RoundResult[]
+  sessionResults SessionResult[]
+  stores         Store[]
+}
+
+model GameRound {
+  id             String          @id @default(cuid())
+  sessionId      String
+  roundNumber    Int
+  status         GameRoundStatus @default(CLOSED)
+  startsAt       DateTime?
+  endsAt         DateTime?
+  createdAt      DateTime        @default(now())
+  configurations Configuration[]
+  session        GameSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  rankings       RoundRanking[]
+  results        RoundResult[]
+
+  @@unique([sessionId, roundNumber])
+}
+
+model Player {
+  id        String      @id @default(cuid())
+  name      String
+  socketId  String?
+  sessionId String
+  createdAt DateTime    @default(now())
+  storeId   String?
+  role      PlayerRole
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  store     Store?      @relation(fields: [storeId], references: [id])
+}
+
+model Store {
+  id                 String          @id @default(uuid())
+  name               String
+  cashBalance        Float           @default(700000)
+  createdAt          DateTime        @default(now())
+  accumulatedEbitda  Float           @default(0)
+  accumulatedProfit  Float           @default(0)
+  accumulatedRevenue Float           @default(0)
+  currentCSAT        Float           @default(0)
+  currentSLA         Float           @default(0)
+  sessionId          String
+  configurations     Configuration[]
+  players            Player[]
+  rankings           RoundRanking[]
+  roundResults       RoundResult[]
+  sessionResults     SessionResult[]
+  session            GameSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+model CategoryMaster {
+  id               String       @id @default(uuid())
+  name             String
+  unitCost         Float
+  taxRate          Float
+  agingPenaltyRate Float
+  totalMarketStock Int
+  stockInputs      StockInput[]
+}
+
+model CapexMaster {
+  id                   String       @id @default(uuid())
+  name                 String
+  description          String
+  cost                 Float
+  csatImpact           Float        @default(0)
+  productivityImpact   Float        @default(0)
+  recurringLicenseCost Float        @default(0)
+  slaImpact            Float        @default(0)
+  storeCapexes         StoreCapex[]
+}
+
+model Configuration {
+  id                  String       @id @default(uuid())
+  storeId             String
+  operatorsQty        Int
+  serviceOperatorsQty Int
+  quizScore           Float
+  createdAt           DateTime     @default(now())
+  roundId             String
+  sessionId           String
+  submittedAt         DateTime     @default(now())
+  calculatedCSAT      Float?
+  calculatedSLA       Float?
+  totalInvestment     Float        @default(0)
+  round               GameRound    @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  session             GameSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  store               Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  stockInputs         StockInput[]
+  capexSelections     StoreCapex[]
+
+  @@unique([storeId, roundId])
+}
+
+model StockInput {
+  id                String         @id @default(uuid())
+  categoryId        String
+  buyQty            Int
+  commercialMargin  Float
+  configurationId   String
+  createdAt         DateTime       @default(now())
+  expectedSellPrice Float
+  category          CategoryMaster @relation(fields: [categoryId], references: [id])
+  configuration     Configuration  @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+}
+
+model StoreCapex {
+  id              String        @id @default(uuid())
+  capexId         String
+  approved        Boolean       @default(false)
+  configurationId String
+  createdAt       DateTime      @default(now())
+  capex           CapexMaster   @relation(fields: [capexId], references: [id])
+  configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+}
+
+model RoundRanking {
+  id                String      @id @default(uuid())
+  sessionId         String
+  roundId           String
+  storeId           String
+  priceScore        Float
+  availabilityScore Float
+  csatScore         Float
+  finalScore        Float
+  position          Int
+  createdAt         DateTime    @default(now())
+  marketShare       Float
+  roundNumber       Int
+  round             GameRound   @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  session           GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  store             Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, roundId, storeId])
+  @@index([sessionId, roundNumber])
+  @@index([sessionId, roundId])
+}
+
+model RoundResult {
+  id                  String      @id @default(uuid())
+  storeId             String
+  totalRevenue        Float
+  totalCMV            Float
+  operatingCosts      Float
+  agingCosts          Float
+  ebitdaValue         Float
+  ebitdaMargin        Float
+  createdAt           DateTime    @default(now())
+  roundId             String
+  sessionId           String
+  finalCash           Float
+  capexCosts          Float
+  csat                Float
+  customersReceived   Float
+  interestCosts       Float
+  licensingCosts      Float
+  remainingStockValue Float
+  sla                 Float
+  stockBreakLoss      Float
+  totalExpenses       Float
+  totalTaxes          Float
+  marketShare         Float       @default(0)
+  availabilityRate    Float       @default(0)
+  averagePrice        Float       @default(0)
+  round               GameRound   @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  session             GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  store               Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, roundId])
+  @@index([sessionId, roundId])
+}
+
+model SessionResult {
+  id                String      @id @default(uuid())
+  sessionId         String
+  storeId           String
+  totalRevenue      Float
+  finalScore        Float
+  position          Int
+  createdAt         DateTime    @default(now())
+  finalCash         Float
+  finalEbitda       Float
+  finalEbitdaMargin Float
+  totalExpenses     Float
+  finalMarketShare  Float
+  session           GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  store             Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, storeId])
+  @@index([sessionId])
+}
 
 enum GameSessionStatus {
   LOBBY
@@ -18,10 +222,10 @@ enum GameSessionStatus {
 }
 
 enum GameRoundStatus {
-  CLOSED
   OPEN
-  PROCESSING
+  CLOSED
   PROCESSED
+  PROCESSING
 }
 
 enum PlayerRole {
@@ -30,370 +234,4 @@ enum PlayerRole {
   SUPPLY_MANAGER
   COMMERCIAL_MANAGER
   OPERATION_MANAGER
-}
-
-// ===============================
-// SESSION
-// ===============================
-
-model GameSession {
-  id String @id @default(cuid())
-
-  code String @unique
-
-  status GameSessionStatus @default(LOBBY)
-
-  totalRounds  Int @default(3)
-  currentRound Int @default(0)
-
-  players Player[]
-  stores  Store[]
-  rounds  GameRound[]
-
-  configurations Configuration[]
-
-  roundResults RoundResult[]
-
-  roundRankings RoundRanking[]
-
-  sessionResults SessionResult[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// ===============================
-// ROUND
-// ===============================
-
-model GameRound {
-  id String @id @default(cuid())
-
-  sessionId String
-  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  roundNumber Int
-
-  status GameRoundStatus @default(CLOSED)
-
-  startsAt DateTime?
-  endsAt   DateTime?
-
-  configurations Configuration[]
-  results        RoundResult[]
-  rankings       RoundRanking[]
-
-  createdAt DateTime @default(now())
-
-  @@unique([sessionId, roundNumber])
-}
-
-// ===============================
-// PLAYER
-// ===============================
-
-model Player {
-  id String @id @default(cuid())
-
-  name  String
-
-  role PlayerRole
-
-  socketId String?
-
-  sessionId String
-  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  storeId String?
-  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-}
-
-// ===============================
-// STORE
-// ===============================
-
-model Store {
-  id String @id @default(uuid())
-
-  name String
-
-  sessionId String
-  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  cashBalance Float @default(700000)
-
-  accumulatedRevenue Float @default(0)
-  accumulatedProfit  Float @default(0)
-  accumulatedEbitda  Float @default(0)
-
-  currentCSAT Float @default(0)
-  currentSLA  Float @default(0)
-
-  players Player[]
-
-  configurations Configuration[]
-
-  roundResults RoundResult[]
-
-  rankings RoundRanking[]
-
-  sessionResults SessionResult[]
-
-  createdAt DateTime @default(now())
-
-  @@index([sessionId])
-}
-
-// ===============================
-// CATEGORY
-// ===============================
-
-model CategoryMaster {
-  id String @id @default(uuid())
-
-  name String
-
-  unitCost Float
-  taxRate  Float
-
-  agingPenaltyRate Float
-
-  totalMarketStock Int
-
-  stockInputs StockInput[]
-}
-
-// ===============================
-// CAPEX
-// ===============================
-
-model CapexMaster {
-  id String @id @default(uuid())
-
-  name        String
-  description String
-
-  cost Float
-
-  recurringLicenseCost Float @default(0)
-
-  slaImpact  Float @default(0)
-  csatImpact Float @default(0)
-
-  productivityImpact Float @default(0)
-
-  storeCapexes StoreCapex[]
-}
-
-// ===============================
-// CONFIGURATION
-// ===============================
-
-model Configuration {
-  id String @id @default(uuid())
-
-  sessionId String
-  roundId   String
-  storeId   String
-
-  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  round GameRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  operatorsQty Int
-
-  serviceOperatorsQty Int
-
-  quizScore Float
-
-  calculatedCSAT Float?
-  calculatedSLA  Float?
-
-  totalInvestment Float @default(0)
-
-  submittedAt DateTime @default(now())
-
-  stockInputs StockInput[]
-
-  capexSelections StoreCapex[]
-
-  createdAt DateTime @default(now())
-
-  @@unique([storeId, roundId])
-}
-
-// ===============================
-// STOCK INPUT
-// ===============================
-
-model StockInput {
-  id String @id @default(uuid())
-
-  configurationId String
-
-  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
-
-  categoryId String
-
-  category CategoryMaster @relation(fields: [categoryId], references: [id])
-
-  buyQty Int
-
-  commercialMargin Float
-
-  expectedSellPrice Float
-
-  createdAt DateTime @default(now())
-}
-
-// ===============================
-// STORE CAPEX
-// ===============================
-
-model StoreCapex {
-  id String @id @default(uuid())
-
-  configurationId String
-
-  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
-
-  capexId String
-
-  capex CapexMaster @relation(fields: [capexId], references: [id])
-
-  approved Boolean @default(false)
-
-  createdAt DateTime @default(now())
-}
-
-// ===============================
-// ROUND RANKING
-// ===============================
-
-// ===============================
-// ROUND RANKING
-// ===============================
-
-model RoundRanking {
-  id String @id @default(uuid())
-
-  sessionId String
-  roundId   String
-  storeId   String
-
-  roundNumber Int
-
-  marketShare Float
-
-  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  round GameRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  priceScore        Float
-  availabilityScore Float
-  csatScore         Float
-
-  finalScore Float
-
-  position Int
-
-  createdAt DateTime @default(now())
-
-  @@unique([sessionId, roundId, storeId])
-  @@index([sessionId, roundNumber])
-  @@index([sessionId, roundId])
-}
-
-
-// ===============================
-// ROUND RESULT
-// ===============================
-
-
-// ===============================
-// ROUND RESULT
-// ===============================
-
-model RoundResult {
-  id String @id @default(uuid())
-
-  sessionId String
-  roundId   String
-  storeId   String
-
-  marketShare Float @default(0)
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  round GameRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
-
-  customersReceived Float
-
-  totalRevenue Float
-  totalTaxes   Float
-  totalCMV     Float
-
-  operatingCosts Float
-  capexCosts     Float
-  licensingCosts Float
-  agingCosts     Float
-  interestCosts  Float
-
-  totalExpenses Float
-
-  ebitdaValue  Float
-  ebitdaMargin Float
-
-  finalCash Float
-
-  remainingStockValue Float
-  stockBreakLoss Float
-
-  csat Float
-  sla  Float
-
-  averagePrice Float @default(0)
-
-  availabilityRate Float @default(0)
-
-  createdAt DateTime @default(now())
-
-  @@unique([storeId, roundId])
-  @@index([sessionId, roundId])
-}
-
-// ===============================
-// SESSION RESULT
-// ===============================
-
-model SessionResult {
-  id String @id @default(uuid())
-
-  sessionId String
-  storeId   String
-
-  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  totalRevenue Float
-  totalExpenses Float
-
-  finalEbitda Float
-  finalEbitdaMargin Float
-
-  finalCash Float
-  finalScore Float
-
-  position Int
-
-  finalMarketShare Float
-
-  createdAt DateTime @default(now())
-
-  @@unique([sessionId, storeId])
-  @@index([sessionId])
 }
