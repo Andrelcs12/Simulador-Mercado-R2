@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
-import { AppConfig } from "../types/onboarding";
 
 import { useOnboarding } from "../context/OnboardingContext";
 
@@ -48,6 +47,10 @@ export function useOnboardingSession(API_URL: string) {
     setSubmitting,
 
     config,
+    setMaxStockPericiveis,
+    setMaxStockMercearia,
+    setMaxStockEletro,
+    setMaxStockHipel,
   } = useOnboarding();
 
   const socketRef = useRef<Socket | null>(null);
@@ -58,6 +61,39 @@ export function useOnboardingSession(API_URL: string) {
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
 
   const timeUp = timeLeft <= 0;
+
+  const applyMaxStockConfig = useCallback(
+    (maxStock?: {
+      pereciveis?: number;
+      mercearia?: number;
+      eletro?: number;
+      hipel?: number;
+    }) => {
+      if (!maxStock) return;
+
+      if (maxStock.pereciveis !== undefined) {
+        setMaxStockPericiveis(maxStock.pereciveis);
+      }
+
+      if (maxStock.mercearia !== undefined) {
+        setMaxStockMercearia(maxStock.mercearia);
+      }
+
+      if (maxStock.eletro !== undefined) {
+        setMaxStockEletro(maxStock.eletro);
+      }
+
+      if (maxStock.hipel !== undefined) {
+        setMaxStockHipel(maxStock.hipel);
+      }
+    },
+    [
+      setMaxStockPericiveis,
+      setMaxStockMercearia,
+      setMaxStockEletro,
+      setMaxStockHipel,
+    ]
+  );
 
   // ─────────────────────────────
   // TIMER
@@ -92,6 +128,16 @@ export function useOnboardingSession(API_URL: string) {
 
     const p = JSON.parse(saved);
     setPlayer(p);
+
+    const savedRound = localStorage.getItem("round_data");
+
+    if (savedRound) {
+      try {
+        applyMaxStockConfig(JSON.parse(savedRound)?.maxStock);
+      } catch {
+        // Mantém os limites atuais se o cache da rodada estiver inválido.
+      }
+    }
 
     const socket = io(`${API_URL}/simulation`);
     socketRef.current = socket;
@@ -143,6 +189,7 @@ export function useOnboardingSession(API_URL: string) {
 
     socket.on("round:started", (data: any) => {
       const endMs = normalizeEndTime(data.endTime);
+      applyMaxStockConfig(data.maxStock);
 
       const normalized = {
         roundId: data.roundId,
@@ -156,7 +203,13 @@ export function useOnboardingSession(API_URL: string) {
       setSubmitted(false);
       setSubmitting(false);
 
-      localStorage.setItem("round_data", JSON.stringify(normalized));
+      localStorage.setItem(
+        "round_data",
+        JSON.stringify({
+          ...normalized,
+          maxStock: data.maxStock,
+        })
+      );
 
       if (endMs) startTimer(endMs);
 
@@ -173,7 +226,15 @@ export function useOnboardingSession(API_URL: string) {
       socket.disconnect();
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [API_URL, setPlayer, setRound, setSubmitting, setSubmitted, startTimer]);
+  }, [
+    API_URL,
+    applyMaxStockConfig,
+    setPlayer,
+    setRound,
+    setSubmitting,
+    setSubmitted,
+    startTimer,
+  ]);
 
   // ─────────────────────────────
   // CATEGORIES MAP RECONCILIATION

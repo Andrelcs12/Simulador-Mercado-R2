@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { persistMaxStockConfig } from "../pages/onboarding/context/OnboardingContext";
 
 /**
  * useRoundWatcher
@@ -40,6 +41,10 @@ export const useRoundWatcher = (API_URL: string) => {
 
     // Nova rodada iniciada pelo admin → salva dados e vai pro onboarding
     socket.on("round:started", (data: any) => {
+      if (data.maxStock) {
+        persistMaxStockConfig(data.maxStock);
+      }
+
       const endTimeMs =
         typeof data.endTime === "number"
           ? data.endTime
@@ -52,6 +57,7 @@ export const useRoundWatcher = (API_URL: string) => {
           roundNumber: data.roundNumber,
           duration: data.duration,
           endTime: endTimeMs,
+          maxStock: data.maxStock,
         })
       );
 

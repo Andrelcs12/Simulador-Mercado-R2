@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Settings2,
@@ -15,8 +15,7 @@ import {
 import { Toaster } from "react-hot-toast";
 
 import { useOnboardingSession } from "./hooks/useOnboardingSession";
-// 🚨 ALTERAÇÃO: Importando também o OnboardingProvider aqui
-import { useOnboarding, OnboardingProvider } from "./context/OnboardingContext";
+import { useOnboarding } from "./context/OnboardingContext";
 
 import SetupStep from "./components/SetupStep";
 import ComercialStep from "./components/ComercialStep";
@@ -302,6 +301,7 @@ function OnboardingContent() {
       <footer className="sticky bottom-0 bg-white border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <button
+            type="button"
             disabled={step === 1}
             onClick={() => setStep((s) => Math.max(1, s - 1))}
             className="px-5 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold disabled:opacity-40"
@@ -315,6 +315,7 @@ function OnboardingContent() {
 
           {step < STEPS.length ? (
             <button
+              type="button"
               onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))}
               className="px-6 cursor-pointer py-2 rounded-xl bg-orange-500 text-white font-black"
             >
@@ -322,6 +323,7 @@ function OnboardingContent() {
             </button>
           ) : (
             <button
+              type="button"
               onClick={handleFinalize}
               disabled={submitting || timeLeft <= 0 || submitted}
               className="px-6 py-2 cursor-pointer rounded-xl bg-emerald-500 text-white font-black disabled:opacity-40"
@@ -339,15 +341,10 @@ function OnboardingContent() {
   );
 }
 
-// 🚨 COMPONENTE EXPORTADO PRINCIPAL
-// Aqui é onde acontece o "envelopamento" com o Provider!
-// Tudo o que está dentro do OnboardingContent agora consegue usar o Contexto global.
 export default function OnboardingPage() {
   return (
-    <OnboardingProvider>
-      <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
-        <OnboardingContent />
-      </div>
-    </OnboardingProvider>
+    <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
+      <OnboardingContent />
+    </div>
   );
 }

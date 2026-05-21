@@ -1,11 +1,5 @@
-"use client";
+import type { ReactNode } from "react";
 
-import { OnboardingProvider } from "./context/OnboardingContext";
-
-export default function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <OnboardingProvider>{children}</OnboardingProvider>;
+export default function Layout({ children }: { children: ReactNode }) {
+  return children;
 }

@@ -1,23 +1,34 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Settings,
-  ChevronUp,
   ChevronDown,
+  ChevronUp,
   Clock3,
-  Play,
-  Square,
-  SkipForward,
   Layers3,
-  Sliders,
+  Play,
+  Settings,
+  SkipForward,
+  Square,
 } from "lucide-react";
 
-import { motion, AnimatePresence } from "framer-motion";
-
-import { RoundConfig } from "../types";
+import type {
+  RoundConfig,
+  RoundConfigCategoryLimitKey,
+} from "../types";
 
 const DURATION_PRESETS = [
   5, 10, 15, 20, 25, 30, 45, 60, 90,
+];
+
+const CATEGORY_LIMIT_FIELDS: Array<{
+  label: string;
+  key: RoundConfigCategoryLimitKey;
+}> = [
+  { label: "Perecíveis", key: "maxPereciveis" },
+  { label: "Mercearia", key: "maxMercearia" },
+  { label: "Eletro", key: "maxEletro" },
+  { label: "Hipel", key: "maxHipel" },
 ];
 
 interface RoundConfigPanelProps {
@@ -49,12 +60,12 @@ export const RoundConfigPanel = ({
   onParar,
   onProxima,
 }: RoundConfigPanelProps) => {
-  console.log("Valores atuais de config:", config);
   return (
     <section className="w-full rounded-3xl border border-white/[0.06] bg-[#111827] overflow-hidden">
 
       {/* HEADER */}
       <button
+        type="button"
         onClick={onToggle}
         className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
       >
@@ -176,50 +187,53 @@ export const RoundConfigPanel = ({
               </div>
 
               {/* QUANTIDADES MÁXIMAS */}
-              <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
-                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-black">
-                      Quantidades Máximas por Categoria
-                    </p>
-                    <p className="text-xs text-slate-600 mt-1">
-                      Defina o limite máximo de itens para a rodada
-                    </p>
+                <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
+                  <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-black">
+                        Quantidades Máximas por Categoria
+                      </p>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Defina o limite máximo de itens para a rodada
+                      </p>
+                    </div>
+                    {gameStarted && (
+                      <div className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] uppercase tracking-widest font-black">
+                        Bloqueado
+                      </div>
+                    )}
                   </div>
-                  {gameStarted && (
-                    <div className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] uppercase tracking-widest font-black">
-                      Bloqueado
-                    </div>
-                  )}
-                </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {[
-                    { label: "Perecíveis", key: "maxPereciveis" },
-                    { label: "Mercearia", key: "maxMercearia" },
-                    { label: "Eletro", key: "maxEletro" },
-                    { label: "Hipel", key: "maxHipel" },
-                  ].map((item) => (
-                    <div key={item.key} className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                        {item.label}
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        disabled={gameStarted}
-                        value={(config as any)[item.key] ?? 0}
-                        onChange={(e) =>
-                          onConfigChange({
-                            [item.key]: parseInt(e.target.value) || 0,
-                          })
-                        }
-                        className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm font-black focus:outline-none focus:border-orange-500/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {CATEGORY_LIMIT_FIELDS.map((item) => (
+                      <div key={item.key} className="flex flex-col gap-1.5">
+                        <label
+                          htmlFor={item.key}
+                          className="text-[11px] font-bold text-slate-400 uppercase tracking-wider"
+                        >
+                          {item.label}
+                        </label>
+                        <input
+                          id={item.key}
+                          type="number"
+                          min="0"
+                          step="1"
+                          disabled={gameStarted}
+                          value={config[item.key]}
+                          onChange={(e) => {
+                            const parsedValue = Number(e.target.value);
+                            const nextValue = Number.isFinite(parsedValue)
+                              ? Math.max(0, Math.floor(parsedValue))
+                              : 0;
+
+                            onConfigChange({ [item.key]: nextValue });
+                          }}
+                          className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm font-black focus:outline-none focus:border-orange-500/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
               {/* PRESETS */}
               <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
@@ -253,6 +267,7 @@ export const RoundConfigPanel = ({
 
                     return (
                       <button
+                        type="button"
                         key={minutes}
                         disabled={gameStarted}
                         onClick={() =>
@@ -290,6 +305,7 @@ export const RoundConfigPanel = ({
 
                 {!gameStarted && (
                   <button
+                    type="button"
                     onClick={onIniciar}
                     className="flex cursor-pointer items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-orange-500 hover:bg-orange-400 transition-all shadow-lg shadow-orange-500/20"
                   >
@@ -306,6 +322,7 @@ export const RoundConfigPanel = ({
 
                 {gameStarted && (
                   <button
+                    type="button"
                     onClick={onParar}
                     className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-red-500/10 hover:bg-red-500 border border-red-500/20 hover:border-transparent transition-all"
                   >
@@ -322,6 +339,7 @@ export const RoundConfigPanel = ({
 
                 {!gameStarted && canGoNext && (
                   <button
+                    type="button"
                     onClick={onProxima}
                     className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 transition-all"
                   >

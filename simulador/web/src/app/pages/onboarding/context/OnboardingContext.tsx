@@ -1,14 +1,16 @@
 "use client";
 
-import React, {
+import type React from "react";
+import {
   createContext,
   useContext,
+  useEffect,
   useState,
   useCallback,
   useMemo,
 } from "react";
 
-import { AppConfig, PlayerData, RoundData } from "../types/onboarding";
+import type { AppConfig, PlayerData, RoundData } from "../types/onboarding";
 
 // ─────────────────────────────────────────────
 // GAME RULES & CONSTANTS (BASEADO NA DOC)
@@ -18,6 +20,77 @@ const GAME_RULES = {
   budget: 700000,           // Caixa inicial de R$ 700 mil
   idealCaixaOperators: 10,   // Quadro ideal de operados de caixa para o CSAT
 };
+
+export type MaxStockConfig = {
+  pereciveis: number;
+  mercearia: number;
+  eletro: number;
+  hipel: number;
+};
+
+export const MAX_STOCK_STORAGE_KEY = "round_config_max_stock";
+export const MAX_STOCK_UPDATED_EVENT = "round_config_max_stock_updated";
+
+const DEFAULT_MAX_STOCK_CONFIG: MaxStockConfig = {
+  pereciveis: 5000,
+  mercearia: 4000,
+  eletro: 400,
+  hipel: 3000,
+};
+
+function sanitizeMaxStock(value: unknown, fallback: number) {
+  const parsedValue = Number(value);
+
+  return Number.isFinite(parsedValue)
+    ? Math.max(0, Math.floor(parsedValue))
+    : fallback;
+}
+
+function readStoredMaxStockConfig(): MaxStockConfig {
+  if (typeof window === "undefined") {
+    return DEFAULT_MAX_STOCK_CONFIG;
+  }
+
+  try {
+    const stored = window.localStorage.getItem(MAX_STOCK_STORAGE_KEY);
+
+    if (!stored) {
+      return DEFAULT_MAX_STOCK_CONFIG;
+    }
+
+    const parsed = JSON.parse(stored) as Partial<MaxStockConfig>;
+
+    return {
+      pereciveis: sanitizeMaxStock(
+        parsed.pereciveis,
+        DEFAULT_MAX_STOCK_CONFIG.pereciveis
+      ),
+      mercearia: sanitizeMaxStock(
+        parsed.mercearia,
+        DEFAULT_MAX_STOCK_CONFIG.mercearia
+      ),
+      eletro: sanitizeMaxStock(parsed.eletro, DEFAULT_MAX_STOCK_CONFIG.eletro),
+      hipel: sanitizeMaxStock(parsed.hipel, DEFAULT_MAX_STOCK_CONFIG.hipel),
+    };
+  } catch {
+    return DEFAULT_MAX_STOCK_CONFIG;
+  }
+}
+
+export function persistMaxStockConfig(config: Partial<MaxStockConfig>) {
+  if (typeof window === "undefined") return;
+
+  const current = readStoredMaxStockConfig();
+  const next: MaxStockConfig = {
+    pereciveis: sanitizeMaxStock(config.pereciveis, current.pereciveis),
+    mercearia: sanitizeMaxStock(config.mercearia, current.mercearia),
+    eletro: sanitizeMaxStock(config.eletro, current.eletro),
+    hipel: sanitizeMaxStock(config.hipel, current.hipel),
+  };
+
+  window.localStorage.setItem(MAX_STOCK_STORAGE_KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event(MAX_STOCK_UPDATED_EVENT));
+}
 
 // Custos unitários exatos por categoria retirados da documentação
 export const COMERCIAL_PRICES: Record<string, number> = {
@@ -124,15 +197,76 @@ export function OnboardingProvider({
   children: React.ReactNode;
 }) {
   const [config, setConfig] = useState<AppConfig>(initialConfig);
-  const [maxStockPericiveis, setMaxStockPericiveis] = useState(5000);
-  const [maxStockMercearia, setMaxStockMercearia] = useState(4000);
-  const [maxStockEletro, setMaxStockEletro] = useState(400);
-  const [maxStockHipel, setMaxStockHipel] = useState(3000);
+  const [maxStockConfig, setMaxStockConfig] = useState<MaxStockConfig>(
+    readStoredMaxStockConfig
+  );
   const [round, setRound] = useState<RoundData | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [player, setPlayer] = useState<PlayerData | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const maxStockPericiveis = maxStockConfig.pereciveis;
+  const maxStockMercearia = maxStockConfig.mercearia;
+  const maxStockEletro = maxStockConfig.eletro;
+  const maxStockHipel = maxStockConfig.hipel;
+
+  const setMaxStockPericiveis = useCallback((v: number) => {
+    setMaxStockConfig((prev) => ({
+      ...prev,
+      pereciveis: sanitizeMaxStock(v, prev.pereciveis),
+    }));
+  }, []);
+
+  const setMaxStockMercearia = useCallback((v: number) => {
+    setMaxStockConfig((prev) => ({
+      ...prev,
+      mercearia: sanitizeMaxStock(v, prev.mercearia),
+    }));
+  }, []);
+
+  const setMaxStockEletro = useCallback((v: number) => {
+    setMaxStockConfig((prev) => ({
+      ...prev,
+      eletro: sanitizeMaxStock(v, prev.eletro),
+    }));
+  }, []);
+
+  const setMaxStockHipel = useCallback((v: number) => {
+    setMaxStockConfig((prev) => ({
+      ...prev,
+      hipel: sanitizeMaxStock(v, prev.hipel),
+    }));
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      MAX_STOCK_STORAGE_KEY,
+      JSON.stringify(maxStockConfig)
+    );
+  }, [maxStockConfig]);
+
+  useEffect(() => {
+    const handleMaxStockUpdate = () => {
+      setMaxStockConfig(readStoredMaxStockConfig());
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== MAX_STOCK_STORAGE_KEY || !event.newValue) return;
+      handleMaxStockUpdate();
+    };
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener(MAX_STOCK_UPDATED_EVENT, handleMaxStockUpdate);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener(
+        MAX_STOCK_UPDATED_EVENT,
+        handleMaxStockUpdate
+      );
+    };
+  }, []);
 
   // ─────────────────────────────
   // REGRAS FIXAS
