@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import type React from "react";
+import { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -12,8 +13,8 @@ import {
   Target,
 } from "lucide-react";
 
-import { AppConfig } from "../types/onboarding";
 import { useOnboarding, COMERCIAL_PRICES } from "../context/OnboardingContext";
+import type { AppConfig, CategoriaKey } from "../types/onboarding";
 
 interface SummaryStepProps {
   config: AppConfig;
@@ -28,19 +29,12 @@ const CAPEX_META: Record<string, { label: string; value: number }> = {
   melhoria: { label: "CAPEX Melhoria Contínua", value: 45000 },
 };
 
-const CATEGORIAS = [
-  { id: "pereciveis" as const, label: "Perecíveis" },
-  { id: "mercearia" as const, label: "Mercearia" },
-  { id: "eletro" as const, label: "Eletrodomésticos" },
-  { id: "hipel" as const, label: "Higiene & Limpeza" },
+const CATEGORIAS: Array<{ id: CategoriaKey; label: string }> = [
+  { id: "pereciveis", label: "Perecíveis" },
+  { id: "mercearia", label: "Mercearia" },
+  { id: "eletro", label: "Eletrodomésticos" },
+  { id: "hipel", label: "Higiene & Limpeza" },
 ];
-
-const COMERCIAL_MAX_STOCK: Record<string, number> = {
-  pereciveis: 5000,
-  mercearia: 4000,
-  eletro: 400,
-  hipel: 3000,
-};
 
 function calculateCSAT(operadoresCaixa: number, quizScore: number): number {
   const operatorFactor = Math.min(operadoresCaixa / 10, 1);
@@ -63,7 +57,31 @@ export default function SummaryStep({ config }: SummaryStepProps) {
     setIsMounted(true);
   }, []);
 
-  const { budget, capexTotal, comercialTotal, remainingBudget } = useOnboarding();
+  const {
+    budget,
+    capexTotal,
+    comercialTotal,
+    remainingBudget,
+    maxStockPericiveis,
+    maxStockMercearia,
+    maxStockEletro,
+    maxStockHipel,
+  } = useOnboarding();
+
+  const maxStockByCategory = useMemo<Record<CategoriaKey, number>>(
+    () => ({
+      pereciveis: maxStockPericiveis,
+      mercearia: maxStockMercearia,
+      eletro: maxStockEletro,
+      hipel: maxStockHipel,
+    }),
+    [
+      maxStockPericiveis,
+      maxStockMercearia,
+      maxStockEletro,
+      maxStockHipel,
+    ]
+  );
 
   const opCaixa = config.operadoresCaixa ?? 5;
   const opAtendimento = config.operadoresAtendimento ?? 3;
@@ -185,13 +203,14 @@ export default function SummaryStep({ config }: SummaryStepProps) {
 
           {CATEGORIAS.map((c) => {
             const qtd = config.comercial?.[c.id]?.estoque ?? 0;
-            const maxEstoque = COMERCIAL_MAX_STOCK[c.id] || 1;
+            const maxEstoque = maxStockByCategory[c.id];
             const custoUnitarioReal = COMERCIAL_PRICES[c.id] || 0;
             const itemTotalCost = qtd * custoUnitarioReal;
 
             // Formatação limpa com un. embutido conforme solicitado
             const fractionLabel = `${qtd} / ${maxEstoque} un.`;
-            const stockCapacityPercentage = (qtd / maxEstoque) * 100;
+            const stockCapacityPercentage =
+              maxEstoque > 0 ? (qtd / maxEstoque) * 100 : 0;
 
             return (
               <Row
