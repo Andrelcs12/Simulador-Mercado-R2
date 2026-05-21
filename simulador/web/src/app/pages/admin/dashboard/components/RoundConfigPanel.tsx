@@ -9,6 +9,7 @@ import {
   Square,
   SkipForward,
   Layers3,
+  Sliders,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,6 +49,7 @@ export const RoundConfigPanel = ({
   onParar,
   onProxima,
 }: RoundConfigPanelProps) => {
+  console.log("Valores atuais de config:", config);
   return (
     <section className="w-full rounded-3xl border border-white/[0.06] bg-[#111827] overflow-hidden">
 
@@ -171,6 +173,52 @@ export const RoundConfigPanel = ({
                   </div>
                 </div>
 
+              </div>
+
+              {/* QUANTIDADES MÁXIMAS */}
+              <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
+                <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-black">
+                      Quantidades Máximas por Categoria
+                    </p>
+                    <p className="text-xs text-slate-600 mt-1">
+                      Defina o limite máximo de itens para a rodada
+                    </p>
+                  </div>
+                  {gameStarted && (
+                    <div className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] uppercase tracking-widest font-black">
+                      Bloqueado
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[
+                    { label: "Perecíveis", key: "maxPereciveis" },
+                    { label: "Mercearia", key: "maxMercearia" },
+                    { label: "Eletro", key: "maxEletro" },
+                    { label: "Hipel", key: "maxHipel" },
+                  ].map((item) => (
+                    <div key={item.key} className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        {item.label}
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        disabled={gameStarted}
+                        value={(config as any)[item.key] ?? 0}
+                        onChange={(e) =>
+                          onConfigChange({
+                            [item.key]: parseInt(e.target.value) || 0,
+                          })
+                        }
+                        className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm font-black focus:outline-none focus:border-orange-500/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* PRESETS */}

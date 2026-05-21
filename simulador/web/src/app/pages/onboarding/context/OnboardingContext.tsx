@@ -27,14 +27,6 @@ export const COMERCIAL_PRICES: Record<string, number> = {
   hipel: 45,
 };
 
-// Limites máximos de estoque por categoria retirados da documentação
-export const COMERCIAL_MAX_STOCK: Record<string, number> = {
-  pereciveis: 5000,
-  mercearia: 4000,
-  eletro: 400,
-  hipel: 3000,
-};
-
 // ─────────────────────────────────────────────
 // CONTEXT TYPE
 // ─────────────────────────────────────────────
@@ -48,6 +40,16 @@ type OnboardingContextType = {
   // GAME RULES
   budget: number;
   idealOperators: number;
+
+  // MAX STOCK DINÂMICO POR CATEGORIA
+  maxStockPericiveis: number;
+  setMaxStockPericiveis: (v: number) => void;
+  maxStockMercearia: number;
+  setMaxStockMercearia: (v: number) => void;
+  maxStockEletro: number;
+  setMaxStockEletro: (v: number) => void;
+  maxStockHipel: number;
+  setMaxStockHipel: (v: number) => void;
 
   // DERIVADOS REATIVOS
   capexTotal: number;
@@ -122,6 +124,10 @@ export function OnboardingProvider({
   children: React.ReactNode;
 }) {
   const [config, setConfig] = useState<AppConfig>(initialConfig);
+  const [maxStockPericiveis, setMaxStockPericiveis] = useState(5000);
+  const [maxStockMercearia, setMaxStockMercearia] = useState(4000);
+  const [maxStockEletro, setMaxStockEletro] = useState(400);
+  const [maxStockHipel, setMaxStockHipel] = useState(3000);
   const [round, setRound] = useState<RoundData | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [player, setPlayer] = useState<PlayerData | null>(null);
@@ -155,22 +161,26 @@ export function OnboardingProvider({
   // ─────────────────────────────
 
   const estoqueAnalysis = useMemo(() => {
-    const categorias = ["pereciveis", "mercearia", "eletro", "hipel"];
+    const categorias = [
+      { key: "pereciveis", maxStock: maxStockPericiveis },
+      { key: "mercearia", maxStock: maxStockMercearia },
+      { key: "eletro", maxStock: maxStockEletro },
+      { key: "hipel", maxStock: maxStockHipel },
+    ];
     
-    return categorias.reduce((acc, cat) => {
-      const qtd = config.comercial?.[cat as keyof typeof config.comercial]?.estoque ?? 0;
-      const maxDisponivel = COMERCIAL_MAX_STOCK[cat] || 0;
-      const custoUnitario = COMERCIAL_PRICES[cat] || 0;
+    return categorias.reduce((acc, { key, maxStock }) => {
+      const qtd = config.comercial?.[key as keyof typeof config.comercial]?.estoque ?? 0;
+      const custoUnitario = COMERCIAL_PRICES[key] || 0;
       
-      acc[cat] = {
+      acc[key] = {
         qtd,
-        maxDisponivel,
-        pctGasto: maxDisponivel > 0 ? (qtd / maxDisponivel) * 100 : 0,
+        maxDisponivel: maxStock,
+        pctGasto: maxStock > 0 ? (qtd / maxStock) * 100 : 0,
         custoTotal: qtd * custoUnitario,
       };
       return acc;
     }, {} as Record<string, { qtd: number; maxDisponivel: number; pctGasto: number; custoTotal: number }>);
-  }, [config.comercial]);
+  }, [config.comercial, maxStockPericiveis, maxStockMercearia, maxStockEletro, maxStockHipel]);
 
   // ─────────────────────────────
   // 🔥 COMERCIAL TOTAL (ESTOQUE REALTIME)
@@ -209,6 +219,15 @@ export function OnboardingProvider({
 
         budget,
         idealOperators,
+
+        maxStockPericiveis,
+        setMaxStockPericiveis,
+        maxStockMercearia,
+        setMaxStockMercearia,
+        maxStockEletro,
+        setMaxStockEletro,
+        maxStockHipel,
+        setMaxStockHipel,
 
         capexTotal,
         comercialTotal,
