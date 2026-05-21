@@ -118,6 +118,15 @@ export const useAdminSocket = (API_URL: string) => {
     socket.on("round:next_started", handleRoundStart);
 
     // =========================
+    // TEMPO REAL: ATUALIZAÇÃO DO CRONÔMETRO
+    // =========================
+    // Ouvir o feedback do servidor quando o tempo for alterado
+    socket.on("round:time_updated", (data: { endTime: number; duration: number }) => {
+      setEndTime(data.endTime);
+      toast.success("⏱️ Tempo da rodada atualizado!");
+    });
+
+    // =========================
     // ROUND END (UNIFICADO)
     // =========================
     const handleRoundEnd = () => {
@@ -143,6 +152,23 @@ export const useAdminSocket = (API_URL: string) => {
     });
   }, [API_URL, syncPlayers]);
 
+  // =========================
+  // EMISSÃO DA ALTERAÇÃO DE TEMPO
+  // =========================
+  // Função para você chamar de dentro do painel do Admin ao clicar em um preset
+  const alterarTempoRodada = useCallback((minutes: number, sessionId: string) => {
+    if (!socketRef.current) return;
+
+    // Calcula o novo timestamp baseado no horário atual da máquina + minutos adicionados
+    const novoEndTime = Date.now() + minutes * 60 * 1000;
+
+    socketRef.current.emit("round:update_time", {
+      sessionId,
+      endTime: novoEndTime,
+      duration: minutes * 60, // em segundos para atualizar as barras de progresso (%) dos clientes
+    });
+  }, []);
+
   const emit = useCallback((event: string, data: any) => {
     socketRef.current?.emit(event, data);
   }, []);
@@ -165,5 +191,6 @@ export const useAdminSocket = (API_URL: string) => {
     conectar,
     emit,
     disconnect,
+    alterarTempoRodada, // 👈 Função exportada com sucesso!
   };
 };

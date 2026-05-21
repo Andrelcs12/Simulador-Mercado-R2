@@ -56,22 +56,22 @@ type OnboardingContextType = {
 
   // ROUND
   round: RoundData | null;
-  setRound: (r: RoundData | null) => void;
+  setRound: React.Dispatch<React.SetStateAction<RoundData | null>>; // ✅ CORRIGIDO: Agora aceita (prev => ...)
 
   // TIMER
   timeLeft: number;
-  setTimeLeft: (t: number) => void;
+  setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
 
   // PLAYER
   player: PlayerData | null;
-  setPlayer: (p: PlayerData | null) => void;
+  setPlayer: React.Dispatch<React.SetStateAction<PlayerData | null>>;
 
   // FLOW STATE
   submitted: boolean;
-  setSubmitted: (v: boolean) => void;
+  setSubmitted: React.Dispatch<React.SetStateAction<boolean>>;
 
   submitting: boolean;
-  setSubmitting: (v: boolean) => void;
+  setSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 // ─────────────────────────────────────────────

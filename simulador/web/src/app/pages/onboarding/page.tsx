@@ -235,12 +235,15 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      
       {/* STEPS */}
 <div className="flex gap-4 w-full">
   {STEPS.map((s, i) => {
     const isActive = activeStep(i);
     const isDone = doneStep(i);
+    
+    // ✅ Permite clicar se já passou pela etapa, se for a etapa atual,
+    // ou se o orçamento não estourou (permitindo ir até o resumo)
+    const isAccessible = i + 1 <= step || remainingBudget >= 0;
 
     return (
       <div key={s.label} className="flex flex-col gap-1.5 flex-1">
@@ -255,7 +258,7 @@ export default function OnboardingPage() {
         <button
           type="button"
           onClick={() => {
-            if (isDone) {
+            if (isAccessible) {
               setStep(i + 1);
             }
           }}
@@ -265,7 +268,7 @@ export default function OnboardingPage() {
                 ? "bg-orange-500 text-white border-orange-500"
                 : isDone
                 ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/50"
-                : "bg-gray-300 text-slate-400 border-slate-200 cursor-not-allowed"
+                : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100" // 💡 Ajustado: Visual limpo e clicável
             }`}
         >
           {isDone ? <CheckCircle2 size={14} /> : null }
@@ -276,6 +279,8 @@ export default function OnboardingPage() {
   })}
 </div>
 
+      
+     
     </div>
   </div>
 </header>

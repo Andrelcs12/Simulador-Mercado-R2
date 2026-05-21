@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
-import { AppConfig } from "../types/onboarding";
+import { AppConfig, RoundData } from "../types/onboarding";
 
 import { useOnboarding } from "../context/OnboardingContext";
 
@@ -163,9 +163,35 @@ export function useOnboardingSession(API_URL: string) {
       toast.success(`Rodada ${data.roundNumber} iniciada`);
     });
 
+    // ==========================================
+    // ESCUTAR ALTERAÇÃO DE TEMPO (ADMIN -> PLAYER)
+    // ==========================================
+   socket.on("round:time_updated", (data: { endTime: number; duration: number }) => {
+  const endMs = normalizeEndTime(data.endTime);
+
+  // Agora o TypeScript aceitará a função perfeitamente
+  setRound((prev) => {
+    if (!prev) return null;
+    
+    const updated: RoundData = {
+      ...prev,
+      duration: data.duration,
+      endTime: endMs,
+    };
+    
+    localStorage.setItem("round_data", JSON.stringify(updated));
+    return updated;
+  });
+
+  if (endMs) {
+    startTimer(endMs);
+    toast("⏱️ O administrador alterou o tempo da rodada!");
+  }
+});
+
     socket.on("submit:error", ({ message }) => {
       setSubmitting(false);
-      setSubmitted(false); // Libera o estado do botão em caso de falha de validação do back
+      setSubmitted(false);
       toast.error(message || "Erro ao enviar");
     });
 
@@ -196,12 +222,10 @@ export function useOnboardingSession(API_URL: string) {
             .replace(/\p{Diacritic}/gu, "")
             .toLowerCase();
 
-          // Vincula o ID vindo do back tanto para o nome cru quanto variantes normatizadas
           map[n] = c.id;
           map[n.toLowerCase()] = c.id;
           map[norm] = c.id;
 
-          // Fallbacks inteligentes para bater as chaves estáticas do Front com as Strings do Back
           if (norm.includes("pereci")) map["pereciveis"] = c.id;
           if (norm.includes("mercea")) map["mercearia"] = c.id;
           if (norm.includes("eletro")) map["eletro"] = c.id;
@@ -260,12 +284,10 @@ export function useOnboardingSession(API_URL: string) {
           sessionId: payload.sessionId,
           roundId: payload.roundId,
           storeId: payload.storeId,
-          // Correção: operatorsQty representa o quadro total ativo na frente de caixas
           operatorsQty: config.operadoresCaixa,
           serviceOperatorsQty: config.operadoresAtendimento,
           quizScore: config.quizScore,
           stockInputs,
-          // Adaptação: filtra valores maiores que 0 já que o CAPEX agora armazena números (custo)
           capexSelections: Object.entries(config.capex)
             .filter(([, v]) => (v ?? 0) > 0)
             .map(([capexId]) => ({ capexId })),
