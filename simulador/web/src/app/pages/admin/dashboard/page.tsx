@@ -1,13 +1,12 @@
 "use client";
 
-import { RefreshCw } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { RefreshCw, Clock } from "lucide-react"; // Importado Clock para a UI de tempo
 
-import { RoundConfig } from "./types";
-import { useAdminSocket } from "./hooks/useAdminSocket";
+
 
 import { Header } from "./components/Header";
 import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
@@ -18,12 +17,12 @@ import { RoundTimer } from "./components/RoundTimer";
 import { StatsCards } from "./components/StatsCard";
 import { useAdminSocket } from "./hooks/useAdminSocket";
 import { useOnboarding } from "../../onboarding/context/OnboardingContext";
-import type { Player, RoundConfig } from "./types";
+
 
 type DashboardState = {
   ranking?: Parameters<typeof AdminRoundRanking>[0]["ranking"];
 };
-import { Player } from "./types";
+import { Player, RoundConfig } from "./types";
 
 const AdminMestre = () => {
   const router = useRouter();
