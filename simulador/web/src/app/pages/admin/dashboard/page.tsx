@@ -4,6 +4,11 @@ import { RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { RefreshCw, Clock } from "lucide-react"; // Importado Clock para a UI de tempo
+
+import { RoundConfig } from "./types";
+import { useAdminSocket } from "./hooks/useAdminSocket";
+
 import { Header } from "./components/Header";
 import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
 import { PlayersTable } from "./components/PlayersTable";
@@ -18,12 +23,13 @@ import type { Player, RoundConfig } from "./types";
 type DashboardState = {
   ranking?: Parameters<typeof AdminRoundRanking>[0]["ranking"];
 };
+import { Player } from "./types";
 
 const AdminMestre = () => {
   const router = useRouter();
-
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+  // Desestruturada a nova função 'alterarTempoRodada' do hook
   const {
     connected,
     players,
@@ -34,6 +40,7 @@ const AdminMestre = () => {
     setSession,
     conectar,
     emit,
+    alterarTempoRodada, 
   } = useAdminSocket(API_URL);
 
   const [adminName, setAdminName] = useState("Administrador");
@@ -160,7 +167,7 @@ const AdminMestre = () => {
   }, [API_URL, conectar, router, setPlayers, setSession]);
 
   // =========================
-  // TIMER (CORRIGIDO)
+  // TIMER
   // =========================
   useEffect(() => {
     if (!endTime || !gameStarted) return;
@@ -219,6 +226,12 @@ const AdminMestre = () => {
     router.push("/pages/admin/setup");
   };
 
+  // Função disparada pelos botões rápidos de controle de tempo
+  const handleAlterarTempoRapido = (minutos: number) => {
+    if (!session?.id) return;
+    alterarTempoRodada(minutos, session.id);
+  };
+
   // =========================
   // LOADING
   // =========================
@@ -258,14 +271,9 @@ const AdminMestre = () => {
             />
         </div>
         
-
-
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
-          
           <div className="xl:col-span-8 space-y-6">
-
-            
 
             <RoundTimer
               gameStarted={gameStarted}
@@ -276,6 +284,42 @@ const AdminMestre = () => {
               submittedCount={submittedCount}
               readyCount={readyCount}
             />
+
+            {/* ======================================================= */}
+            {/* COMPONENTE VISUAL INJETADO: PRESETS DE CONTROLE DE TEMPO */}
+            {/* ======================================================= */}
+            {gameStarted && (
+              <div className="bg-[#0f192b] border border-slate-800 p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <Clock className="text-orange-500" size={20} />
+                  <div>
+                    <h3 className="font-semibold text-sm">Controle de Tempo em Tempo Real</h3>
+                    <p className="text-xs text-slate-400">Modifique a duração restante da rodada atual para todos.</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => handleAlterarTempoRapido(1)}
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded text-xs font-medium transition"
+                  >
+                    +1 Minuto
+                  </button>
+                  <button 
+                    onClick={() => handleAlterarTempoRapido(5)}
+                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 rounded text-xs font-medium transition"
+                  >
+                    +5 Minutos
+                  </button>
+                  <button 
+                    onClick={() => handleAlterarTempoRapido(-1)}
+                    className="px-3 py-1.5 bg-rose-700 hover:bg-rose-600 rounded text-xs font-medium transition"
+                  >
+                    -1 Minuto
+                  </button>
+                </div>
+              </div>
+            )}
+            {/* ======================================================= */}
 
             <RoundConfigPanel
               config={config}

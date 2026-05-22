@@ -45,6 +45,7 @@ interface RoundConfigPanelProps {
   onIniciar: () => void;
   onParar: () => void;
   onProxima: () => void;
+  onAlterarTempoTempoReal?: (minutes: number) => void; // ✅ Prop adicionada para tempo real
 }
 
 export const RoundConfigPanel = ({
@@ -59,6 +60,7 @@ export const RoundConfigPanel = ({
   onIniciar,
   onParar,
   onProxima,
+  onAlterarTempoTempoReal, // ✅ Injetada aqui
 }: RoundConfigPanelProps) => {
   return (
     <section className="w-full rounded-3xl border border-white/[0.06] bg-[#111827] overflow-hidden">
@@ -251,8 +253,9 @@ export const RoundConfigPanel = ({
                   </div>
 
                   {gameStarted && (
-                    <div className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] uppercase tracking-widest font-black">
-                      Bloqueado
+                    // ✅ Mudou de "Bloqueado" para informativo de edição dinâmica
+                    <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] uppercase tracking-widest font-black animate-pulse">
+                      Edição em Tempo Real
                     </div>
                   )}
 
@@ -261,33 +264,31 @@ export const RoundConfigPanel = ({
                 <div className="grid grid-cols-3 sm:grid-cols-5 xl:grid-cols-9 gap-2">
 
                   {DURATION_PRESETS.map((minutes) => {
-                    const active =
-                      config.durationMinutes ===
-                      minutes;
+                    const active = config.durationMinutes === minutes;
 
                     return (
                       <button
                         type="button"
                         key={minutes}
-                        disabled={gameStarted}
-                        onClick={() =>
-                          onConfigChange({
-                            durationMinutes:
-                              minutes,
-                            durationSeconds: 0,
-                          })
-                        }
+                        // ✅ Removido o disabled={gameStarted} para permitir clicks durante o jogo
+                        onClick={() => {
+                          if (gameStarted && onAlterarTempoTempoReal) {
+                            // Se o jogo já começou, atualiza dinamicamente via socket
+                            onAlterarTempoTempoReal(minutes);
+                          } else {
+                            // Se está parado, altera a configuração padrão local normalmente
+                            onConfigChange({
+                              durationMinutes: minutes,
+                              durationSeconds: 0,
+                            });
+                          }
+                        }}
                         className={`
-                          h-10 rounded-xl text-xs font-black uppercase border transition-all
+                          h-10 rounded-xl text-xs font-black uppercase border transition-all cursor-pointer
                           ${
                             active
                               ? "bg-orange-500 border-orange-400 text-white shadow-lg shadow-orange-500/20"
                               : "bg-white/[0.03] border-white/[0.06] text-slate-400 hover:bg-white/[0.06] hover:text-white"
-                          }
-                          ${
-                            gameStarted
-                              ? "opacity-40 cursor-not-allowed"
-                              : "cursor-pointer"
                           }
                         `}
                       >

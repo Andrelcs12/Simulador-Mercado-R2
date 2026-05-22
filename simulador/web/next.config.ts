@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/admin/setup",
-        destination: "/pages/admin/dashboard/setup"
+        destination: "/pages/admin/setup"
         
       },
        {
