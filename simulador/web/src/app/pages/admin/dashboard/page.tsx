@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { RefreshCw, Clock } from "lucide-react"; // Importado Clock para a UI de tempo
 
@@ -9,13 +10,19 @@ import { RoundConfig } from "./types";
 import { useAdminSocket } from "./hooks/useAdminSocket";
 
 import { Header } from "./components/Header";
-import { StatsCards } from "./components/StatsCard";
-import { RoundTimer } from "./components/RoundTimer";
-import { RoundConfigPanel } from "./components/RoundConfigPanel";
-import { PlayersTable } from "./components/PlayersTable";
 import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
+import { PlayersTable } from "./components/PlayersTable";
+import { RoundConfigPanel } from "./components/RoundConfigPanel";
 import AdminRoundRanking from "./components/RoundRankingBoard";
+import { RoundTimer } from "./components/RoundTimer";
+import { StatsCards } from "./components/StatsCard";
+import { useAdminSocket } from "./hooks/useAdminSocket";
+import { useOnboarding } from "../../onboarding/context/OnboardingContext";
+import type { Player, RoundConfig } from "./types";
 
+type DashboardState = {
+  ranking?: Parameters<typeof AdminRoundRanking>[0]["ranking"];
+};
 import { Player } from "./types";
 
 const AdminMestre = () => {
@@ -42,15 +49,30 @@ const AdminMestre = () => {
   const [showConfig, setShowConfig] = useState(true);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmKick, setConfirmKick] = useState<Player | null>(null);
-  const [dashboard, setDashboard] = useState<any>(null);
+  const [dashboard] = useState<DashboardState | null>(null);
 
   const connectedRef = useRef(false);
+
+  const {
+    maxStockPericiveis,
+    setMaxStockPericiveis,
+    maxStockMercearia,
+    setMaxStockMercearia,
+    maxStockEletro,
+    setMaxStockEletro,
+    maxStockHipel,
+    setMaxStockHipel,
+  } = useOnboarding();
 
   const [config, setConfig] = useState<RoundConfig>({
     durationMinutes: 15,
     durationSeconds: 0,
     roundNumber: 1,
     intervalMinutes: 5,
+    maxPereciveis: maxStockPericiveis,
+    maxMercearia: maxStockMercearia,
+    maxEletro: maxStockEletro,
+    maxHipel: maxStockHipel,
   });
 
   const submittedCount = useMemo(
@@ -75,6 +97,28 @@ const AdminMestre = () => {
       : 0;
 
   const ranking = dashboard?.ranking ?? [];
+
+  const handleConfigChange = (patch: Partial<RoundConfig>) => {
+    const nextConfig = { ...config, ...patch };
+
+    setConfig(nextConfig);
+
+    if (patch.maxPereciveis !== undefined) {
+      setMaxStockPericiveis(nextConfig.maxPereciveis);
+    }
+
+    if (patch.maxMercearia !== undefined) {
+      setMaxStockMercearia(nextConfig.maxMercearia);
+    }
+
+    if (patch.maxEletro !== undefined) {
+      setMaxStockEletro(nextConfig.maxEletro);
+    }
+
+    if (patch.maxHipel !== undefined) {
+      setMaxStockHipel(nextConfig.maxHipel);
+    }
+  };
 
   // =========================
   // LOAD INITIAL
@@ -148,6 +192,12 @@ const AdminMestre = () => {
       duration: totalDurationSeconds,
       round: config.roundNumber,
       interval: config.intervalMinutes * 60,
+      maxStock: {
+        pereciveis: config.maxPereciveis,
+        mercearia: config.maxMercearia,
+        eletro: config.maxEletro,
+        hipel: config.maxHipel,
+      },
     });
 
     setPlayers((prev) =>
@@ -277,9 +327,7 @@ const AdminMestre = () => {
               showConfig={showConfig}
               canGoNext={(session?.currentRound ?? 0) > 0}
               onToggle={() => setShowConfig((v) => !v)}
-              onConfigChange={(patch) =>
-                setConfig((prev) => ({ ...prev, ...patch }))
-              }
+              onConfigChange={handleConfigChange}
               onIniciar={iniciarRodada}
               onParar={pararRodada}
               onProxima={proximaRodada}

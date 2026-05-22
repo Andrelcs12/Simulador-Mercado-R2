@@ -28,18 +28,18 @@ export type AggregateStore = {
 
 export type StoreAvgAggregateOutputType = {
   cashBalance: number | null
-  accumulatedRevenue: number | null
-  accumulatedProfit: number | null
   accumulatedEbitda: number | null
+  accumulatedProfit: number | null
+  accumulatedRevenue: number | null
   currentCSAT: number | null
   currentSLA: number | null
 }
 
 export type StoreSumAggregateOutputType = {
   cashBalance: number | null
-  accumulatedRevenue: number | null
-  accumulatedProfit: number | null
   accumulatedEbitda: number | null
+  accumulatedProfit: number | null
+  accumulatedRevenue: number | null
   currentCSAT: number | null
   currentSLA: number | null
 }
@@ -47,58 +47,58 @@ export type StoreSumAggregateOutputType = {
 export type StoreMinAggregateOutputType = {
   id: string | null
   name: string | null
-  sessionId: string | null
   cashBalance: number | null
-  accumulatedRevenue: number | null
-  accumulatedProfit: number | null
+  createdAt: Date | null
   accumulatedEbitda: number | null
+  accumulatedProfit: number | null
+  accumulatedRevenue: number | null
   currentCSAT: number | null
   currentSLA: number | null
-  createdAt: Date | null
+  sessionId: string | null
 }
 
 export type StoreMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  sessionId: string | null
   cashBalance: number | null
-  accumulatedRevenue: number | null
-  accumulatedProfit: number | null
+  createdAt: Date | null
   accumulatedEbitda: number | null
+  accumulatedProfit: number | null
+  accumulatedRevenue: number | null
   currentCSAT: number | null
   currentSLA: number | null
-  createdAt: Date | null
+  sessionId: string | null
 }
 
 export type StoreCountAggregateOutputType = {
   id: number
   name: number
-  sessionId: number
   cashBalance: number
-  accumulatedRevenue: number
-  accumulatedProfit: number
+  createdAt: number
   accumulatedEbitda: number
+  accumulatedProfit: number
+  accumulatedRevenue: number
   currentCSAT: number
   currentSLA: number
-  createdAt: number
+  sessionId: number
   _all: number
 }
 
 
 export type StoreAvgAggregateInputType = {
   cashBalance?: true
-  accumulatedRevenue?: true
-  accumulatedProfit?: true
   accumulatedEbitda?: true
+  accumulatedProfit?: true
+  accumulatedRevenue?: true
   currentCSAT?: true
   currentSLA?: true
 }
 
 export type StoreSumAggregateInputType = {
   cashBalance?: true
-  accumulatedRevenue?: true
-  accumulatedProfit?: true
   accumulatedEbitda?: true
+  accumulatedProfit?: true
+  accumulatedRevenue?: true
   currentCSAT?: true
   currentSLA?: true
 }
@@ -106,40 +106,40 @@ export type StoreSumAggregateInputType = {
 export type StoreMinAggregateInputType = {
   id?: true
   name?: true
-  sessionId?: true
   cashBalance?: true
-  accumulatedRevenue?: true
-  accumulatedProfit?: true
+  createdAt?: true
   accumulatedEbitda?: true
+  accumulatedProfit?: true
+  accumulatedRevenue?: true
   currentCSAT?: true
   currentSLA?: true
-  createdAt?: true
+  sessionId?: true
 }
 
 export type StoreMaxAggregateInputType = {
   id?: true
   name?: true
-  sessionId?: true
   cashBalance?: true
-  accumulatedRevenue?: true
-  accumulatedProfit?: true
+  createdAt?: true
   accumulatedEbitda?: true
+  accumulatedProfit?: true
+  accumulatedRevenue?: true
   currentCSAT?: true
   currentSLA?: true
-  createdAt?: true
+  sessionId?: true
 }
 
 export type StoreCountAggregateInputType = {
   id?: true
   name?: true
-  sessionId?: true
   cashBalance?: true
-  accumulatedRevenue?: true
-  accumulatedProfit?: true
+  createdAt?: true
   accumulatedEbitda?: true
+  accumulatedProfit?: true
+  accumulatedRevenue?: true
   currentCSAT?: true
   currentSLA?: true
-  createdAt?: true
+  sessionId?: true
   _all?: true
 }
 
@@ -232,14 +232,14 @@ export type StoreGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type StoreGroupByOutputType = {
   id: string
   name: string
-  sessionId: string
   cashBalance: number
-  accumulatedRevenue: number
-  accumulatedProfit: number
+  createdAt: Date
   accumulatedEbitda: number
+  accumulatedProfit: number
+  accumulatedRevenue: number
   currentCSAT: number
   currentSLA: number
-  createdAt: Date
+  sessionId: string
   _count: StoreCountAggregateOutputType | null
   _avg: StoreAvgAggregateOutputType | null
   _sum: StoreSumAggregateOutputType | null
@@ -268,39 +268,39 @@ export type StoreWhereInput = {
   NOT?: Prisma.StoreWhereInput | Prisma.StoreWhereInput[]
   id?: Prisma.StringFilter<"Store"> | string
   name?: Prisma.StringFilter<"Store"> | string
-  sessionId?: Prisma.StringFilter<"Store"> | string
   cashBalance?: Prisma.FloatFilter<"Store"> | number
-  accumulatedRevenue?: Prisma.FloatFilter<"Store"> | number
-  accumulatedProfit?: Prisma.FloatFilter<"Store"> | number
+  createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
   accumulatedEbitda?: Prisma.FloatFilter<"Store"> | number
+  accumulatedProfit?: Prisma.FloatFilter<"Store"> | number
+  accumulatedRevenue?: Prisma.FloatFilter<"Store"> | number
   currentCSAT?: Prisma.FloatFilter<"Store"> | number
   currentSLA?: Prisma.FloatFilter<"Store"> | number
-  createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
-  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
-  players?: Prisma.PlayerListRelationFilter
+  sessionId?: Prisma.StringFilter<"Store"> | string
   configurations?: Prisma.ConfigurationListRelationFilter
-  roundResults?: Prisma.RoundResultListRelationFilter
+  players?: Prisma.PlayerListRelationFilter
   rankings?: Prisma.RoundRankingListRelationFilter
+  roundResults?: Prisma.RoundResultListRelationFilter
   sessionResults?: Prisma.SessionResultListRelationFilter
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
 }
 
 export type StoreOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
   cashBalance?: Prisma.SortOrder
-  accumulatedRevenue?: Prisma.SortOrder
-  accumulatedProfit?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   accumulatedEbitda?: Prisma.SortOrder
+  accumulatedProfit?: Prisma.SortOrder
+  accumulatedRevenue?: Prisma.SortOrder
   currentCSAT?: Prisma.SortOrder
   currentSLA?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  session?: Prisma.GameSessionOrderByWithRelationInput
-  players?: Prisma.PlayerOrderByRelationAggregateInput
+  sessionId?: Prisma.SortOrder
   configurations?: Prisma.ConfigurationOrderByRelationAggregateInput
-  roundResults?: Prisma.RoundResultOrderByRelationAggregateInput
+  players?: Prisma.PlayerOrderByRelationAggregateInput
   rankings?: Prisma.RoundRankingOrderByRelationAggregateInput
+  roundResults?: Prisma.RoundResultOrderByRelationAggregateInput
   sessionResults?: Prisma.SessionResultOrderByRelationAggregateInput
+  session?: Prisma.GameSessionOrderByWithRelationInput
 }
 
 export type StoreWhereUniqueInput = Prisma.AtLeast<{
@@ -309,33 +309,33 @@ export type StoreWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.StoreWhereInput[]
   NOT?: Prisma.StoreWhereInput | Prisma.StoreWhereInput[]
   name?: Prisma.StringFilter<"Store"> | string
-  sessionId?: Prisma.StringFilter<"Store"> | string
   cashBalance?: Prisma.FloatFilter<"Store"> | number
-  accumulatedRevenue?: Prisma.FloatFilter<"Store"> | number
-  accumulatedProfit?: Prisma.FloatFilter<"Store"> | number
+  createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
   accumulatedEbitda?: Prisma.FloatFilter<"Store"> | number
+  accumulatedProfit?: Prisma.FloatFilter<"Store"> | number
+  accumulatedRevenue?: Prisma.FloatFilter<"Store"> | number
   currentCSAT?: Prisma.FloatFilter<"Store"> | number
   currentSLA?: Prisma.FloatFilter<"Store"> | number
-  createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
-  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
-  players?: Prisma.PlayerListRelationFilter
+  sessionId?: Prisma.StringFilter<"Store"> | string
   configurations?: Prisma.ConfigurationListRelationFilter
-  roundResults?: Prisma.RoundResultListRelationFilter
+  players?: Prisma.PlayerListRelationFilter
   rankings?: Prisma.RoundRankingListRelationFilter
+  roundResults?: Prisma.RoundResultListRelationFilter
   sessionResults?: Prisma.SessionResultListRelationFilter
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
 }, "id">
 
 export type StoreOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
   cashBalance?: Prisma.SortOrder
-  accumulatedRevenue?: Prisma.SortOrder
-  accumulatedProfit?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   accumulatedEbitda?: Prisma.SortOrder
+  accumulatedProfit?: Prisma.SortOrder
+  accumulatedRevenue?: Prisma.SortOrder
   currentCSAT?: Prisma.SortOrder
   currentSLA?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
   _count?: Prisma.StoreCountOrderByAggregateInput
   _avg?: Prisma.StoreAvgOrderByAggregateInput
   _max?: Prisma.StoreMaxOrderByAggregateInput
@@ -349,49 +349,49 @@ export type StoreScalarWhereWithAggregatesInput = {
   NOT?: Prisma.StoreScalarWhereWithAggregatesInput | Prisma.StoreScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Store"> | string
   name?: Prisma.StringWithAggregatesFilter<"Store"> | string
-  sessionId?: Prisma.StringWithAggregatesFilter<"Store"> | string
   cashBalance?: Prisma.FloatWithAggregatesFilter<"Store"> | number
-  accumulatedRevenue?: Prisma.FloatWithAggregatesFilter<"Store"> | number
-  accumulatedProfit?: Prisma.FloatWithAggregatesFilter<"Store"> | number
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Store"> | Date | string
   accumulatedEbitda?: Prisma.FloatWithAggregatesFilter<"Store"> | number
+  accumulatedProfit?: Prisma.FloatWithAggregatesFilter<"Store"> | number
+  accumulatedRevenue?: Prisma.FloatWithAggregatesFilter<"Store"> | number
   currentCSAT?: Prisma.FloatWithAggregatesFilter<"Store"> | number
   currentSLA?: Prisma.FloatWithAggregatesFilter<"Store"> | number
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Store"> | Date | string
+  sessionId?: Prisma.StringWithAggregatesFilter<"Store"> | string
 }
 
 export type StoreCreateInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
-  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultCreateNestedManyWithoutStoreInput
+  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
 }
 
 export type StoreUncheckedCreateInput = {
   id?: string
   name: string
-  sessionId: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
+  sessionId: string
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingUncheckedCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultUncheckedCreateNestedManyWithoutStoreInput
 }
 
@@ -399,74 +399,74 @@ export type StoreUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
-  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUpdateManyWithoutStoreNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
 }
 
 export type StoreUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUncheckedUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateManyInput = {
   id?: string
   name: string
-  sessionId: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
+  sessionId: string
 }
 
 export type StoreUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StoreUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type StoreListRelationFilter = {
@@ -487,21 +487,21 @@ export type StoreNullableScalarRelationFilter = {
 export type StoreCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
   cashBalance?: Prisma.SortOrder
-  accumulatedRevenue?: Prisma.SortOrder
-  accumulatedProfit?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   accumulatedEbitda?: Prisma.SortOrder
+  accumulatedProfit?: Prisma.SortOrder
+  accumulatedRevenue?: Prisma.SortOrder
   currentCSAT?: Prisma.SortOrder
   currentSLA?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
 }
 
 export type StoreAvgOrderByAggregateInput = {
   cashBalance?: Prisma.SortOrder
-  accumulatedRevenue?: Prisma.SortOrder
-  accumulatedProfit?: Prisma.SortOrder
   accumulatedEbitda?: Prisma.SortOrder
+  accumulatedProfit?: Prisma.SortOrder
+  accumulatedRevenue?: Prisma.SortOrder
   currentCSAT?: Prisma.SortOrder
   currentSLA?: Prisma.SortOrder
 }
@@ -509,34 +509,34 @@ export type StoreAvgOrderByAggregateInput = {
 export type StoreMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
   cashBalance?: Prisma.SortOrder
-  accumulatedRevenue?: Prisma.SortOrder
-  accumulatedProfit?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   accumulatedEbitda?: Prisma.SortOrder
+  accumulatedProfit?: Prisma.SortOrder
+  accumulatedRevenue?: Prisma.SortOrder
   currentCSAT?: Prisma.SortOrder
   currentSLA?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
 }
 
 export type StoreMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
   cashBalance?: Prisma.SortOrder
-  accumulatedRevenue?: Prisma.SortOrder
-  accumulatedProfit?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   accumulatedEbitda?: Prisma.SortOrder
+  accumulatedProfit?: Prisma.SortOrder
+  accumulatedRevenue?: Prisma.SortOrder
   currentCSAT?: Prisma.SortOrder
   currentSLA?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
 }
 
 export type StoreSumOrderByAggregateInput = {
   cashBalance?: Prisma.SortOrder
-  accumulatedRevenue?: Prisma.SortOrder
-  accumulatedProfit?: Prisma.SortOrder
   accumulatedEbitda?: Prisma.SortOrder
+  accumulatedProfit?: Prisma.SortOrder
+  accumulatedRevenue?: Prisma.SortOrder
   currentCSAT?: Prisma.SortOrder
   currentSLA?: Prisma.SortOrder
 }
@@ -672,16 +672,16 @@ export type StoreCreateWithoutSessionInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultCreateNestedManyWithoutStoreInput
 }
 
@@ -689,16 +689,16 @@ export type StoreUncheckedCreateWithoutSessionInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingUncheckedCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultUncheckedCreateNestedManyWithoutStoreInput
 }
 
@@ -734,47 +734,47 @@ export type StoreScalarWhereInput = {
   NOT?: Prisma.StoreScalarWhereInput | Prisma.StoreScalarWhereInput[]
   id?: Prisma.StringFilter<"Store"> | string
   name?: Prisma.StringFilter<"Store"> | string
-  sessionId?: Prisma.StringFilter<"Store"> | string
   cashBalance?: Prisma.FloatFilter<"Store"> | number
-  accumulatedRevenue?: Prisma.FloatFilter<"Store"> | number
-  accumulatedProfit?: Prisma.FloatFilter<"Store"> | number
+  createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
   accumulatedEbitda?: Prisma.FloatFilter<"Store"> | number
+  accumulatedProfit?: Prisma.FloatFilter<"Store"> | number
+  accumulatedRevenue?: Prisma.FloatFilter<"Store"> | number
   currentCSAT?: Prisma.FloatFilter<"Store"> | number
   currentSLA?: Prisma.FloatFilter<"Store"> | number
-  createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
+  sessionId?: Prisma.StringFilter<"Store"> | string
 }
 
 export type StoreCreateWithoutPlayersInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultCreateNestedManyWithoutStoreInput
+  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
 }
 
 export type StoreUncheckedCreateWithoutPlayersInput = {
   id?: string
   name: string
-  sessionId: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
+  sessionId: string
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingUncheckedCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultUncheckedCreateNestedManyWithoutStoreInput
 }
 
@@ -798,33 +798,33 @@ export type StoreUpdateWithoutPlayersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUpdateManyWithoutStoreNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutPlayersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUncheckedUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUncheckedUpdateManyWithoutStoreNestedInput
 }
 
@@ -832,33 +832,33 @@ export type StoreCreateWithoutConfigurationsInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
   players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultCreateNestedManyWithoutStoreInput
+  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
 }
 
 export type StoreUncheckedCreateWithoutConfigurationsInput = {
   id?: string
   name: string
-  sessionId: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
+  sessionId: string
   players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingUncheckedCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultUncheckedCreateNestedManyWithoutStoreInput
 }
 
@@ -882,33 +882,33 @@ export type StoreUpdateWithoutConfigurationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
   players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUpdateManyWithoutStoreNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutConfigurationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUncheckedUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUncheckedUpdateManyWithoutStoreNestedInput
 }
 
@@ -916,32 +916,32 @@ export type StoreCreateWithoutRankingsInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
-  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultCreateNestedManyWithoutStoreInput
+  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
 }
 
 export type StoreUncheckedCreateWithoutRankingsInput = {
   id?: string
   name: string
-  sessionId: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
+  sessionId: string
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
   roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultUncheckedCreateNestedManyWithoutStoreInput
 }
@@ -966,32 +966,32 @@ export type StoreUpdateWithoutRankingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
-  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUpdateManyWithoutStoreNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutRankingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
   roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUncheckedUpdateManyWithoutStoreNestedInput
 }
@@ -1000,32 +1000,32 @@ export type StoreCreateWithoutRoundResultsInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
-  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultCreateNestedManyWithoutStoreInput
+  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
 }
 
 export type StoreUncheckedCreateWithoutRoundResultsInput = {
   id?: string
   name: string
-  sessionId: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
+  sessionId: string
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingUncheckedCreateNestedManyWithoutStoreInput
   sessionResults?: Prisma.SessionResultUncheckedCreateNestedManyWithoutStoreInput
 }
@@ -1050,32 +1050,32 @@ export type StoreUpdateWithoutRoundResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
-  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUpdateManyWithoutStoreNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutRoundResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUncheckedUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUncheckedUpdateManyWithoutStoreNestedInput
 }
@@ -1084,34 +1084,34 @@ export type StoreCreateWithoutSessionResultsInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
-  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   configurations?: Prisma.ConfigurationCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultCreateNestedManyWithoutStoreInput
+  session: Prisma.GameSessionCreateNestedOneWithoutStoresInput
 }
 
 export type StoreUncheckedCreateWithoutSessionResultsInput = {
   id?: string
   name: string
-  sessionId: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
-  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
+  sessionId: string
   configurations?: Prisma.ConfigurationUncheckedCreateNestedManyWithoutStoreInput
-  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
+  players?: Prisma.PlayerUncheckedCreateNestedManyWithoutStoreInput
   rankings?: Prisma.RoundRankingUncheckedCreateNestedManyWithoutStoreInput
+  roundResults?: Prisma.RoundResultUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutSessionResultsInput = {
@@ -1134,62 +1134,62 @@ export type StoreUpdateWithoutSessionResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
-  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutStoresNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutSessionResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUncheckedUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateManySessionInput = {
   id?: string
   name: string
   cashBalance?: number
-  accumulatedRevenue?: number
-  accumulatedProfit?: number
+  createdAt?: Date | string
   accumulatedEbitda?: number
+  accumulatedProfit?: number
+  accumulatedRevenue?: number
   currentCSAT?: number
   currentSLA?: number
-  createdAt?: Date | string
 }
 
 export type StoreUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUpdateManyWithoutStoreNestedInput
 }
 
@@ -1197,16 +1197,16 @@ export type StoreUncheckedUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
   configurations?: Prisma.ConfigurationUncheckedUpdateManyWithoutStoreNestedInput
-  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
+  players?: Prisma.PlayerUncheckedUpdateManyWithoutStoreNestedInput
   rankings?: Prisma.RoundRankingUncheckedUpdateManyWithoutStoreNestedInput
+  roundResults?: Prisma.RoundResultUncheckedUpdateManyWithoutStoreNestedInput
   sessionResults?: Prisma.SessionResultUncheckedUpdateManyWithoutStoreNestedInput
 }
 
@@ -1214,12 +1214,12 @@ export type StoreUncheckedUpdateManyWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   cashBalance?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accumulatedEbitda?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedProfit?: Prisma.FloatFieldUpdateOperationsInput | number
+  accumulatedRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
   currentCSAT?: Prisma.FloatFieldUpdateOperationsInput | number
   currentSLA?: Prisma.FloatFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -1228,18 +1228,18 @@ export type StoreUncheckedUpdateManyWithoutSessionInput = {
  */
 
 export type StoreCountOutputType = {
-  players: number
   configurations: number
-  roundResults: number
+  players: number
   rankings: number
+  roundResults: number
   sessionResults: number
 }
 
 export type StoreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  players?: boolean | StoreCountOutputTypeCountPlayersArgs
   configurations?: boolean | StoreCountOutputTypeCountConfigurationsArgs
-  roundResults?: boolean | StoreCountOutputTypeCountRoundResultsArgs
+  players?: boolean | StoreCountOutputTypeCountPlayersArgs
   rankings?: boolean | StoreCountOutputTypeCountRankingsArgs
+  roundResults?: boolean | StoreCountOutputTypeCountRoundResultsArgs
   sessionResults?: boolean | StoreCountOutputTypeCountSessionResultsArgs
 }
 
@@ -1256,13 +1256,6 @@ export type StoreCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * StoreCountOutputType without action
  */
-export type StoreCountOutputTypeCountPlayersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PlayerWhereInput
-}
-
-/**
- * StoreCountOutputType without action
- */
 export type StoreCountOutputTypeCountConfigurationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ConfigurationWhereInput
 }
@@ -1270,8 +1263,8 @@ export type StoreCountOutputTypeCountConfigurationsArgs<ExtArgs extends runtime.
 /**
  * StoreCountOutputType without action
  */
-export type StoreCountOutputTypeCountRoundResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RoundResultWhereInput
+export type StoreCountOutputTypeCountPlayersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlayerWhereInput
 }
 
 /**
@@ -1279,6 +1272,13 @@ export type StoreCountOutputTypeCountRoundResultsArgs<ExtArgs extends runtime.Ty
  */
 export type StoreCountOutputTypeCountRankingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RoundRankingWhereInput
+}
+
+/**
+ * StoreCountOutputType without action
+ */
+export type StoreCountOutputTypeCountRoundResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RoundResultWhereInput
 }
 
 /**
@@ -1292,72 +1292,72 @@ export type StoreCountOutputTypeCountSessionResultsArgs<ExtArgs extends runtime.
 export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  sessionId?: boolean
   cashBalance?: boolean
-  accumulatedRevenue?: boolean
-  accumulatedProfit?: boolean
+  createdAt?: boolean
   accumulatedEbitda?: boolean
+  accumulatedProfit?: boolean
+  accumulatedRevenue?: boolean
   currentCSAT?: boolean
   currentSLA?: boolean
-  createdAt?: boolean
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
-  players?: boolean | Prisma.Store$playersArgs<ExtArgs>
+  sessionId?: boolean
   configurations?: boolean | Prisma.Store$configurationsArgs<ExtArgs>
-  roundResults?: boolean | Prisma.Store$roundResultsArgs<ExtArgs>
+  players?: boolean | Prisma.Store$playersArgs<ExtArgs>
   rankings?: boolean | Prisma.Store$rankingsArgs<ExtArgs>
+  roundResults?: boolean | Prisma.Store$roundResultsArgs<ExtArgs>
   sessionResults?: boolean | Prisma.Store$sessionResultsArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
 export type StoreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  sessionId?: boolean
   cashBalance?: boolean
-  accumulatedRevenue?: boolean
-  accumulatedProfit?: boolean
+  createdAt?: boolean
   accumulatedEbitda?: boolean
+  accumulatedProfit?: boolean
+  accumulatedRevenue?: boolean
   currentCSAT?: boolean
   currentSLA?: boolean
-  createdAt?: boolean
+  sessionId?: boolean
   session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
 export type StoreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  sessionId?: boolean
   cashBalance?: boolean
-  accumulatedRevenue?: boolean
-  accumulatedProfit?: boolean
+  createdAt?: boolean
   accumulatedEbitda?: boolean
+  accumulatedProfit?: boolean
+  accumulatedRevenue?: boolean
   currentCSAT?: boolean
   currentSLA?: boolean
-  createdAt?: boolean
+  sessionId?: boolean
   session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
 export type StoreSelectScalar = {
   id?: boolean
   name?: boolean
-  sessionId?: boolean
   cashBalance?: boolean
-  accumulatedRevenue?: boolean
-  accumulatedProfit?: boolean
+  createdAt?: boolean
   accumulatedEbitda?: boolean
+  accumulatedProfit?: boolean
+  accumulatedRevenue?: boolean
   currentCSAT?: boolean
   currentSLA?: boolean
-  createdAt?: boolean
+  sessionId?: boolean
 }
 
-export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "sessionId" | "cashBalance" | "accumulatedRevenue" | "accumulatedProfit" | "accumulatedEbitda" | "currentCSAT" | "currentSLA" | "createdAt", ExtArgs["result"]["store"]>
+export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "cashBalance" | "createdAt" | "accumulatedEbitda" | "accumulatedProfit" | "accumulatedRevenue" | "currentCSAT" | "currentSLA" | "sessionId", ExtArgs["result"]["store"]>
 export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
-  players?: boolean | Prisma.Store$playersArgs<ExtArgs>
   configurations?: boolean | Prisma.Store$configurationsArgs<ExtArgs>
-  roundResults?: boolean | Prisma.Store$roundResultsArgs<ExtArgs>
+  players?: boolean | Prisma.Store$playersArgs<ExtArgs>
   rankings?: boolean | Prisma.Store$rankingsArgs<ExtArgs>
+  roundResults?: boolean | Prisma.Store$roundResultsArgs<ExtArgs>
   sessionResults?: boolean | Prisma.Store$sessionResultsArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1370,24 +1370,24 @@ export type StoreIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Store"
   objects: {
-    session: Prisma.$GameSessionPayload<ExtArgs>
-    players: Prisma.$PlayerPayload<ExtArgs>[]
     configurations: Prisma.$ConfigurationPayload<ExtArgs>[]
-    roundResults: Prisma.$RoundResultPayload<ExtArgs>[]
+    players: Prisma.$PlayerPayload<ExtArgs>[]
     rankings: Prisma.$RoundRankingPayload<ExtArgs>[]
+    roundResults: Prisma.$RoundResultPayload<ExtArgs>[]
     sessionResults: Prisma.$SessionResultPayload<ExtArgs>[]
+    session: Prisma.$GameSessionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    sessionId: string
     cashBalance: number
-    accumulatedRevenue: number
-    accumulatedProfit: number
+    createdAt: Date
     accumulatedEbitda: number
+    accumulatedProfit: number
+    accumulatedRevenue: number
     currentCSAT: number
     currentSLA: number
-    createdAt: Date
+    sessionId: string
   }, ExtArgs["result"]["store"]>
   composites: {}
 }
@@ -1782,12 +1782,12 @@ readonly fields: StoreFieldRefs;
  */
 export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  session<T extends Prisma.GameSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  players<T extends Prisma.Store$playersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$playersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   configurations<T extends Prisma.Store$configurationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$configurationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  roundResults<T extends Prisma.Store$roundResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$roundResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoundResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  players<T extends Prisma.Store$playersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$playersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rankings<T extends Prisma.Store$rankingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$rankingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoundRankingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  roundResults<T extends Prisma.Store$roundResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$roundResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoundResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessionResults<T extends Prisma.Store$sessionResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$sessionResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  session<T extends Prisma.GameSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1819,14 +1819,14 @@ export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Ty
 export interface StoreFieldRefs {
   readonly id: Prisma.FieldRef<"Store", 'String'>
   readonly name: Prisma.FieldRef<"Store", 'String'>
-  readonly sessionId: Prisma.FieldRef<"Store", 'String'>
   readonly cashBalance: Prisma.FieldRef<"Store", 'Float'>
-  readonly accumulatedRevenue: Prisma.FieldRef<"Store", 'Float'>
-  readonly accumulatedProfit: Prisma.FieldRef<"Store", 'Float'>
+  readonly createdAt: Prisma.FieldRef<"Store", 'DateTime'>
   readonly accumulatedEbitda: Prisma.FieldRef<"Store", 'Float'>
+  readonly accumulatedProfit: Prisma.FieldRef<"Store", 'Float'>
+  readonly accumulatedRevenue: Prisma.FieldRef<"Store", 'Float'>
   readonly currentCSAT: Prisma.FieldRef<"Store", 'Float'>
   readonly currentSLA: Prisma.FieldRef<"Store", 'Float'>
-  readonly createdAt: Prisma.FieldRef<"Store", 'DateTime'>
+  readonly sessionId: Prisma.FieldRef<"Store", 'String'>
 }
     
 
@@ -2228,30 +2228,6 @@ export type StoreDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Store.players
- */
-export type Store$playersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Player
-   */
-  select?: Prisma.PlayerSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Player
-   */
-  omit?: Prisma.PlayerOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PlayerInclude<ExtArgs> | null
-  where?: Prisma.PlayerWhereInput
-  orderBy?: Prisma.PlayerOrderByWithRelationInput | Prisma.PlayerOrderByWithRelationInput[]
-  cursor?: Prisma.PlayerWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PlayerScalarFieldEnum | Prisma.PlayerScalarFieldEnum[]
-}
-
-/**
  * Store.configurations
  */
 export type Store$configurationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2276,27 +2252,27 @@ export type Store$configurationsArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * Store.roundResults
+ * Store.players
  */
-export type Store$roundResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Store$playersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the RoundResult
+   * Select specific fields to fetch from the Player
    */
-  select?: Prisma.RoundResultSelect<ExtArgs> | null
+  select?: Prisma.PlayerSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the RoundResult
+   * Omit specific fields from the Player
    */
-  omit?: Prisma.RoundResultOmit<ExtArgs> | null
+  omit?: Prisma.PlayerOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.RoundResultInclude<ExtArgs> | null
-  where?: Prisma.RoundResultWhereInput
-  orderBy?: Prisma.RoundResultOrderByWithRelationInput | Prisma.RoundResultOrderByWithRelationInput[]
-  cursor?: Prisma.RoundResultWhereUniqueInput
+  include?: Prisma.PlayerInclude<ExtArgs> | null
+  where?: Prisma.PlayerWhereInput
+  orderBy?: Prisma.PlayerOrderByWithRelationInput | Prisma.PlayerOrderByWithRelationInput[]
+  cursor?: Prisma.PlayerWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.RoundResultScalarFieldEnum | Prisma.RoundResultScalarFieldEnum[]
+  distinct?: Prisma.PlayerScalarFieldEnum | Prisma.PlayerScalarFieldEnum[]
 }
 
 /**
@@ -2321,6 +2297,30 @@ export type Store$rankingsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.RoundRankingScalarFieldEnum | Prisma.RoundRankingScalarFieldEnum[]
+}
+
+/**
+ * Store.roundResults
+ */
+export type Store$roundResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RoundResult
+   */
+  select?: Prisma.RoundResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RoundResult
+   */
+  omit?: Prisma.RoundResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoundResultInclude<ExtArgs> | null
+  where?: Prisma.RoundResultWhereInput
+  orderBy?: Prisma.RoundResultOrderByWithRelationInput | Prisma.RoundResultOrderByWithRelationInput[]
+  cursor?: Prisma.RoundResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RoundResultScalarFieldEnum | Prisma.RoundResultScalarFieldEnum[]
 }
 
 /**

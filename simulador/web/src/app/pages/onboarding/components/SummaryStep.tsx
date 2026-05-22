@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo } from "react";
+import type React from "react";
+import { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -12,16 +13,13 @@ import {
   Target,
 } from "lucide-react";
 
-import { AppConfig } from "../types/onboarding";
 import { useOnboarding, COMERCIAL_PRICES } from "../context/OnboardingContext";
+import type { AppConfig, CategoriaKey } from "../types/onboarding";
 
 interface SummaryStepProps {
   config: AppConfig;
 }
 
-// ─────────────────────────────────────────────
-// METADADOS E CONSTANTES (SINCRONIZADOS COM INFRA OPE/CAPEX)
-// ─────────────────────────────────────────────
 const CAPEX_META: Record<string, { label: string; value: number }> = {
   seguranca: { label: "CAPEX Segurança", value: 50000 },
   equipamentos: { label: "CAPEX Balança / Freezer", value: 75000 },
@@ -31,16 +29,13 @@ const CAPEX_META: Record<string, { label: string; value: number }> = {
   melhoria: { label: "CAPEX Melhoria Contínua", value: 45000 },
 };
 
-const CATEGORIAS = [
-  { id: "pereciveis" as const, label: "Perecíveis" },
-  { id: "mercearia" as const, label: "Mercearia" },
-  { id: "eletro" as const, label: "Eletrodomésticos" },
-  { id: "hipel" as const, label: "Higiene & Limpeza" },
+const CATEGORIAS: Array<{ id: CategoriaKey; label: string }> = [
+  { id: "pereciveis", label: "Perecíveis" },
+  { id: "mercearia", label: "Mercearia" },
+  { id: "eletro", label: "Eletrodomésticos" },
+  { id: "hipel", label: "Higiene & Limpeza" },
 ];
 
-// ─────────────────────────────────────────────
-// FÓRMULAS DE PROJEÇÃO SINCRONIZADAS COM O BACKEND
-// ─────────────────────────────────────────────
 function calculateCSAT(operadoresCaixa: number, quizScore: number): number {
   const operatorFactor = Math.min(operadoresCaixa / 10, 1);
   const quizFactor = Math.min(Math.max(quizScore / 100, 0), 1);
@@ -56,8 +51,37 @@ function calculateSLA(serviceOps: number): number {
 }
 
 export default function SummaryStep({ config }: SummaryStepProps) {
-  // Consome os estados financeiros dinâmicos e reativos do Contexto Global
-  const { budget, capexTotal, comercialTotal, remainingBudget } = useOnboarding();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const {
+    budget,
+    capexTotal,
+    comercialTotal,
+    remainingBudget,
+    maxStockPericiveis,
+    maxStockMercearia,
+    maxStockEletro,
+    maxStockHipel,
+  } = useOnboarding();
+
+  const maxStockByCategory = useMemo<Record<CategoriaKey, number>>(
+    () => ({
+      pereciveis: maxStockPericiveis,
+      mercearia: maxStockMercearia,
+      eletro: maxStockEletro,
+      hipel: maxStockHipel,
+    }),
+    [
+      maxStockPericiveis,
+      maxStockMercearia,
+      maxStockEletro,
+      maxStockHipel,
+    ]
+  );
 
   const opCaixa = config.operadoresCaixa ?? 5;
   const opAtendimento = config.operadoresAtendimento ?? 3;
@@ -67,9 +91,6 @@ export default function SummaryStep({ config }: SummaryStepProps) {
   const investimentoTotal = capexTotal + comercialTotal;
   const progressPct = Math.min((investimentoTotal / budget) * 100, 100);
 
-  // ─────────────────────────────────────────────
-  // PERFORMANCE OPERACIONAL E MODELAGEM EBITDA (REAL-TIME)
-  // ─────────────────────────────────────────────
   const performanceData = useMemo(() => {
     const totalOps = opCaixa + opAtendimento;
     const csat = calculateCSAT(opCaixa, quiz);
@@ -80,31 +101,21 @@ export default function SummaryStep({ config }: SummaryStepProps) {
       ? CATEGORIAS.reduce((acc, c) => acc + (config.comercial?.[c.id]?.margem ?? 0), 0) / totalCategorias
       : 0;
 
-    // Receita baseada no markup comercial sobre o custo real investido em estoque
     const revenue = comercialTotal * 1.65 * (1 + margemMedia / 100);
-    
-    // OPEX: Fração do investimento em infraestrutura + folha salarial projetada do time
     const opex = (investimentoTotal * 0.08) + (totalOps * 2400);
-    
-    // EBITDA Absoluto exato sem truncagem arbitrária de centavos
     const ebitda = revenue - opex;
     const ebitdaMargin = revenue > 0 ? (ebitda / revenue) * 100 : 0;
 
-    return {
-      csat,
-      sla,
-      margemMedia,
-      revenue,
-      opex,
-      ebitda,
-      ebitdaMargin,
-    };
+    return { csat, sla, margemMedia, revenue, opex, ebitda, ebitdaMargin };
   }, [opCaixa, opAtendimento, quiz, config.comercial, comercialTotal, investimentoTotal]);
 
-  // Filtra chaves ativas do mapeamento de CAPEX do estado global
   const capexSelecionados = useMemo(() => {
     return Object.entries(config.capex ?? {}).filter(([, v]) => (v ?? 0) > 0);
   }, [config.capex]);
+
+  if (!isMounted) {
+    return <div className="p-8 text-slate-400 text-sm">Carregando resumo da simulação...</div>;
+  }
 
   const csatColor = performanceData.csat >= 80 
     ? "text-emerald-600" 
@@ -157,10 +168,10 @@ export default function SummaryStep({ config }: SummaryStepProps) {
         <KPI label="CSAT" value={`${performanceData.csat}%`} icon={<Users size={16} />} color={csatColor} />
         <KPI label="SLA" value={`${performanceData.sla}%`} icon={<Target size={16} />} />
         <KPI label="Margem Média" value={`${performanceData.margemMedia.toFixed(1)}%`} icon={<TrendingUp size={16} />} />
-        <KPI label="EBITDA Proved" value={`R$ ${performanceData.ebitda.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} icon={<DollarSign size={16} />} color={performanceData.ebitda >= 0 ? "text-emerald-600" : "text-red-500"} />
+        <KPI label="EBITDA Proved" value={`R$ ${performanceData.ebitda.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} icon={<DollarSign size={16} />} color={performanceData.ebitda >= 0 ? "text-emerald-600" : "text-red-500"} />
       </div>
 
-      {/* BREAKDOWN FINANCEIRO DE AMBAS AS VERTICAIS */}
+      {/* BREAKDOWN FINANCEIRO */}
       <div className="grid md:grid-cols-2 gap-5">
         <Card title="Aplicações em CAPEX">
           {capexSelecionados.length > 0 ? (
@@ -183,20 +194,37 @@ export default function SummaryStep({ config }: SummaryStepProps) {
         </Card>
 
         <Card title="Alocação Comercial de Estoque">
+          <div className="flex justify-between text-[10px] uppercase font-black text-slate-400 px-0.5 mb-2 gap-4 tracking-wider">
+            <span className="flex-1">Categoria</span>
+            <span className="min-w-[95px] text-center">Qtd / Máx</span>
+            <span className="min-w-[50px] text-right">Part. %</span>
+            <span className="min-w-[100px] text-right">Total Investido</span>
+          </div>
+
           {CATEGORIAS.map((c) => {
             const qtd = config.comercial?.[c.id]?.estoque ?? 0;
+            const maxEstoque = maxStockByCategory[c.id];
             const custoUnitarioReal = COMERCIAL_PRICES[c.id] || 0;
+            const itemTotalCost = qtd * custoUnitarioReal;
+
+            // Formatação limpa com un. embutido conforme solicitado
+            const fractionLabel = `${qtd} / ${maxEstoque} un.`;
+            const stockCapacityPercentage =
+              maxEstoque > 0 ? (qtd / maxEstoque) * 100 : 0;
+
             return (
               <Row
                 key={c.id}
-                label={`${c.label} (${qtd.toLocaleString("pt-BR")} un.)`}
-                value={qtd * custoUnitarioReal}
+                label={c.label}
+                fraction={fractionLabel}
+                percentage={`${stockCapacityPercentage.toFixed(1)}%`}
+                value={itemTotalCost}
               />
             );
           })}
           <div className="pt-2.5 mt-2 border-t border-slate-100 flex justify-between text-xs font-black text-slate-900">
             <span>Subtotal Estoque</span>
-            <span>R$ {comercialTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+            <span className="min-w-[100px] text-right">R$ {comercialTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
         </Card>
       </div>
@@ -209,17 +237,15 @@ export default function SummaryStep({ config }: SummaryStepProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <MiniStat label="Receita Bruta Estimada" value={`R$ ${performanceData.revenue.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
-          <MiniStat label="OPEX Projetado (Equipe + Operações)" value={`R$ ${performanceData.opex.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
+          <MiniStat label="Receita Bruta Estimada" value={`R$ ${performanceData.revenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} />
+          <MiniStat label="OPEX Projetado (Equipe + Operações)" value={`R$ ${performanceData.opex.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} />
           <MiniStat label="Margem EBITDA" value={`${performanceData.ebitdaMargin.toFixed(1)}%`} />
         </div>
       </div>
 
       {/* STATUS FINAL DE VALIDAÇÃO */}
       <div className={`rounded-2xl border p-4 flex items-center gap-3 transition-colors duration-200 ${
-        okBudget
-          ? "bg-emerald-50/60 border-emerald-200"
-          : "bg-red-50/60 border-red-200"
+        okBudget ? "bg-emerald-50/60 border-emerald-200" : "bg-red-50/60 border-red-200"
       }`}>
         {okBudget ? (
           <CheckCircle2 className="text-emerald-600 flex-shrink-0" size={20} />
@@ -278,14 +304,32 @@ function Card({ title, children }: StructuralCardProps) {
 
 interface RowProps {
   label: string;
+  fraction?: string;    
+  percentage?: string;  
   value: number;
 }
 
-function Row({ label, value }: RowProps) {
+function Row({ label, fraction, percentage, value }: RowProps) {
   return (
-    <div className="flex justify-between items-center text-xs text-slate-600 py-0.5 border-b border-slate-50 last:border-0">
-      <span className="font-medium text-slate-500">{label}</span>
-      <span className="font-bold text-slate-900">
+    <div className="flex justify-between items-center text-xs text-slate-600 py-2 border-b border-slate-100/70 last:border-0 gap-4">
+      <span className="font-medium text-slate-700 min-w-[100px] flex-1">{label}</span>
+      
+      {/* Coluna 2: Qtd / Máx com a mesma família de fontes elegante */}
+      {fraction && (
+        <span className="font-medium text-slate-400 text-center min-w-[95px]">
+          {fraction}
+        </span>
+      )}
+
+      {/* Coluna 3: Part. % alinhada */}
+      {percentage && (
+        <span className="font-semibold text-slate-500 text-right min-w-[50px]">
+          {percentage}
+        </span>
+      )}
+      
+      {/* Coluna 4: Total Investido */}
+      <span className="font-bold text-slate-900 text-right min-w-[100px]">
         R$ {value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </span>
     </div>

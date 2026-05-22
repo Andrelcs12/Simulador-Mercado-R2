@@ -1,24 +1,25 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  ShoppingBasket,
-  Package,
   Computer,
   Droplets,
   Minus,
+  Package,
   Plus,
-  LucideIcon,
+  ShoppingBasket,
   TrendingUp,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
-import { AppConfig, CategoriaKey } from "../types/onboarding";
 import { useOnboarding } from "../context/OnboardingContext";
+import type { AppConfig, CategoriaKey } from "../types/onboarding";
 
 interface Props {
   config: AppConfig;
-  setConfig: React.Dispatch<React.SetStateAction<AppConfig>>;
+  setConfig: Dispatch<SetStateAction<AppConfig>>;
 }
 
 interface Categoria {
@@ -33,7 +34,7 @@ interface Categoria {
   maxEstoque: number;
 }
 
-const CATEGORIAS: Categoria[] = [
+const CATEGORIAS_BASE: Omit<Categoria, "maxEstoque">[] = [
   {
     id: "pereciveis",
     label: "Perecíveis",
@@ -43,7 +44,6 @@ const CATEGORIAS: Categoria[] = [
     bg: "bg-rose-50/50",
     borderColor: "focus-within:border-rose-400",
     descricao: "Alta rotatividade e sensível à ruptura de estoque.",
-    maxEstoque: 5000,
   },
   {
     id: "mercearia",
@@ -54,7 +54,6 @@ const CATEGORIAS: Categoria[] = [
     bg: "bg-blue-50/50",
     borderColor: "focus-within:border-blue-400",
     descricao: "Demanda estável e previsível no dia a dia.",
-    maxEstoque: 12000,
   },
   {
     id: "eletro",
@@ -65,7 +64,6 @@ const CATEGORIAS: Categoria[] = [
     bg: "bg-emerald-50/50",
     borderColor: "focus-within:border-emerald-400",
     descricao: "Ticket alto com forte impacto na margem de lucro.",
-    maxEstoque: 2000,
   },
   {
     id: "hipel",
@@ -76,7 +74,6 @@ const CATEGORIAS: Categoria[] = [
     bg: "bg-amber-50/50",
     borderColor: "focus-within:border-amber-400",
     descricao: "Compra recorrente com alta elasticidade de preço.",
-    maxEstoque: 8000,
   },
 ];
 
@@ -100,22 +97,49 @@ const MARGIN_STEP = 5;
 
 export default function ComercialStep({ config, setConfig }: Props) {
   // Consome o estado orçamentário compartilhado
-  const { remainingBudget } = useOnboarding();
+  const {
+    remainingBudget,
+    maxStockPericiveis,
+    maxStockMercearia,
+    maxStockEletro,
+    maxStockHipel,
+  } = useOnboarding();
+
+  const categorias = useMemo<Categoria[]>(
+    () =>
+      CATEGORIAS_BASE.map((categoria) => ({
+        ...categoria,
+        maxEstoque:
+          categoria.id === "pereciveis"
+            ? maxStockPericiveis
+            : categoria.id === "mercearia"
+              ? maxStockMercearia
+              : categoria.id === "eletro"
+                ? maxStockEletro
+                : maxStockHipel,
+      })),
+    [
+      maxStockPericiveis,
+      maxStockMercearia,
+      maxStockEletro,
+      maxStockHipel,
+    ]
+  );
 
   const opCaixa = config.operadoresCaixa ?? 5;
   const opAtendimento = config.operadoresAtendimento ?? 3;
   const quiz = config.quizScore ?? 100;
 
-  const csat = calcCSAT(opCaixa, quiz);
-  const sla = calcSLA(opAtendimento);
+  const _csat = calcCSAT(opCaixa, quiz);
+  const _sla = calcSLA(opAtendimento);
 
   // Calcula o somatório do capital investido em estoque baseado no estado atual
   const estoqueTotal = useMemo(() => {
-    return CATEGORIAS.reduce((acc, c) => {
+    return categorias.reduce((acc, c) => {
       const qtd = config.comercial?.[c.id]?.estoque ?? 0;
       return acc + (qtd * c.custoUn);
     }, 0);
-  }, [config.comercial]);
+  }, [categorias, config.comercial]);
 
   // Calcula o caixa final líquido (o remainingBudget do contexto já desconta o CAPEX fixado)
   const saldoFinal = remainingBudget - estoqueTotal;
@@ -127,8 +151,33 @@ export default function ComercialStep({ config, setConfig }: Props) {
     return Math.max(0, Math.min(c.maxEstoque, budgetLimit));
   };
 
+  useEffect(() => {
+    setConfig((prev) => {
+      let changed = false;
+      const comercial = { ...prev.comercial };
+
+      for (const categoria of categorias) {
+        const current = comercial[categoria.id]?.estoque ?? 0;
+
+        if (current > categoria.maxEstoque) {
+          changed = true;
+          comercial[categoria.id] = {
+            ...comercial[categoria.id],
+            estoque: categoria.maxEstoque,
+            margem: comercial[categoria.id]?.margem ?? 0,
+          };
+        }
+      }
+
+      return changed ? { ...prev, comercial } : prev;
+    });
+  }, [categorias, setConfig]);
+
   const updateStock = (cat: CategoriaKey, value: number) => {
-    const c = CATEGORIAS.find((x) => x.id === cat)!;
+    const c = categorias.find((x) => x.id === cat);
+
+    if (!c) return;
+
     const current = config.comercial?.[cat]?.estoque ?? 0;
     const maxAllowed = getMaxAllowed(c, current);
 
@@ -204,7 +253,7 @@ export default function ComercialStep({ config, setConfig }: Props) {
 
       {/* CARDS DE CATEGORIAS */}
       <div className="grid gap-5">
-        {CATEGORIAS.map((c, i) => {
+        {categorias.map((c, i) => {
           const estoque = config.comercial?.[c.id]?.estoque ?? 0;
           const margem = config.comercial?.[c.id]?.margem ?? 0;
           const subtotal = estoque * c.custoUn;
@@ -212,6 +261,8 @@ export default function ComercialStep({ config, setConfig }: Props) {
           const maxAllowed = getMaxAllowed(c, estoque);
           const blocked = estoque >= maxAllowed || saldoFinal < c.custoUn;
           const precoVenda = c.custoUn * (1 + margem / 100);
+          const stockInputId = `estoque-${c.id}`;
+          const marginInputId = `margem-${c.id}`;
 
           return (
             <motion.div
@@ -249,7 +300,10 @@ export default function ComercialStep({ config, setConfig }: Props) {
               <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                 {/* CONTROL: ESTOQUE */}
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex justify-between">
+                  <label
+                    htmlFor={stockInputId}
+                    className="text-[10px] uppercase font-black text-slate-400 tracking-wider flex justify-between"
+                  >
                     <span>Comprar Estoque (Qtd)</span>
                     <span className="text-slate-400 font-normal">
                       Máx: {c.maxEstoque.toLocaleString("pt-BR")} un
@@ -267,6 +321,7 @@ export default function ComercialStep({ config, setConfig }: Props) {
                     </button>
 
                     <input
+                      id={stockInputId}
                       type="number"
                       min={0}
                       max={maxAllowed}
@@ -295,7 +350,10 @@ export default function ComercialStep({ config, setConfig }: Props) {
 
                 {/* CONTROL: MARGEM */}
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-black text-slate-400 tracking-wider">
+                  <label
+                    htmlFor={marginInputId}
+                    className="text-[10px] uppercase font-black text-slate-400 tracking-wider"
+                  >
                     Margem Comercial (%)
                   </label>
 
@@ -310,6 +368,7 @@ export default function ComercialStep({ config, setConfig }: Props) {
                     </button>
 
                     <input
+                      id={marginInputId}
                       type="number"
                       min={0}
                       max={200}

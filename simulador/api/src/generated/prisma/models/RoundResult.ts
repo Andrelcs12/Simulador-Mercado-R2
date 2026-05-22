@@ -27,265 +27,265 @@ export type AggregateRoundResult = {
 }
 
 export type RoundResultAvgAggregateOutputType = {
-  marketShare: number | null
-  customersReceived: number | null
   totalRevenue: number | null
-  totalTaxes: number | null
   totalCMV: number | null
   operatingCosts: number | null
-  capexCosts: number | null
-  licensingCosts: number | null
   agingCosts: number | null
-  interestCosts: number | null
-  totalExpenses: number | null
   ebitdaValue: number | null
   ebitdaMargin: number | null
   finalCash: number | null
-  remainingStockValue: number | null
-  stockBreakLoss: number | null
+  capexCosts: number | null
   csat: number | null
+  customersReceived: number | null
+  interestCosts: number | null
+  licensingCosts: number | null
+  remainingStockValue: number | null
   sla: number | null
-  averagePrice: number | null
+  stockBreakLoss: number | null
+  totalExpenses: number | null
+  totalTaxes: number | null
+  marketShare: number | null
   availabilityRate: number | null
+  averagePrice: number | null
 }
 
 export type RoundResultSumAggregateOutputType = {
-  marketShare: number | null
-  customersReceived: number | null
   totalRevenue: number | null
-  totalTaxes: number | null
   totalCMV: number | null
   operatingCosts: number | null
-  capexCosts: number | null
-  licensingCosts: number | null
   agingCosts: number | null
-  interestCosts: number | null
-  totalExpenses: number | null
   ebitdaValue: number | null
   ebitdaMargin: number | null
   finalCash: number | null
-  remainingStockValue: number | null
-  stockBreakLoss: number | null
+  capexCosts: number | null
   csat: number | null
+  customersReceived: number | null
+  interestCosts: number | null
+  licensingCosts: number | null
+  remainingStockValue: number | null
   sla: number | null
-  averagePrice: number | null
+  stockBreakLoss: number | null
+  totalExpenses: number | null
+  totalTaxes: number | null
+  marketShare: number | null
   availabilityRate: number | null
+  averagePrice: number | null
 }
 
 export type RoundResultMinAggregateOutputType = {
   id: string | null
-  sessionId: string | null
-  roundId: string | null
   storeId: string | null
-  marketShare: number | null
-  customersReceived: number | null
   totalRevenue: number | null
-  totalTaxes: number | null
   totalCMV: number | null
   operatingCosts: number | null
-  capexCosts: number | null
-  licensingCosts: number | null
   agingCosts: number | null
-  interestCosts: number | null
-  totalExpenses: number | null
   ebitdaValue: number | null
   ebitdaMargin: number | null
-  finalCash: number | null
-  remainingStockValue: number | null
-  stockBreakLoss: number | null
-  csat: number | null
-  sla: number | null
-  averagePrice: number | null
-  availabilityRate: number | null
   createdAt: Date | null
+  roundId: string | null
+  sessionId: string | null
+  finalCash: number | null
+  capexCosts: number | null
+  csat: number | null
+  customersReceived: number | null
+  interestCosts: number | null
+  licensingCosts: number | null
+  remainingStockValue: number | null
+  sla: number | null
+  stockBreakLoss: number | null
+  totalExpenses: number | null
+  totalTaxes: number | null
+  marketShare: number | null
+  availabilityRate: number | null
+  averagePrice: number | null
 }
 
 export type RoundResultMaxAggregateOutputType = {
   id: string | null
-  sessionId: string | null
-  roundId: string | null
   storeId: string | null
-  marketShare: number | null
-  customersReceived: number | null
   totalRevenue: number | null
-  totalTaxes: number | null
   totalCMV: number | null
   operatingCosts: number | null
-  capexCosts: number | null
-  licensingCosts: number | null
   agingCosts: number | null
-  interestCosts: number | null
-  totalExpenses: number | null
   ebitdaValue: number | null
   ebitdaMargin: number | null
-  finalCash: number | null
-  remainingStockValue: number | null
-  stockBreakLoss: number | null
-  csat: number | null
-  sla: number | null
-  averagePrice: number | null
-  availabilityRate: number | null
   createdAt: Date | null
+  roundId: string | null
+  sessionId: string | null
+  finalCash: number | null
+  capexCosts: number | null
+  csat: number | null
+  customersReceived: number | null
+  interestCosts: number | null
+  licensingCosts: number | null
+  remainingStockValue: number | null
+  sla: number | null
+  stockBreakLoss: number | null
+  totalExpenses: number | null
+  totalTaxes: number | null
+  marketShare: number | null
+  availabilityRate: number | null
+  averagePrice: number | null
 }
 
 export type RoundResultCountAggregateOutputType = {
   id: number
-  sessionId: number
-  roundId: number
   storeId: number
-  marketShare: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice: number
-  availabilityRate: number
   createdAt: number
+  roundId: number
+  sessionId: number
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare: number
+  availabilityRate: number
+  averagePrice: number
   _all: number
 }
 
 
 export type RoundResultAvgAggregateInputType = {
-  marketShare?: true
-  customersReceived?: true
   totalRevenue?: true
-  totalTaxes?: true
   totalCMV?: true
   operatingCosts?: true
-  capexCosts?: true
-  licensingCosts?: true
   agingCosts?: true
-  interestCosts?: true
-  totalExpenses?: true
   ebitdaValue?: true
   ebitdaMargin?: true
   finalCash?: true
-  remainingStockValue?: true
-  stockBreakLoss?: true
+  capexCosts?: true
   csat?: true
+  customersReceived?: true
+  interestCosts?: true
+  licensingCosts?: true
+  remainingStockValue?: true
   sla?: true
-  averagePrice?: true
+  stockBreakLoss?: true
+  totalExpenses?: true
+  totalTaxes?: true
+  marketShare?: true
   availabilityRate?: true
+  averagePrice?: true
 }
 
 export type RoundResultSumAggregateInputType = {
-  marketShare?: true
-  customersReceived?: true
   totalRevenue?: true
-  totalTaxes?: true
   totalCMV?: true
   operatingCosts?: true
-  capexCosts?: true
-  licensingCosts?: true
   agingCosts?: true
-  interestCosts?: true
-  totalExpenses?: true
   ebitdaValue?: true
   ebitdaMargin?: true
   finalCash?: true
-  remainingStockValue?: true
-  stockBreakLoss?: true
+  capexCosts?: true
   csat?: true
+  customersReceived?: true
+  interestCosts?: true
+  licensingCosts?: true
+  remainingStockValue?: true
   sla?: true
-  averagePrice?: true
+  stockBreakLoss?: true
+  totalExpenses?: true
+  totalTaxes?: true
+  marketShare?: true
   availabilityRate?: true
+  averagePrice?: true
 }
 
 export type RoundResultMinAggregateInputType = {
   id?: true
-  sessionId?: true
-  roundId?: true
   storeId?: true
-  marketShare?: true
-  customersReceived?: true
   totalRevenue?: true
-  totalTaxes?: true
   totalCMV?: true
   operatingCosts?: true
-  capexCosts?: true
-  licensingCosts?: true
   agingCosts?: true
-  interestCosts?: true
-  totalExpenses?: true
   ebitdaValue?: true
   ebitdaMargin?: true
-  finalCash?: true
-  remainingStockValue?: true
-  stockBreakLoss?: true
-  csat?: true
-  sla?: true
-  averagePrice?: true
-  availabilityRate?: true
   createdAt?: true
+  roundId?: true
+  sessionId?: true
+  finalCash?: true
+  capexCosts?: true
+  csat?: true
+  customersReceived?: true
+  interestCosts?: true
+  licensingCosts?: true
+  remainingStockValue?: true
+  sla?: true
+  stockBreakLoss?: true
+  totalExpenses?: true
+  totalTaxes?: true
+  marketShare?: true
+  availabilityRate?: true
+  averagePrice?: true
 }
 
 export type RoundResultMaxAggregateInputType = {
   id?: true
-  sessionId?: true
-  roundId?: true
   storeId?: true
-  marketShare?: true
-  customersReceived?: true
   totalRevenue?: true
-  totalTaxes?: true
   totalCMV?: true
   operatingCosts?: true
-  capexCosts?: true
-  licensingCosts?: true
   agingCosts?: true
-  interestCosts?: true
-  totalExpenses?: true
   ebitdaValue?: true
   ebitdaMargin?: true
-  finalCash?: true
-  remainingStockValue?: true
-  stockBreakLoss?: true
-  csat?: true
-  sla?: true
-  averagePrice?: true
-  availabilityRate?: true
   createdAt?: true
+  roundId?: true
+  sessionId?: true
+  finalCash?: true
+  capexCosts?: true
+  csat?: true
+  customersReceived?: true
+  interestCosts?: true
+  licensingCosts?: true
+  remainingStockValue?: true
+  sla?: true
+  stockBreakLoss?: true
+  totalExpenses?: true
+  totalTaxes?: true
+  marketShare?: true
+  availabilityRate?: true
+  averagePrice?: true
 }
 
 export type RoundResultCountAggregateInputType = {
   id?: true
-  sessionId?: true
-  roundId?: true
   storeId?: true
-  marketShare?: true
-  customersReceived?: true
   totalRevenue?: true
-  totalTaxes?: true
   totalCMV?: true
   operatingCosts?: true
-  capexCosts?: true
-  licensingCosts?: true
   agingCosts?: true
-  interestCosts?: true
-  totalExpenses?: true
   ebitdaValue?: true
   ebitdaMargin?: true
-  finalCash?: true
-  remainingStockValue?: true
-  stockBreakLoss?: true
-  csat?: true
-  sla?: true
-  averagePrice?: true
-  availabilityRate?: true
   createdAt?: true
+  roundId?: true
+  sessionId?: true
+  finalCash?: true
+  capexCosts?: true
+  csat?: true
+  customersReceived?: true
+  interestCosts?: true
+  licensingCosts?: true
+  remainingStockValue?: true
+  sla?: true
+  stockBreakLoss?: true
+  totalExpenses?: true
+  totalTaxes?: true
+  marketShare?: true
+  availabilityRate?: true
+  averagePrice?: true
   _all?: true
 }
 
@@ -377,30 +377,30 @@ export type RoundResultGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type RoundResultGroupByOutputType = {
   id: string
-  sessionId: string
-  roundId: string
   storeId: string
-  marketShare: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice: number
-  availabilityRate: number
   createdAt: Date
+  roundId: string
+  sessionId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare: number
+  availabilityRate: number
+  averagePrice: number
   _count: RoundResultCountAggregateOutputType | null
   _avg: RoundResultAvgAggregateOutputType | null
   _sum: RoundResultSumAggregateOutputType | null
@@ -428,64 +428,64 @@ export type RoundResultWhereInput = {
   OR?: Prisma.RoundResultWhereInput[]
   NOT?: Prisma.RoundResultWhereInput | Prisma.RoundResultWhereInput[]
   id?: Prisma.StringFilter<"RoundResult"> | string
-  sessionId?: Prisma.StringFilter<"RoundResult"> | string
-  roundId?: Prisma.StringFilter<"RoundResult"> | string
   storeId?: Prisma.StringFilter<"RoundResult"> | string
-  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
-  customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
-  totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
   totalCMV?: Prisma.FloatFilter<"RoundResult"> | number
   operatingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  capexCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  licensingCosts?: Prisma.FloatFilter<"RoundResult"> | number
   agingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  interestCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  totalExpenses?: Prisma.FloatFilter<"RoundResult"> | number
   ebitdaValue?: Prisma.FloatFilter<"RoundResult"> | number
   ebitdaMargin?: Prisma.FloatFilter<"RoundResult"> | number
-  finalCash?: Prisma.FloatFilter<"RoundResult"> | number
-  remainingStockValue?: Prisma.FloatFilter<"RoundResult"> | number
-  stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
-  csat?: Prisma.FloatFilter<"RoundResult"> | number
-  sla?: Prisma.FloatFilter<"RoundResult"> | number
-  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
-  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeFilter<"RoundResult"> | Date | string
-  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
-  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
+  roundId?: Prisma.StringFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringFilter<"RoundResult"> | string
+  finalCash?: Prisma.FloatFilter<"RoundResult"> | number
+  capexCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  csat?: Prisma.FloatFilter<"RoundResult"> | number
+  customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
+  interestCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  licensingCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  remainingStockValue?: Prisma.FloatFilter<"RoundResult"> | number
+  sla?: Prisma.FloatFilter<"RoundResult"> | number
+  stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
+  totalExpenses?: Prisma.FloatFilter<"RoundResult"> | number
+  totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
+  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
   round?: Prisma.XOR<Prisma.GameRoundScalarRelationFilter, Prisma.GameRoundWhereInput>
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
+  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
 }
 
 export type RoundResultOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
-  roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
-  marketShare?: Prisma.SortOrder
-  customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
-  totalTaxes?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
   operatingCosts?: Prisma.SortOrder
-  capexCosts?: Prisma.SortOrder
-  licensingCosts?: Prisma.SortOrder
   agingCosts?: Prisma.SortOrder
-  interestCosts?: Prisma.SortOrder
-  totalExpenses?: Prisma.SortOrder
   ebitdaValue?: Prisma.SortOrder
   ebitdaMargin?: Prisma.SortOrder
-  finalCash?: Prisma.SortOrder
-  remainingStockValue?: Prisma.SortOrder
-  stockBreakLoss?: Prisma.SortOrder
-  csat?: Prisma.SortOrder
-  sla?: Prisma.SortOrder
-  averagePrice?: Prisma.SortOrder
-  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  store?: Prisma.StoreOrderByWithRelationInput
-  session?: Prisma.GameSessionOrderByWithRelationInput
+  roundId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  finalCash?: Prisma.SortOrder
+  capexCosts?: Prisma.SortOrder
+  csat?: Prisma.SortOrder
+  customersReceived?: Prisma.SortOrder
+  interestCosts?: Prisma.SortOrder
+  licensingCosts?: Prisma.SortOrder
+  remainingStockValue?: Prisma.SortOrder
+  sla?: Prisma.SortOrder
+  stockBreakLoss?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  totalTaxes?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
   round?: Prisma.GameRoundOrderByWithRelationInput
+  session?: Prisma.GameSessionOrderByWithRelationInput
+  store?: Prisma.StoreOrderByWithRelationInput
 }
 
 export type RoundResultWhereUniqueInput = Prisma.AtLeast<{
@@ -494,61 +494,61 @@ export type RoundResultWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.RoundResultWhereInput | Prisma.RoundResultWhereInput[]
   OR?: Prisma.RoundResultWhereInput[]
   NOT?: Prisma.RoundResultWhereInput | Prisma.RoundResultWhereInput[]
-  sessionId?: Prisma.StringFilter<"RoundResult"> | string
-  roundId?: Prisma.StringFilter<"RoundResult"> | string
   storeId?: Prisma.StringFilter<"RoundResult"> | string
-  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
-  customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
-  totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
   totalCMV?: Prisma.FloatFilter<"RoundResult"> | number
   operatingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  capexCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  licensingCosts?: Prisma.FloatFilter<"RoundResult"> | number
   agingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  interestCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  totalExpenses?: Prisma.FloatFilter<"RoundResult"> | number
   ebitdaValue?: Prisma.FloatFilter<"RoundResult"> | number
   ebitdaMargin?: Prisma.FloatFilter<"RoundResult"> | number
-  finalCash?: Prisma.FloatFilter<"RoundResult"> | number
-  remainingStockValue?: Prisma.FloatFilter<"RoundResult"> | number
-  stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
-  csat?: Prisma.FloatFilter<"RoundResult"> | number
-  sla?: Prisma.FloatFilter<"RoundResult"> | number
-  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
-  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeFilter<"RoundResult"> | Date | string
-  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
-  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
+  roundId?: Prisma.StringFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringFilter<"RoundResult"> | string
+  finalCash?: Prisma.FloatFilter<"RoundResult"> | number
+  capexCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  csat?: Prisma.FloatFilter<"RoundResult"> | number
+  customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
+  interestCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  licensingCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  remainingStockValue?: Prisma.FloatFilter<"RoundResult"> | number
+  sla?: Prisma.FloatFilter<"RoundResult"> | number
+  stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
+  totalExpenses?: Prisma.FloatFilter<"RoundResult"> | number
+  totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
+  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
   round?: Prisma.XOR<Prisma.GameRoundScalarRelationFilter, Prisma.GameRoundWhereInput>
+  session?: Prisma.XOR<Prisma.GameSessionScalarRelationFilter, Prisma.GameSessionWhereInput>
+  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
 }, "id" | "storeId_roundId">
 
 export type RoundResultOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
-  roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
-  marketShare?: Prisma.SortOrder
-  customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
-  totalTaxes?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
   operatingCosts?: Prisma.SortOrder
-  capexCosts?: Prisma.SortOrder
-  licensingCosts?: Prisma.SortOrder
   agingCosts?: Prisma.SortOrder
-  interestCosts?: Prisma.SortOrder
-  totalExpenses?: Prisma.SortOrder
   ebitdaValue?: Prisma.SortOrder
   ebitdaMargin?: Prisma.SortOrder
-  finalCash?: Prisma.SortOrder
-  remainingStockValue?: Prisma.SortOrder
-  stockBreakLoss?: Prisma.SortOrder
-  csat?: Prisma.SortOrder
-  sla?: Prisma.SortOrder
-  averagePrice?: Prisma.SortOrder
-  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roundId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  finalCash?: Prisma.SortOrder
+  capexCosts?: Prisma.SortOrder
+  csat?: Prisma.SortOrder
+  customersReceived?: Prisma.SortOrder
+  interestCosts?: Prisma.SortOrder
+  licensingCosts?: Prisma.SortOrder
+  remainingStockValue?: Prisma.SortOrder
+  sla?: Prisma.SortOrder
+  stockBreakLoss?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  totalTaxes?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
   _count?: Prisma.RoundResultCountOrderByAggregateInput
   _avg?: Prisma.RoundResultAvgOrderByAggregateInput
   _max?: Prisma.RoundResultMaxOrderByAggregateInput
@@ -561,223 +561,223 @@ export type RoundResultScalarWhereWithAggregatesInput = {
   OR?: Prisma.RoundResultScalarWhereWithAggregatesInput[]
   NOT?: Prisma.RoundResultScalarWhereWithAggregatesInput | Prisma.RoundResultScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
-  sessionId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
-  roundId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
   storeId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
-  marketShare?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  customersReceived?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  totalTaxes?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   totalCMV?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   operatingCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  capexCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  licensingCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   agingCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  interestCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  totalExpenses?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   ebitdaValue?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   ebitdaMargin?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  finalCash?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  remainingStockValue?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  stockBreakLoss?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  csat?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  sla?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  averagePrice?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
-  availabilityRate?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RoundResult"> | Date | string
+  roundId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringWithAggregatesFilter<"RoundResult"> | string
+  finalCash?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  capexCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  csat?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  customersReceived?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  interestCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  licensingCosts?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  remainingStockValue?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  sla?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  stockBreakLoss?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  totalExpenses?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  totalTaxes?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  marketShare?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatWithAggregatesFilter<"RoundResult"> | number
 }
 
 export type RoundResultCreateInput = {
   id?: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
-  session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
   round: Prisma.GameRoundCreateNestedOneWithoutResultsInput
+  session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
+  store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
 }
 
 export type RoundResultUncheckedCreateInput = {
   id?: string
-  sessionId: string
-  roundId: string
   storeId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  roundId: string
+  sessionId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   round?: Prisma.GameRoundUpdateOneRequiredWithoutResultsNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
+  store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
 }
 
 export type RoundResultUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
-  roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultCreateManyInput = {
   id?: string
-  sessionId: string
-  roundId: string
   storeId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  roundId: string
+  sessionId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
-  roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultListRelationFilter = {
@@ -797,132 +797,132 @@ export type RoundResultStoreIdRoundIdCompoundUniqueInput = {
 
 export type RoundResultCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
-  roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
-  marketShare?: Prisma.SortOrder
-  customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
-  totalTaxes?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
   operatingCosts?: Prisma.SortOrder
-  capexCosts?: Prisma.SortOrder
-  licensingCosts?: Prisma.SortOrder
   agingCosts?: Prisma.SortOrder
-  interestCosts?: Prisma.SortOrder
-  totalExpenses?: Prisma.SortOrder
   ebitdaValue?: Prisma.SortOrder
   ebitdaMargin?: Prisma.SortOrder
-  finalCash?: Prisma.SortOrder
-  remainingStockValue?: Prisma.SortOrder
-  stockBreakLoss?: Prisma.SortOrder
-  csat?: Prisma.SortOrder
-  sla?: Prisma.SortOrder
-  averagePrice?: Prisma.SortOrder
-  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roundId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  finalCash?: Prisma.SortOrder
+  capexCosts?: Prisma.SortOrder
+  csat?: Prisma.SortOrder
+  customersReceived?: Prisma.SortOrder
+  interestCosts?: Prisma.SortOrder
+  licensingCosts?: Prisma.SortOrder
+  remainingStockValue?: Prisma.SortOrder
+  sla?: Prisma.SortOrder
+  stockBreakLoss?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  totalTaxes?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
 }
 
 export type RoundResultAvgOrderByAggregateInput = {
-  marketShare?: Prisma.SortOrder
-  customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
-  totalTaxes?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
   operatingCosts?: Prisma.SortOrder
-  capexCosts?: Prisma.SortOrder
-  licensingCosts?: Prisma.SortOrder
   agingCosts?: Prisma.SortOrder
-  interestCosts?: Prisma.SortOrder
-  totalExpenses?: Prisma.SortOrder
   ebitdaValue?: Prisma.SortOrder
   ebitdaMargin?: Prisma.SortOrder
   finalCash?: Prisma.SortOrder
-  remainingStockValue?: Prisma.SortOrder
-  stockBreakLoss?: Prisma.SortOrder
+  capexCosts?: Prisma.SortOrder
   csat?: Prisma.SortOrder
+  customersReceived?: Prisma.SortOrder
+  interestCosts?: Prisma.SortOrder
+  licensingCosts?: Prisma.SortOrder
+  remainingStockValue?: Prisma.SortOrder
   sla?: Prisma.SortOrder
-  averagePrice?: Prisma.SortOrder
+  stockBreakLoss?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  totalTaxes?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
   availabilityRate?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
 }
 
 export type RoundResultMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
-  roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
-  marketShare?: Prisma.SortOrder
-  customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
-  totalTaxes?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
   operatingCosts?: Prisma.SortOrder
-  capexCosts?: Prisma.SortOrder
-  licensingCosts?: Prisma.SortOrder
   agingCosts?: Prisma.SortOrder
-  interestCosts?: Prisma.SortOrder
-  totalExpenses?: Prisma.SortOrder
   ebitdaValue?: Prisma.SortOrder
   ebitdaMargin?: Prisma.SortOrder
-  finalCash?: Prisma.SortOrder
-  remainingStockValue?: Prisma.SortOrder
-  stockBreakLoss?: Prisma.SortOrder
-  csat?: Prisma.SortOrder
-  sla?: Prisma.SortOrder
-  averagePrice?: Prisma.SortOrder
-  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roundId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  finalCash?: Prisma.SortOrder
+  capexCosts?: Prisma.SortOrder
+  csat?: Prisma.SortOrder
+  customersReceived?: Prisma.SortOrder
+  interestCosts?: Prisma.SortOrder
+  licensingCosts?: Prisma.SortOrder
+  remainingStockValue?: Prisma.SortOrder
+  sla?: Prisma.SortOrder
+  stockBreakLoss?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  totalTaxes?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
 }
 
 export type RoundResultMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
-  roundId?: Prisma.SortOrder
   storeId?: Prisma.SortOrder
-  marketShare?: Prisma.SortOrder
-  customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
-  totalTaxes?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
   operatingCosts?: Prisma.SortOrder
-  capexCosts?: Prisma.SortOrder
-  licensingCosts?: Prisma.SortOrder
   agingCosts?: Prisma.SortOrder
-  interestCosts?: Prisma.SortOrder
-  totalExpenses?: Prisma.SortOrder
   ebitdaValue?: Prisma.SortOrder
   ebitdaMargin?: Prisma.SortOrder
-  finalCash?: Prisma.SortOrder
-  remainingStockValue?: Prisma.SortOrder
-  stockBreakLoss?: Prisma.SortOrder
-  csat?: Prisma.SortOrder
-  sla?: Prisma.SortOrder
-  averagePrice?: Prisma.SortOrder
-  availabilityRate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  roundId?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  finalCash?: Prisma.SortOrder
+  capexCosts?: Prisma.SortOrder
+  csat?: Prisma.SortOrder
+  customersReceived?: Prisma.SortOrder
+  interestCosts?: Prisma.SortOrder
+  licensingCosts?: Prisma.SortOrder
+  remainingStockValue?: Prisma.SortOrder
+  sla?: Prisma.SortOrder
+  stockBreakLoss?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  totalTaxes?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
+  availabilityRate?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
 }
 
 export type RoundResultSumOrderByAggregateInput = {
-  marketShare?: Prisma.SortOrder
-  customersReceived?: Prisma.SortOrder
   totalRevenue?: Prisma.SortOrder
-  totalTaxes?: Prisma.SortOrder
   totalCMV?: Prisma.SortOrder
   operatingCosts?: Prisma.SortOrder
-  capexCosts?: Prisma.SortOrder
-  licensingCosts?: Prisma.SortOrder
   agingCosts?: Prisma.SortOrder
-  interestCosts?: Prisma.SortOrder
-  totalExpenses?: Prisma.SortOrder
   ebitdaValue?: Prisma.SortOrder
   ebitdaMargin?: Prisma.SortOrder
   finalCash?: Prisma.SortOrder
-  remainingStockValue?: Prisma.SortOrder
-  stockBreakLoss?: Prisma.SortOrder
+  capexCosts?: Prisma.SortOrder
   csat?: Prisma.SortOrder
+  customersReceived?: Prisma.SortOrder
+  interestCosts?: Prisma.SortOrder
+  licensingCosts?: Prisma.SortOrder
+  remainingStockValue?: Prisma.SortOrder
   sla?: Prisma.SortOrder
-  averagePrice?: Prisma.SortOrder
+  stockBreakLoss?: Prisma.SortOrder
+  totalExpenses?: Prisma.SortOrder
+  totalTaxes?: Prisma.SortOrder
+  marketShare?: Prisma.SortOrder
   availabilityRate?: Prisma.SortOrder
+  averagePrice?: Prisma.SortOrder
 }
 
 export type RoundResultCreateNestedManyWithoutSessionInput = {
@@ -1053,56 +1053,56 @@ export type RoundResultUncheckedUpdateManyWithoutStoreNestedInput = {
 
 export type RoundResultCreateWithoutSessionInput = {
   id?: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
   round: Prisma.GameRoundCreateNestedOneWithoutResultsInput
+  store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
 }
 
 export type RoundResultUncheckedCreateWithoutSessionInput = {
   id?: string
-  roundId: string
   storeId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  roundId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultCreateOrConnectWithoutSessionInput = {
@@ -1136,84 +1136,84 @@ export type RoundResultScalarWhereInput = {
   OR?: Prisma.RoundResultScalarWhereInput[]
   NOT?: Prisma.RoundResultScalarWhereInput | Prisma.RoundResultScalarWhereInput[]
   id?: Prisma.StringFilter<"RoundResult"> | string
-  sessionId?: Prisma.StringFilter<"RoundResult"> | string
-  roundId?: Prisma.StringFilter<"RoundResult"> | string
   storeId?: Prisma.StringFilter<"RoundResult"> | string
-  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
-  customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
   totalRevenue?: Prisma.FloatFilter<"RoundResult"> | number
-  totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
   totalCMV?: Prisma.FloatFilter<"RoundResult"> | number
   operatingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  capexCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  licensingCosts?: Prisma.FloatFilter<"RoundResult"> | number
   agingCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  interestCosts?: Prisma.FloatFilter<"RoundResult"> | number
-  totalExpenses?: Prisma.FloatFilter<"RoundResult"> | number
   ebitdaValue?: Prisma.FloatFilter<"RoundResult"> | number
   ebitdaMargin?: Prisma.FloatFilter<"RoundResult"> | number
-  finalCash?: Prisma.FloatFilter<"RoundResult"> | number
-  remainingStockValue?: Prisma.FloatFilter<"RoundResult"> | number
-  stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
-  csat?: Prisma.FloatFilter<"RoundResult"> | number
-  sla?: Prisma.FloatFilter<"RoundResult"> | number
-  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
-  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
   createdAt?: Prisma.DateTimeFilter<"RoundResult"> | Date | string
+  roundId?: Prisma.StringFilter<"RoundResult"> | string
+  sessionId?: Prisma.StringFilter<"RoundResult"> | string
+  finalCash?: Prisma.FloatFilter<"RoundResult"> | number
+  capexCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  csat?: Prisma.FloatFilter<"RoundResult"> | number
+  customersReceived?: Prisma.FloatFilter<"RoundResult"> | number
+  interestCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  licensingCosts?: Prisma.FloatFilter<"RoundResult"> | number
+  remainingStockValue?: Prisma.FloatFilter<"RoundResult"> | number
+  sla?: Prisma.FloatFilter<"RoundResult"> | number
+  stockBreakLoss?: Prisma.FloatFilter<"RoundResult"> | number
+  totalExpenses?: Prisma.FloatFilter<"RoundResult"> | number
+  totalTaxes?: Prisma.FloatFilter<"RoundResult"> | number
+  marketShare?: Prisma.FloatFilter<"RoundResult"> | number
+  availabilityRate?: Prisma.FloatFilter<"RoundResult"> | number
+  averagePrice?: Prisma.FloatFilter<"RoundResult"> | number
 }
 
 export type RoundResultCreateWithoutRoundInput = {
   id?: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
   session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
+  store: Prisma.StoreCreateNestedOneWithoutRoundResultsInput
 }
 
 export type RoundResultUncheckedCreateWithoutRoundInput = {
   id?: string
-  sessionId: string
   storeId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  sessionId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultCreateOrConnectWithoutRoundInput = {
@@ -1244,56 +1244,56 @@ export type RoundResultUpdateManyWithWhereWithoutRoundInput = {
 
 export type RoundResultCreateWithoutStoreInput = {
   id?: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
-  session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
   round: Prisma.GameRoundCreateNestedOneWithoutResultsInput
+  session: Prisma.GameSessionCreateNestedOneWithoutRoundResultsInput
 }
 
 export type RoundResultUncheckedCreateWithoutStoreInput = {
   id?: string
-  sessionId: string
-  roundId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  roundId: string
+  sessionId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultCreateOrConnectWithoutStoreInput = {
@@ -1324,501 +1324,501 @@ export type RoundResultUpdateManyWithWhereWithoutStoreInput = {
 
 export type RoundResultCreateManySessionInput = {
   id?: string
-  roundId: string
   storeId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  roundId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   round?: Prisma.GameRoundUpdateOneRequiredWithoutResultsNestedInput
+  store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
 }
 
 export type RoundResultUncheckedUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultUncheckedUpdateManyWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  roundId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultCreateManyRoundInput = {
   id?: string
-  sessionId: string
   storeId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  sessionId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultUpdateWithoutRoundInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
+  store?: Prisma.StoreUpdateOneRequiredWithoutRoundResultsNestedInput
 }
 
 export type RoundResultUncheckedUpdateWithoutRoundInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultUncheckedUpdateManyWithoutRoundInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   storeId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultCreateManyStoreInput = {
   id?: string
-  sessionId: string
-  roundId: string
-  marketShare?: number
-  customersReceived: number
   totalRevenue: number
-  totalTaxes: number
   totalCMV: number
   operatingCosts: number
-  capexCosts: number
-  licensingCosts: number
   agingCosts: number
-  interestCosts: number
-  totalExpenses: number
   ebitdaValue: number
   ebitdaMargin: number
-  finalCash: number
-  remainingStockValue: number
-  stockBreakLoss: number
-  csat: number
-  sla: number
-  averagePrice?: number
-  availabilityRate?: number
   createdAt?: Date | string
+  roundId: string
+  sessionId: string
+  finalCash: number
+  capexCosts: number
+  csat: number
+  customersReceived: number
+  interestCosts: number
+  licensingCosts: number
+  remainingStockValue: number
+  sla: number
+  stockBreakLoss: number
+  totalExpenses: number
+  totalTaxes: number
+  marketShare?: number
+  availabilityRate?: number
+  averagePrice?: number
 }
 
 export type RoundResultUpdateWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   round?: Prisma.GameRoundUpdateOneRequiredWithoutResultsNestedInput
+  session?: Prisma.GameSessionUpdateOneRequiredWithoutRoundResultsNestedInput
 }
 
 export type RoundResultUncheckedUpdateWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
-  roundId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type RoundResultUncheckedUpdateManyWithoutStoreInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
-  roundId?: Prisma.StringFieldUpdateOperationsInput | string
-  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
-  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
   totalRevenue?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
   totalCMV?: Prisma.FloatFieldUpdateOperationsInput | number
   operatingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
   agingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
-  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaValue?: Prisma.FloatFieldUpdateOperationsInput | number
   ebitdaMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
-  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
-  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
-  csat?: Prisma.FloatFieldUpdateOperationsInput | number
-  sla?: Prisma.FloatFieldUpdateOperationsInput | number
-  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roundId?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  finalCash?: Prisma.FloatFieldUpdateOperationsInput | number
+  capexCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  csat?: Prisma.FloatFieldUpdateOperationsInput | number
+  customersReceived?: Prisma.FloatFieldUpdateOperationsInput | number
+  interestCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  licensingCosts?: Prisma.FloatFieldUpdateOperationsInput | number
+  remainingStockValue?: Prisma.FloatFieldUpdateOperationsInput | number
+  sla?: Prisma.FloatFieldUpdateOperationsInput | number
+  stockBreakLoss?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalExpenses?: Prisma.FloatFieldUpdateOperationsInput | number
+  totalTaxes?: Prisma.FloatFieldUpdateOperationsInput | number
+  marketShare?: Prisma.FloatFieldUpdateOperationsInput | number
+  availabilityRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  averagePrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 
 
 export type RoundResultSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sessionId?: boolean
-  roundId?: boolean
   storeId?: boolean
-  marketShare?: boolean
-  customersReceived?: boolean
   totalRevenue?: boolean
-  totalTaxes?: boolean
   totalCMV?: boolean
   operatingCosts?: boolean
-  capexCosts?: boolean
-  licensingCosts?: boolean
   agingCosts?: boolean
-  interestCosts?: boolean
-  totalExpenses?: boolean
   ebitdaValue?: boolean
   ebitdaMargin?: boolean
-  finalCash?: boolean
-  remainingStockValue?: boolean
-  stockBreakLoss?: boolean
-  csat?: boolean
-  sla?: boolean
-  averagePrice?: boolean
-  availabilityRate?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  roundId?: boolean
+  sessionId?: boolean
+  finalCash?: boolean
+  capexCosts?: boolean
+  csat?: boolean
+  customersReceived?: boolean
+  interestCosts?: boolean
+  licensingCosts?: boolean
+  remainingStockValue?: boolean
+  sla?: boolean
+  stockBreakLoss?: boolean
+  totalExpenses?: boolean
+  totalTaxes?: boolean
+  marketShare?: boolean
+  availabilityRate?: boolean
+  averagePrice?: boolean
   round?: boolean | Prisma.GameRoundDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["roundResult"]>
 
 export type RoundResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sessionId?: boolean
-  roundId?: boolean
   storeId?: boolean
-  marketShare?: boolean
-  customersReceived?: boolean
   totalRevenue?: boolean
-  totalTaxes?: boolean
   totalCMV?: boolean
   operatingCosts?: boolean
-  capexCosts?: boolean
-  licensingCosts?: boolean
   agingCosts?: boolean
-  interestCosts?: boolean
-  totalExpenses?: boolean
   ebitdaValue?: boolean
   ebitdaMargin?: boolean
-  finalCash?: boolean
-  remainingStockValue?: boolean
-  stockBreakLoss?: boolean
-  csat?: boolean
-  sla?: boolean
-  averagePrice?: boolean
-  availabilityRate?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  roundId?: boolean
+  sessionId?: boolean
+  finalCash?: boolean
+  capexCosts?: boolean
+  csat?: boolean
+  customersReceived?: boolean
+  interestCosts?: boolean
+  licensingCosts?: boolean
+  remainingStockValue?: boolean
+  sla?: boolean
+  stockBreakLoss?: boolean
+  totalExpenses?: boolean
+  totalTaxes?: boolean
+  marketShare?: boolean
+  availabilityRate?: boolean
+  averagePrice?: boolean
   round?: boolean | Prisma.GameRoundDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["roundResult"]>
 
 export type RoundResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sessionId?: boolean
-  roundId?: boolean
   storeId?: boolean
-  marketShare?: boolean
-  customersReceived?: boolean
   totalRevenue?: boolean
-  totalTaxes?: boolean
   totalCMV?: boolean
   operatingCosts?: boolean
-  capexCosts?: boolean
-  licensingCosts?: boolean
   agingCosts?: boolean
-  interestCosts?: boolean
-  totalExpenses?: boolean
   ebitdaValue?: boolean
   ebitdaMargin?: boolean
-  finalCash?: boolean
-  remainingStockValue?: boolean
-  stockBreakLoss?: boolean
-  csat?: boolean
-  sla?: boolean
-  averagePrice?: boolean
-  availabilityRate?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  roundId?: boolean
+  sessionId?: boolean
+  finalCash?: boolean
+  capexCosts?: boolean
+  csat?: boolean
+  customersReceived?: boolean
+  interestCosts?: boolean
+  licensingCosts?: boolean
+  remainingStockValue?: boolean
+  sla?: boolean
+  stockBreakLoss?: boolean
+  totalExpenses?: boolean
+  totalTaxes?: boolean
+  marketShare?: boolean
+  availabilityRate?: boolean
+  averagePrice?: boolean
   round?: boolean | Prisma.GameRoundDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["roundResult"]>
 
 export type RoundResultSelectScalar = {
   id?: boolean
-  sessionId?: boolean
-  roundId?: boolean
   storeId?: boolean
-  marketShare?: boolean
-  customersReceived?: boolean
   totalRevenue?: boolean
-  totalTaxes?: boolean
   totalCMV?: boolean
   operatingCosts?: boolean
-  capexCosts?: boolean
-  licensingCosts?: boolean
   agingCosts?: boolean
-  interestCosts?: boolean
-  totalExpenses?: boolean
   ebitdaValue?: boolean
   ebitdaMargin?: boolean
-  finalCash?: boolean
-  remainingStockValue?: boolean
-  stockBreakLoss?: boolean
-  csat?: boolean
-  sla?: boolean
-  averagePrice?: boolean
-  availabilityRate?: boolean
   createdAt?: boolean
+  roundId?: boolean
+  sessionId?: boolean
+  finalCash?: boolean
+  capexCosts?: boolean
+  csat?: boolean
+  customersReceived?: boolean
+  interestCosts?: boolean
+  licensingCosts?: boolean
+  remainingStockValue?: boolean
+  sla?: boolean
+  stockBreakLoss?: boolean
+  totalExpenses?: boolean
+  totalTaxes?: boolean
+  marketShare?: boolean
+  availabilityRate?: boolean
+  averagePrice?: boolean
 }
 
-export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "roundId" | "storeId" | "marketShare" | "customersReceived" | "totalRevenue" | "totalTaxes" | "totalCMV" | "operatingCosts" | "capexCosts" | "licensingCosts" | "agingCosts" | "interestCosts" | "totalExpenses" | "ebitdaValue" | "ebitdaMargin" | "finalCash" | "remainingStockValue" | "stockBreakLoss" | "csat" | "sla" | "averagePrice" | "availabilityRate" | "createdAt", ExtArgs["result"]["roundResult"]>
+export type RoundResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "totalRevenue" | "totalCMV" | "operatingCosts" | "agingCosts" | "ebitdaValue" | "ebitdaMargin" | "createdAt" | "roundId" | "sessionId" | "finalCash" | "capexCosts" | "csat" | "customersReceived" | "interestCosts" | "licensingCosts" | "remainingStockValue" | "sla" | "stockBreakLoss" | "totalExpenses" | "totalTaxes" | "marketShare" | "availabilityRate" | "averagePrice", ExtArgs["result"]["roundResult"]>
 export type RoundResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
   round?: boolean | Prisma.GameRoundDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }
 export type RoundResultIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
   round?: boolean | Prisma.GameRoundDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }
 export type RoundResultIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
   round?: boolean | Prisma.GameRoundDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.GameSessionDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }
 
 export type $RoundResultPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RoundResult"
   objects: {
-    store: Prisma.$StorePayload<ExtArgs>
-    session: Prisma.$GameSessionPayload<ExtArgs>
     round: Prisma.$GameRoundPayload<ExtArgs>
+    session: Prisma.$GameSessionPayload<ExtArgs>
+    store: Prisma.$StorePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    sessionId: string
-    roundId: string
     storeId: string
-    marketShare: number
-    customersReceived: number
     totalRevenue: number
-    totalTaxes: number
     totalCMV: number
     operatingCosts: number
-    capexCosts: number
-    licensingCosts: number
     agingCosts: number
-    interestCosts: number
-    totalExpenses: number
     ebitdaValue: number
     ebitdaMargin: number
-    finalCash: number
-    remainingStockValue: number
-    stockBreakLoss: number
-    csat: number
-    sla: number
-    averagePrice: number
-    availabilityRate: number
     createdAt: Date
+    roundId: string
+    sessionId: string
+    finalCash: number
+    capexCosts: number
+    csat: number
+    customersReceived: number
+    interestCosts: number
+    licensingCosts: number
+    remainingStockValue: number
+    sla: number
+    stockBreakLoss: number
+    totalExpenses: number
+    totalTaxes: number
+    marketShare: number
+    availabilityRate: number
+    averagePrice: number
   }, ExtArgs["result"]["roundResult"]>
   composites: {}
 }
@@ -2213,9 +2213,9 @@ readonly fields: RoundResultFieldRefs;
  */
 export interface Prisma__RoundResultClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  session<T extends Prisma.GameSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   round<T extends Prisma.GameRoundDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameRoundDefaultArgs<ExtArgs>>): Prisma.Prisma__GameRoundClient<runtime.Types.Result.GetResult<Prisma.$GameRoundPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  session<T extends Prisma.GameSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GameSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__GameSessionClient<runtime.Types.Result.GetResult<Prisma.$GameSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2246,30 +2246,30 @@ export interface Prisma__RoundResultClient<T, Null = never, ExtArgs extends runt
  */
 export interface RoundResultFieldRefs {
   readonly id: Prisma.FieldRef<"RoundResult", 'String'>
-  readonly sessionId: Prisma.FieldRef<"RoundResult", 'String'>
-  readonly roundId: Prisma.FieldRef<"RoundResult", 'String'>
   readonly storeId: Prisma.FieldRef<"RoundResult", 'String'>
-  readonly marketShare: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly customersReceived: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly totalRevenue: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly totalTaxes: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly totalCMV: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly operatingCosts: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly capexCosts: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly licensingCosts: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly agingCosts: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly interestCosts: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly totalExpenses: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly ebitdaValue: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly ebitdaMargin: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly finalCash: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly remainingStockValue: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly stockBreakLoss: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly csat: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly sla: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly averagePrice: Prisma.FieldRef<"RoundResult", 'Float'>
-  readonly availabilityRate: Prisma.FieldRef<"RoundResult", 'Float'>
   readonly createdAt: Prisma.FieldRef<"RoundResult", 'DateTime'>
+  readonly roundId: Prisma.FieldRef<"RoundResult", 'String'>
+  readonly sessionId: Prisma.FieldRef<"RoundResult", 'String'>
+  readonly finalCash: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly capexCosts: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly csat: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly customersReceived: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly interestCosts: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly licensingCosts: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly remainingStockValue: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly sla: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly stockBreakLoss: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly totalExpenses: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly totalTaxes: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly marketShare: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly availabilityRate: Prisma.FieldRef<"RoundResult", 'Float'>
+  readonly averagePrice: Prisma.FieldRef<"RoundResult", 'Float'>
 }
     
 

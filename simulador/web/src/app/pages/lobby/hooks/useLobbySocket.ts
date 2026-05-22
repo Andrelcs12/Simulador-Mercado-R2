@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import { Player, GameConfig } from "../types";
+import { persistMaxStockConfig } from "../../onboarding/context/OnboardingContext";
 
 interface UseLobbySocketReturn {
   connected: boolean;
@@ -101,6 +102,10 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     socket.on("session:all_ready", () => setRoundLabel("Todos prontos"));
 
     socket.on("round:started", (data: any) => {
+      if (data.maxStock) {
+        persistMaxStockConfig(data.maxStock);
+      }
+
       localStorage.setItem(
         "round_data",
         JSON.stringify({
@@ -108,6 +113,7 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
           roundNumber: data.roundNumber,
           duration: data.duration,
           endTime: data.endTime,
+          maxStock: data.maxStock,
         })
       );
       setEndTime(data.endTime);
@@ -176,8 +182,4 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     myPlayerData,
     confirmarPronto,
   };
-
-  console.log(
-    "loja é", myPlayerData
-  )
 };

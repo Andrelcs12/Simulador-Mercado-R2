@@ -26,25 +26,25 @@ export type AggregateStoreCapex = {
 
 export type StoreCapexMinAggregateOutputType = {
   id: string | null
-  configurationId: string | null
   capexId: string | null
   approved: boolean | null
+  configurationId: string | null
   createdAt: Date | null
 }
 
 export type StoreCapexMaxAggregateOutputType = {
   id: string | null
-  configurationId: string | null
   capexId: string | null
   approved: boolean | null
+  configurationId: string | null
   createdAt: Date | null
 }
 
 export type StoreCapexCountAggregateOutputType = {
   id: number
-  configurationId: number
   capexId: number
   approved: number
+  configurationId: number
   createdAt: number
   _all: number
 }
@@ -52,25 +52,25 @@ export type StoreCapexCountAggregateOutputType = {
 
 export type StoreCapexMinAggregateInputType = {
   id?: true
-  configurationId?: true
   capexId?: true
   approved?: true
+  configurationId?: true
   createdAt?: true
 }
 
 export type StoreCapexMaxAggregateInputType = {
   id?: true
-  configurationId?: true
   capexId?: true
   approved?: true
+  configurationId?: true
   createdAt?: true
 }
 
 export type StoreCapexCountAggregateInputType = {
   id?: true
-  configurationId?: true
   capexId?: true
   approved?: true
+  configurationId?: true
   createdAt?: true
   _all?: true
 }
@@ -149,9 +149,9 @@ export type StoreCapexGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type StoreCapexGroupByOutputType = {
   id: string
-  configurationId: string
   capexId: string
   approved: boolean
+  configurationId: string
   createdAt: Date
   _count: StoreCapexCountAggregateOutputType | null
   _min: StoreCapexMinAggregateOutputType | null
@@ -178,22 +178,22 @@ export type StoreCapexWhereInput = {
   OR?: Prisma.StoreCapexWhereInput[]
   NOT?: Prisma.StoreCapexWhereInput | Prisma.StoreCapexWhereInput[]
   id?: Prisma.StringFilter<"StoreCapex"> | string
-  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   capexId?: Prisma.StringFilter<"StoreCapex"> | string
   approved?: Prisma.BoolFilter<"StoreCapex"> | boolean
+  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   createdAt?: Prisma.DateTimeFilter<"StoreCapex"> | Date | string
-  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
   capex?: Prisma.XOR<Prisma.CapexMasterScalarRelationFilter, Prisma.CapexMasterWhereInput>
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }
 
 export type StoreCapexOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  configuration?: Prisma.ConfigurationOrderByWithRelationInput
   capex?: Prisma.CapexMasterOrderByWithRelationInput
+  configuration?: Prisma.ConfigurationOrderByWithRelationInput
 }
 
 export type StoreCapexWhereUniqueInput = Prisma.AtLeast<{
@@ -201,19 +201,19 @@ export type StoreCapexWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.StoreCapexWhereInput | Prisma.StoreCapexWhereInput[]
   OR?: Prisma.StoreCapexWhereInput[]
   NOT?: Prisma.StoreCapexWhereInput | Prisma.StoreCapexWhereInput[]
-  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   capexId?: Prisma.StringFilter<"StoreCapex"> | string
   approved?: Prisma.BoolFilter<"StoreCapex"> | boolean
+  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   createdAt?: Prisma.DateTimeFilter<"StoreCapex"> | Date | string
-  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
   capex?: Prisma.XOR<Prisma.CapexMasterScalarRelationFilter, Prisma.CapexMasterWhereInput>
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }, "id">
 
 export type StoreCapexOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.StoreCapexCountOrderByAggregateInput
   _max?: Prisma.StoreCapexMaxOrderByAggregateInput
@@ -225,9 +225,9 @@ export type StoreCapexScalarWhereWithAggregatesInput = {
   OR?: Prisma.StoreCapexScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StoreCapexScalarWhereWithAggregatesInput | Prisma.StoreCapexScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
-  configurationId?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
   capexId?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
   approved?: Prisma.BoolWithAggregatesFilter<"StoreCapex"> | boolean
+  configurationId?: Prisma.StringWithAggregatesFilter<"StoreCapex"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StoreCapex"> | Date | string
 }
 
@@ -235,15 +235,15 @@ export type StoreCapexCreateInput = {
   id?: string
   approved?: boolean
   createdAt?: Date | string
-  configuration: Prisma.ConfigurationCreateNestedOneWithoutCapexSelectionsInput
   capex: Prisma.CapexMasterCreateNestedOneWithoutStoreCapexesInput
+  configuration: Prisma.ConfigurationCreateNestedOneWithoutCapexSelectionsInput
 }
 
 export type StoreCapexUncheckedCreateInput = {
   id?: string
-  configurationId: string
   capexId: string
   approved?: boolean
+  configurationId: string
   createdAt?: Date | string
 }
 
@@ -251,23 +251,23 @@ export type StoreCapexUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutCapexSelectionsNestedInput
   capex?: Prisma.CapexMasterUpdateOneRequiredWithoutStoreCapexesNestedInput
+  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutCapexSelectionsNestedInput
 }
 
 export type StoreCapexUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   capexId?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StoreCapexCreateManyInput = {
   id?: string
-  configurationId: string
   capexId: string
   approved?: boolean
+  configurationId: string
   createdAt?: Date | string
 }
 
@@ -279,9 +279,9 @@ export type StoreCapexUpdateManyMutationInput = {
 
 export type StoreCapexUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   capexId?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -297,25 +297,25 @@ export type StoreCapexOrderByRelationAggregateInput = {
 
 export type StoreCapexCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type StoreCapexMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type StoreCapexMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   capexId?: Prisma.SortOrder
   approved?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -416,8 +416,8 @@ export type StoreCapexCreateWithoutCapexInput = {
 
 export type StoreCapexUncheckedCreateWithoutCapexInput = {
   id?: string
-  configurationId: string
   approved?: boolean
+  configurationId: string
   createdAt?: Date | string
 }
 
@@ -452,9 +452,9 @@ export type StoreCapexScalarWhereInput = {
   OR?: Prisma.StoreCapexScalarWhereInput[]
   NOT?: Prisma.StoreCapexScalarWhereInput | Prisma.StoreCapexScalarWhereInput[]
   id?: Prisma.StringFilter<"StoreCapex"> | string
-  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   capexId?: Prisma.StringFilter<"StoreCapex"> | string
   approved?: Prisma.BoolFilter<"StoreCapex"> | boolean
+  configurationId?: Prisma.StringFilter<"StoreCapex"> | string
   createdAt?: Prisma.DateTimeFilter<"StoreCapex"> | Date | string
 }
 
@@ -500,8 +500,8 @@ export type StoreCapexUpdateManyWithWhereWithoutConfigurationInput = {
 
 export type StoreCapexCreateManyCapexInput = {
   id?: string
-  configurationId: string
   approved?: boolean
+  configurationId: string
   createdAt?: Date | string
 }
 
@@ -514,15 +514,15 @@ export type StoreCapexUpdateWithoutCapexInput = {
 
 export type StoreCapexUncheckedUpdateWithoutCapexInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StoreCapexUncheckedUpdateManyWithoutCapexInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   approved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -558,67 +558,67 @@ export type StoreCapexUncheckedUpdateManyWithoutConfigurationInput = {
 
 export type StoreCapexSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configurationId?: boolean
   capexId?: boolean
   approved?: boolean
+  configurationId?: boolean
   createdAt?: boolean
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["storeCapex"]>
 
 export type StoreCapexSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configurationId?: boolean
   capexId?: boolean
   approved?: boolean
+  configurationId?: boolean
   createdAt?: boolean
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["storeCapex"]>
 
 export type StoreCapexSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configurationId?: boolean
   capexId?: boolean
   approved?: boolean
+  configurationId?: boolean
   createdAt?: boolean
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["storeCapex"]>
 
 export type StoreCapexSelectScalar = {
   id?: boolean
-  configurationId?: boolean
   capexId?: boolean
   approved?: boolean
+  configurationId?: boolean
   createdAt?: boolean
 }
 
-export type StoreCapexOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "configurationId" | "capexId" | "approved" | "createdAt", ExtArgs["result"]["storeCapex"]>
+export type StoreCapexOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "capexId" | "approved" | "configurationId" | "createdAt", ExtArgs["result"]["storeCapex"]>
 export type StoreCapexInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StoreCapexIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StoreCapexIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   capex?: boolean | Prisma.CapexMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 
 export type $StoreCapexPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StoreCapex"
   objects: {
-    configuration: Prisma.$ConfigurationPayload<ExtArgs>
     capex: Prisma.$CapexMasterPayload<ExtArgs>
+    configuration: Prisma.$ConfigurationPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    configurationId: string
     capexId: string
     approved: boolean
+    configurationId: string
     createdAt: Date
   }, ExtArgs["result"]["storeCapex"]>
   composites: {}
@@ -1014,8 +1014,8 @@ readonly fields: StoreCapexFieldRefs;
  */
 export interface Prisma__StoreCapexClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  configuration<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   capex<T extends Prisma.CapexMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CapexMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__CapexMasterClient<runtime.Types.Result.GetResult<Prisma.$CapexMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  configuration<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1046,9 +1046,9 @@ export interface Prisma__StoreCapexClient<T, Null = never, ExtArgs extends runti
  */
 export interface StoreCapexFieldRefs {
   readonly id: Prisma.FieldRef<"StoreCapex", 'String'>
-  readonly configurationId: Prisma.FieldRef<"StoreCapex", 'String'>
   readonly capexId: Prisma.FieldRef<"StoreCapex", 'String'>
   readonly approved: Prisma.FieldRef<"StoreCapex", 'Boolean'>
+  readonly configurationId: Prisma.FieldRef<"StoreCapex", 'String'>
   readonly createdAt: Prisma.FieldRef<"StoreCapex", 'DateTime'>
 }
     

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Settings2,
@@ -24,7 +24,6 @@ import SummaryStep from "./components/SummaryStep";
 
 import { useRouter } from "next/navigation";
 
-
 const STEPS = [
   { label: "CAPEX", Icon: Settings2 },
   { label: "Comercial", Icon: ShoppingCart },
@@ -40,7 +39,9 @@ function formatTime(s: number) {
   ).padStart(2, "0")}`;
 }
 
-export default function OnboardingPage() {
+// 🚨 ALTERAÇÃO: Separamos o miolo da página em um componente interno 
+// para que ele possa disparar o hook `useOnboarding()` sem dar erro de escopo.
+function OnboardingContent() {
   const router = useRouter();
 
   const {
@@ -52,7 +53,7 @@ export default function OnboardingPage() {
     submitting,
     budget,
     player,
-    remainingBudget // ✅ FIX CRÍTICO
+    remainingBudget
   } = useOnboarding();
 
   const { submit, categoriesLoaded } = useOnboardingSession(
@@ -62,9 +63,6 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const redirectedRef = useRef(false);
 
-  // =========================
-  // FINAL SUBMIT (SAFE)
-  // =========================
   const handleFinalize = async () => {
     if (!round?.roundId) return;
     if (!player?.id || !player?.sessionId) return;
@@ -82,9 +80,6 @@ export default function OnboardingPage() {
     });
   };
 
-  // =========================
-  // TIMEOUT ROUTE
-  // =========================
   useEffect(() => {
     if (!round?.roundId) return;
     if (timeLeft > 0) return;
@@ -99,9 +94,6 @@ export default function OnboardingPage() {
     );
   }, [timeLeft, submitted, round, router]);
 
-  // =========================
-  // SUCCESS ROUTE
-  // =========================
   useEffect(() => {
     if (!submitted) return;
     if (redirectedRef.current) return;
@@ -131,11 +123,8 @@ export default function OnboardingPage() {
   const activeStep = (i: number) => step === i + 1;
   const doneStep = (i: number) => step > i + 1;
 
-  // ─────────────────────────────
-  // RENDER
-  // ─────────────────────────────
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
+    <>
       <Toaster
         position="top-center"
         toastOptions={{
@@ -147,92 +136,122 @@ export default function OnboardingPage() {
         }}
       />
 
-     
-     {/* HEADER */}
-<header className="sticky top-0 z-40 bg-white border-b border-slate-200">
-  <div className="max-w-6xl mx-auto px-6 py-5">
-    <div className="flex flex-col gap-5">
+      {/* HEADER */}
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-6 py-5">
+          <div className="flex flex-col gap-5">
 
-      {/* TOP */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-slate-900">
-            Configuração da Rodada
-          </h1>
+            {/* TOP */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-black text-slate-900">
+                  Configuração da Rodada
+                </h1>
+                <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-bold mt-1">
+                  Onboarding da simulação operational
+                </p>
+              </div>
 
-          <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-bold mt-1">
-            Onboarding da simulação operacional
-          </p>
-        </div>
+              <div className="flex items-center gap-3">
+                {/* ROUND */}
+                <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 bg-slate-50">
+                  <Layers3 size={15} className="text-orange-500" />
+                  <div className="flex flex-col leading-none">
+                    <span className="text-[10px] uppercase font-black text-slate-400">
+                      Rodada
+                    </span>
+                    <span className="text-sm font-black text-slate-900">
+                      {round?.roundNumber || "--"}
+                    </span>
+                  </div>
+                </div>
 
-        <div className="flex items-center gap-3">
-
-          {/* ROUND */}
-          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 bg-slate-50">
-            <Layers3 size={15} className="text-orange-500" />
-
-            <div className="flex flex-col leading-none">
-              <span className="text-[10px] uppercase font-black text-slate-400">
-                Rodada
-              </span>
-
-              <span className="text-sm font-black text-slate-900">
-                {round?.roundNumber || "--"}
-              </span>
-            </div>
-          </div>
-
-          {/* TIMER */}
-          <div className={`flex items-center gap-2 font-black text-lg ${timerColor}`}>
-            <Timer size={18} />
-            {formatTime(timeLeft)}
-          </div>
-
-        </div>
-      </div>
-
-      {/* PROGRESS */}
-      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-        <motion.div
-          className={`h-full ${barColor}`}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.6, ease: "linear" }}
-        />
-      </div>
-
-      {/* 💰 ORÇAMENTO (HERO CENTER CARD) */}
-      <div className="flex justify-center">
-        <div className="w-full max-w-md">
-
-          <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg shadow-orange-500/20">
-
-            <div className="flex items-center gap-3">
-              <Wallet size={20} className="text-white" />
-
-              <div className="flex flex-col leading-none">
-                <span className="text-[10px] uppercase text-orange-100 font-black tracking-widest">
-                  Orçamento da Loja
-                </span>
-
-                <span className="text-lg font-black text-white">
-                  Capital Disponível
-                </span>
+                {/* TIMER */}
+                <div className={`flex items-center gap-2 font-black text-lg ${timerColor}`}>
+                  <Timer size={18} />
+                  {formatTime(timeLeft)}
+                </div>
               </div>
             </div>
 
-            <div className="text-right">
-  <div className="text-xl font-black text-white">
-    R$ {remainingBudget.toLocaleString("pt-BR")}
-  </div>
+            {/* PROGRESS */}
+            <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full ${barColor}`}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.6, ease: "linear" }}
+              />
+            </div>
 
-  <div className="text-[10px] text-orange-100 uppercase font-bold tracking-widest">
-    Base inicial: R$ {budget.toLocaleString("pt-BR")}
-  </div>
-</div>
+            {/* ORÇAMENTO (HERO CENTER CARD) */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-md">
+                <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg shadow-orange-500/20">
+                  <div className="flex items-center gap-3">
+                    <Wallet size={20} className="text-white" />
+                    <div className="flex flex-col leading-none">
+                      <span className="text-[10px] uppercase text-orange-100 font-black tracking-widest">
+                        Orçamento da Loja
+                      </span>
+                      <span className="text-lg font-black text-white">
+                        Capital Disponível
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="text-xl font-black text-white">
+                      R$ {remainingBudget?.toLocaleString("pt-BR") ?? "0"}
+                    </div>
+                    <div className="text-[10px] text-orange-100 uppercase font-bold tracking-widest">
+                      Base inicial: R$ {budget?.toLocaleString("pt-BR") ?? "0"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* STEPS */}
+            <div className="flex gap-4 w-full">
+              {STEPS.map((s, i) => {
+                const isActive = activeStep(i);
+                const isDone = doneStep(i);
+
+                return (
+                  <div key={s.label} className="flex flex-col gap-1.5 flex-1">
+                    <span className={`text-[12px] font-bold uppercase tracking-wider ${
+                      isActive ? "text-orange-500" : isDone ? "text-emerald-600" : "text-slate-400"
+                    }`}>
+                      Etapa {i + 1}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isDone) {
+                          setStep(i + 1);
+                        }
+                      }}
+                      className={`px-4 py-3 w-full justify-center rounded-xl text-xs font-black uppercase border transition flex items-center gap-2 shadow-sm
+                        ${
+                          isActive
+                            ? "bg-orange-500 text-white border-orange-500"
+                            : isDone
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/50"
+                            : "bg-gray-300 text-slate-400 border-slate-200 cursor-not-allowed"
+                        }`}
+                    >
+                      {isDone ? <CheckCircle2 size={14} /> : null }
+                      {s.label}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
 
           </div>
-
         </div>
+      </header>
       </div>
 
       {/* STEPS */}
@@ -333,6 +352,7 @@ export default function OnboardingPage() {
       <footer className="sticky bottom-0 bg-white border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <button
+            type="button"
             disabled={step === 1}
             onClick={() => setStep((s) => Math.max(1, s - 1))}
             className="px-5 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold disabled:opacity-40"
@@ -346,6 +366,7 @@ export default function OnboardingPage() {
 
           {step < STEPS.length ? (
             <button
+              type="button"
               onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))}
               className="px-6 cursor-pointer py-2 rounded-xl bg-orange-500 text-white font-black"
             >
@@ -353,6 +374,7 @@ export default function OnboardingPage() {
             </button>
           ) : (
             <button
+              type="button"
               onClick={handleFinalize}
               disabled={submitting || timeLeft <= 0 || submitted}
               className="px-6 py-2 cursor-pointer rounded-xl bg-emerald-500 text-white font-black disabled:opacity-40"
@@ -366,8 +388,14 @@ export default function OnboardingPage() {
           )}
         </div>
       </footer>
-    </div>
+    </>
   );
 }
 
-
+export default function OnboardingPage() {
+  return (
+    <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
+      <OnboardingContent />
+    </div>
+  );
+}

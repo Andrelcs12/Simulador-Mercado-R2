@@ -19,10 +19,10 @@ export type GameSessionStatus = (typeof GameSessionStatus)[keyof typeof GameSess
 
 
 export const GameRoundStatus = {
-  CLOSED: 'CLOSED',
   OPEN: 'OPEN',
-  PROCESSING: 'PROCESSING',
-  PROCESSED: 'PROCESSED'
+  CLOSED: 'CLOSED',
+  PROCESSED: 'PROCESSED',
+  PROCESSING: 'PROCESSING'
 } as const
 
 export type GameRoundStatus = (typeof GameRoundStatus)[keyof typeof GameRoundStatus]

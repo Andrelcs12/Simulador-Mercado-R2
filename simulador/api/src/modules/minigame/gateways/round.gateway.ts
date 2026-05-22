@@ -2,6 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
 import { MinigameService } from "../minigame.service";
 
+type RoundMaxStockConfig = {
+  pereciveis?: number;
+  mercearia?: number;
+  eletro?: number;
+  hipel?: number;
+};
+
 @Injectable()
 export class RoundGateway {
   constructor(private readonly minigameService: MinigameService) {}
@@ -19,7 +26,11 @@ export class RoundGateway {
   // =========================
   // START ROUND
   // =========================
-  async startRound(data: { sessionId: string; duration: number }) {
+  async startRound(data: {
+    sessionId: string;
+    duration: number;
+    maxStock?: RoundMaxStockConfig;
+  }) {
     const round = await this.minigameService.startRound(
       data.sessionId,
       data.duration,
@@ -45,6 +56,7 @@ export class RoundGateway {
       duration: data.duration,
       startTime,
       endTime,
+      maxStock: data.maxStock,
     };
 
     this.timers.set(

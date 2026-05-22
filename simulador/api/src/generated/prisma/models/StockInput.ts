@@ -40,32 +40,32 @@ export type StockInputSumAggregateOutputType = {
 
 export type StockInputMinAggregateOutputType = {
   id: string | null
-  configurationId: string | null
   categoryId: string | null
   buyQty: number | null
   commercialMargin: number | null
-  expectedSellPrice: number | null
+  configurationId: string | null
   createdAt: Date | null
+  expectedSellPrice: number | null
 }
 
 export type StockInputMaxAggregateOutputType = {
   id: string | null
-  configurationId: string | null
   categoryId: string | null
   buyQty: number | null
   commercialMargin: number | null
-  expectedSellPrice: number | null
+  configurationId: string | null
   createdAt: Date | null
+  expectedSellPrice: number | null
 }
 
 export type StockInputCountAggregateOutputType = {
   id: number
-  configurationId: number
   categoryId: number
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
+  configurationId: number
   createdAt: number
+  expectedSellPrice: number
   _all: number
 }
 
@@ -84,32 +84,32 @@ export type StockInputSumAggregateInputType = {
 
 export type StockInputMinAggregateInputType = {
   id?: true
-  configurationId?: true
   categoryId?: true
   buyQty?: true
   commercialMargin?: true
-  expectedSellPrice?: true
+  configurationId?: true
   createdAt?: true
+  expectedSellPrice?: true
 }
 
 export type StockInputMaxAggregateInputType = {
   id?: true
-  configurationId?: true
   categoryId?: true
   buyQty?: true
   commercialMargin?: true
-  expectedSellPrice?: true
+  configurationId?: true
   createdAt?: true
+  expectedSellPrice?: true
 }
 
 export type StockInputCountAggregateInputType = {
   id?: true
-  configurationId?: true
   categoryId?: true
   buyQty?: true
   commercialMargin?: true
-  expectedSellPrice?: true
+  configurationId?: true
   createdAt?: true
+  expectedSellPrice?: true
   _all?: true
 }
 
@@ -201,12 +201,12 @@ export type StockInputGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type StockInputGroupByOutputType = {
   id: string
-  configurationId: string
   categoryId: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
+  configurationId: string
   createdAt: Date
+  expectedSellPrice: number
   _count: StockInputCountAggregateOutputType | null
   _avg: StockInputAvgAggregateOutputType | null
   _sum: StockInputSumAggregateOutputType | null
@@ -234,26 +234,26 @@ export type StockInputWhereInput = {
   OR?: Prisma.StockInputWhereInput[]
   NOT?: Prisma.StockInputWhereInput | Prisma.StockInputWhereInput[]
   id?: Prisma.StringFilter<"StockInput"> | string
-  configurationId?: Prisma.StringFilter<"StockInput"> | string
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
   commercialMargin?: Prisma.FloatFilter<"StockInput"> | number
-  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
+  configurationId?: Prisma.StringFilter<"StockInput"> | string
   createdAt?: Prisma.DateTimeFilter<"StockInput"> | Date | string
-  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
+  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
   category?: Prisma.XOR<Prisma.CategoryMasterScalarRelationFilter, Prisma.CategoryMasterWhereInput>
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }
 
 export type StockInputOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
   commercialMargin?: Prisma.SortOrder
-  expectedSellPrice?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  configuration?: Prisma.ConfigurationOrderByWithRelationInput
+  expectedSellPrice?: Prisma.SortOrder
   category?: Prisma.CategoryMasterOrderByWithRelationInput
+  configuration?: Prisma.ConfigurationOrderByWithRelationInput
 }
 
 export type StockInputWhereUniqueInput = Prisma.AtLeast<{
@@ -261,24 +261,24 @@ export type StockInputWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.StockInputWhereInput | Prisma.StockInputWhereInput[]
   OR?: Prisma.StockInputWhereInput[]
   NOT?: Prisma.StockInputWhereInput | Prisma.StockInputWhereInput[]
-  configurationId?: Prisma.StringFilter<"StockInput"> | string
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
   commercialMargin?: Prisma.FloatFilter<"StockInput"> | number
-  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
+  configurationId?: Prisma.StringFilter<"StockInput"> | string
   createdAt?: Prisma.DateTimeFilter<"StockInput"> | Date | string
-  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
+  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
   category?: Prisma.XOR<Prisma.CategoryMasterScalarRelationFilter, Prisma.CategoryMasterWhereInput>
+  configuration?: Prisma.XOR<Prisma.ConfigurationScalarRelationFilter, Prisma.ConfigurationWhereInput>
 }, "id">
 
 export type StockInputOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
   commercialMargin?: Prisma.SortOrder
-  expectedSellPrice?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
   _count?: Prisma.StockInputCountOrderByAggregateInput
   _avg?: Prisma.StockInputAvgOrderByAggregateInput
   _max?: Prisma.StockInputMaxOrderByAggregateInput
@@ -291,80 +291,80 @@ export type StockInputScalarWhereWithAggregatesInput = {
   OR?: Prisma.StockInputScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StockInputScalarWhereWithAggregatesInput | Prisma.StockInputScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
-  configurationId?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
   categoryId?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
   buyQty?: Prisma.IntWithAggregatesFilter<"StockInput"> | number
   commercialMargin?: Prisma.FloatWithAggregatesFilter<"StockInput"> | number
-  expectedSellPrice?: Prisma.FloatWithAggregatesFilter<"StockInput"> | number
+  configurationId?: Prisma.StringWithAggregatesFilter<"StockInput"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StockInput"> | Date | string
+  expectedSellPrice?: Prisma.FloatWithAggregatesFilter<"StockInput"> | number
 }
 
 export type StockInputCreateInput = {
   id?: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
   createdAt?: Date | string
-  configuration: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
+  expectedSellPrice: number
   category: Prisma.CategoryMasterCreateNestedOneWithoutStockInputsInput
+  configuration: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
 }
 
 export type StockInputUncheckedCreateInput = {
   id?: string
-  configurationId: string
   categoryId: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
+  configurationId: string
   createdAt?: Date | string
+  expectedSellPrice: number
 }
 
 export type StockInputUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.CategoryMasterUpdateOneRequiredWithoutStockInputsNestedInput
+  configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
 }
 
 export type StockInputUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type StockInputCreateManyInput = {
   id?: string
-  configurationId: string
   categoryId: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
+  configurationId: string
   createdAt?: Date | string
+  expectedSellPrice: number
 }
 
 export type StockInputUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type StockInputUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type StockInputListRelationFilter = {
@@ -379,12 +379,12 @@ export type StockInputOrderByRelationAggregateInput = {
 
 export type StockInputCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
   commercialMargin?: Prisma.SortOrder
-  expectedSellPrice?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
 }
 
 export type StockInputAvgOrderByAggregateInput = {
@@ -395,22 +395,22 @@ export type StockInputAvgOrderByAggregateInput = {
 
 export type StockInputMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
   commercialMargin?: Prisma.SortOrder
-  expectedSellPrice?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
 }
 
 export type StockInputMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  configurationId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   buyQty?: Prisma.SortOrder
   commercialMargin?: Prisma.SortOrder
-  expectedSellPrice?: Prisma.SortOrder
+  configurationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  expectedSellPrice?: Prisma.SortOrder
 }
 
 export type StockInputSumOrderByAggregateInput = {
@@ -507,18 +507,18 @@ export type StockInputCreateWithoutCategoryInput = {
   id?: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
   createdAt?: Date | string
+  expectedSellPrice: number
   configuration: Prisma.ConfigurationCreateNestedOneWithoutStockInputsInput
 }
 
 export type StockInputUncheckedCreateWithoutCategoryInput = {
   id?: string
-  configurationId: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
+  configurationId: string
   createdAt?: Date | string
+  expectedSellPrice: number
 }
 
 export type StockInputCreateOrConnectWithoutCategoryInput = {
@@ -552,20 +552,20 @@ export type StockInputScalarWhereInput = {
   OR?: Prisma.StockInputScalarWhereInput[]
   NOT?: Prisma.StockInputScalarWhereInput | Prisma.StockInputScalarWhereInput[]
   id?: Prisma.StringFilter<"StockInput"> | string
-  configurationId?: Prisma.StringFilter<"StockInput"> | string
   categoryId?: Prisma.StringFilter<"StockInput"> | string
   buyQty?: Prisma.IntFilter<"StockInput"> | number
   commercialMargin?: Prisma.FloatFilter<"StockInput"> | number
-  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
+  configurationId?: Prisma.StringFilter<"StockInput"> | string
   createdAt?: Prisma.DateTimeFilter<"StockInput"> | Date | string
+  expectedSellPrice?: Prisma.FloatFilter<"StockInput"> | number
 }
 
 export type StockInputCreateWithoutConfigurationInput = {
   id?: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
   createdAt?: Date | string
+  expectedSellPrice: number
   category: Prisma.CategoryMasterCreateNestedOneWithoutStockInputsInput
 }
 
@@ -574,8 +574,8 @@ export type StockInputUncheckedCreateWithoutConfigurationInput = {
   categoryId: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
   createdAt?: Date | string
+  expectedSellPrice: number
 }
 
 export type StockInputCreateOrConnectWithoutConfigurationInput = {
@@ -606,38 +606,38 @@ export type StockInputUpdateManyWithWhereWithoutConfigurationInput = {
 
 export type StockInputCreateManyCategoryInput = {
   id?: string
-  configurationId: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
+  configurationId: string
   createdAt?: Date | string
+  expectedSellPrice: number
 }
 
 export type StockInputUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   configuration?: Prisma.ConfigurationUpdateOneRequiredWithoutStockInputsNestedInput
 }
 
 export type StockInputUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type StockInputUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  configurationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type StockInputCreateManyConfigurationInput = {
@@ -645,16 +645,16 @@ export type StockInputCreateManyConfigurationInput = {
   categoryId: string
   buyQty: number
   commercialMargin: number
-  expectedSellPrice: number
   createdAt?: Date | string
+  expectedSellPrice: number
 }
 
 export type StockInputUpdateWithoutConfigurationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   category?: Prisma.CategoryMasterUpdateOneRequiredWithoutStockInputsNestedInput
 }
 
@@ -663,8 +663,8 @@ export type StockInputUncheckedUpdateWithoutConfigurationInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 export type StockInputUncheckedUpdateManyWithoutConfigurationInput = {
@@ -672,86 +672,86 @@ export type StockInputUncheckedUpdateManyWithoutConfigurationInput = {
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   buyQty?: Prisma.IntFieldUpdateOperationsInput | number
   commercialMargin?: Prisma.FloatFieldUpdateOperationsInput | number
-  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expectedSellPrice?: Prisma.FloatFieldUpdateOperationsInput | number
 }
 
 
 
 export type StockInputSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
   commercialMargin?: boolean
-  expectedSellPrice?: boolean
+  configurationId?: boolean
   createdAt?: boolean
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  expectedSellPrice?: boolean
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
   commercialMargin?: boolean
-  expectedSellPrice?: boolean
+  configurationId?: boolean
   createdAt?: boolean
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  expectedSellPrice?: boolean
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
   commercialMargin?: boolean
-  expectedSellPrice?: boolean
+  configurationId?: boolean
   createdAt?: boolean
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
+  expectedSellPrice?: boolean
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stockInput"]>
 
 export type StockInputSelectScalar = {
   id?: boolean
-  configurationId?: boolean
   categoryId?: boolean
   buyQty?: boolean
   commercialMargin?: boolean
-  expectedSellPrice?: boolean
+  configurationId?: boolean
   createdAt?: boolean
+  expectedSellPrice?: boolean
 }
 
-export type StockInputOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "configurationId" | "categoryId" | "buyQty" | "commercialMargin" | "expectedSellPrice" | "createdAt", ExtArgs["result"]["stockInput"]>
+export type StockInputOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "categoryId" | "buyQty" | "commercialMargin" | "configurationId" | "createdAt" | "expectedSellPrice", ExtArgs["result"]["stockInput"]>
 export type StockInputInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StockInputIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 export type StockInputIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryMasterDefaultArgs<ExtArgs>
+  configuration?: boolean | Prisma.ConfigurationDefaultArgs<ExtArgs>
 }
 
 export type $StockInputPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StockInput"
   objects: {
-    configuration: Prisma.$ConfigurationPayload<ExtArgs>
     category: Prisma.$CategoryMasterPayload<ExtArgs>
+    configuration: Prisma.$ConfigurationPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    configurationId: string
     categoryId: string
     buyQty: number
     commercialMargin: number
-    expectedSellPrice: number
+    configurationId: string
     createdAt: Date
+    expectedSellPrice: number
   }, ExtArgs["result"]["stockInput"]>
   composites: {}
 }
@@ -1146,8 +1146,8 @@ readonly fields: StockInputFieldRefs;
  */
 export interface Prisma__StockInputClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  configuration<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.CategoryMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryMasterClient<runtime.Types.Result.GetResult<Prisma.$CategoryMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  configuration<T extends Prisma.ConfigurationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConfigurationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConfigurationClient<runtime.Types.Result.GetResult<Prisma.$ConfigurationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1178,12 +1178,12 @@ export interface Prisma__StockInputClient<T, Null = never, ExtArgs extends runti
  */
 export interface StockInputFieldRefs {
   readonly id: Prisma.FieldRef<"StockInput", 'String'>
-  readonly configurationId: Prisma.FieldRef<"StockInput", 'String'>
   readonly categoryId: Prisma.FieldRef<"StockInput", 'String'>
   readonly buyQty: Prisma.FieldRef<"StockInput", 'Int'>
   readonly commercialMargin: Prisma.FieldRef<"StockInput", 'Float'>
-  readonly expectedSellPrice: Prisma.FieldRef<"StockInput", 'Float'>
+  readonly configurationId: Prisma.FieldRef<"StockInput", 'String'>
   readonly createdAt: Prisma.FieldRef<"StockInput", 'DateTime'>
+  readonly expectedSellPrice: Prisma.FieldRef<"StockInput", 'Float'>
 }
     
 
