@@ -94,6 +94,7 @@ function calcSLA(serviceOperatorsQty: number): number {
 
 const STOCK_STEP = 100;
 const MARGIN_STEP = 5;
+const MAX_MARGIN = 95; // Teto para evitar divisão por zero ou preços infinitos
 
 export default function ComercialStep({ config, setConfig }: Props) {
   // Consome o estado orçamentário compartilhado
@@ -202,7 +203,7 @@ export default function ComercialStep({ config, setConfig }: Props) {
   };
 
   const updateMargem = (cat: CategoriaKey, value: number) => {
-    const safeMargem = Math.max(0, Math.min(200, value || 0));
+    const safeMargem = Math.max(0, Math.min(MAX_MARGIN, value || 0));
 
     setConfig((prev) => ({
       ...prev,
@@ -260,7 +261,10 @@ export default function ComercialStep({ config, setConfig }: Props) {
 
           const maxAllowed = getMaxAllowed(c, estoque);
           const blocked = estoque >= maxAllowed || saldoFinal < c.custoUn;
-          const precoVenda = c.custoUn * (1 + margem / 100);
+          
+          // 🚀 CORREÇÃO DA FÓRMULA: Alinhado com a Margem Comercial real sobre Preço de Venda
+          const precoVenda = margem >= 100 ? 0 : c.custoUn / (1 - margem / 100);
+          
           const stockInputId = `estoque-${c.id}`;
           const marginInputId = `margem-${c.id}`;
 
@@ -371,7 +375,7 @@ export default function ComercialStep({ config, setConfig }: Props) {
                       id={marginInputId}
                       type="number"
                       min={0}
-                      max={200}
+                      max={MAX_MARGIN} // 🚀 Ajustado teto máximo
                       value={margem}
                       onChange={(e) =>
                         updateMargem(c.id, Math.abs(Number(e.target.value)))
@@ -381,7 +385,7 @@ export default function ComercialStep({ config, setConfig }: Props) {
 
                     <button
                       type="button"
-                      disabled={margem >= 200}
+                      disabled={margem >= MAX_MARGIN} // 🚀 Desabilita com base no novo limite
                       onClick={() => changeMargemStep(c.id, MARGIN_STEP)}
                       className="w-10 h-10 cursor-pointer flex items-center justify-center rounded-xl bg-slate-900 hover:bg-slate-800 text-white shadow-sm active:scale-95 transition-all shrink-0"
                     >
@@ -390,27 +394,40 @@ export default function ComercialStep({ config, setConfig }: Props) {
                   </div>
                 </div>
 
-                {/* VISUALIZAÇÃO DE IMPACTO FINANCEIRO */}
-                <div className="flex md:flex-col justify-between md:justify-center items-center md:items-end p-3 md:p-0 bg-slate-50 md:bg-transparent rounded-xl md:rounded-none gap-1">
-                  <div className="md:text-right">
-                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider">
-                      Subtotal Investido
-                    </p>
-                    <p className="font-extrabold text-slate-900 text-base md:text-lg">
-                      R$ {subtotal.toLocaleString("pt-BR")}
-                    </p>
-                  </div>
+             {/* VISUALIZAÇÃO DE IMPACTO FINANCEIRO */}
+<div className="flex md:flex-col justify-between md:justify-center items-center md:items-end p-3 md:p-0 bg-slate-50 md:bg-transparent rounded-xl md:rounded-none gap-2">
+  <div className="md:text-right">
+    <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider">
+      Subtotal Investido
+    </p>
+    <p className="font-bold text-slate-700 text-sm md:text-base">
+      R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+    </p>
+  </div>
 
-                  <div className="md:text-right md:mt-1 flex items-center gap-1.5 text-slate-500">
-                    <TrendingUp size={13} className="text-emerald-500" />
-                    <p className="text-xs font-medium">
-                      Preço de Gôndola:{" "}
-                      <span className="font-bold text-slate-800">
-                        R$ {precoVenda.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </span>
-                    </p>
-                  </div>
-                </div>
+  <div className="md:text-right flex items-center gap-1.5 text-slate-500">
+    <TrendingUp size={13} className="text-slate-400" />
+    <p className="text-xs font-medium">
+      Preço de Gôndola:{" "}
+      <span className="font-bold text-slate-800">
+        R$ {precoVenda.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      </span>
+    </p>
+  </div>
+
+  <div className="hidden md:block w-16 border-t border-slate-200 my-0.5" />
+
+  <div className="md:text-right">
+    <p className="text-[10px] uppercase font-black text-emerald-600 tracking-wider">
+      Faturamento Previsto
+    </p>
+    <p className="font-black text-emerald-600 text-base md:text-lg">
+      R$ {(estoque * precoVenda).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+    </p>
+  </div>
+</div>
+
+
               </div>
             </motion.div>
           );

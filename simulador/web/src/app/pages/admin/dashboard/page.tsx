@@ -321,16 +321,18 @@ const AdminMestre = () => {
             {/* ======================================================= */}
 
             <RoundConfigPanel
-              config={config}
-              gameStarted={gameStarted}
-              showConfig={showConfig}
-              canGoNext={(session?.currentRound ?? 0) > 0}
-              onToggle={() => setShowConfig((v) => !v)}
-              onConfigChange={handleConfigChange}
-              onIniciar={iniciarRodada}
-              onParar={pararRodada}
-              onProxima={proximaRodada}
-            />
+  config={config}
+  gameStarted={gameStarted}
+  showConfig={showConfig}
+  canGoNext={(session?.currentRound ?? 0) > 0}
+  sessionId={session?.id || ""} // 🚀 Correção aqui: Passando o sessionId obrigatório
+  onToggle={() => setShowConfig((v) => !v)}
+  onConfigChange={handleConfigChange}
+  onIniciar={iniciarRodada}
+  onParar={pararRodada}
+  onProxima={proximaRodada}
+  onAlterarTempoTempoReal={alterarTempoRodada} // 🚀 Vincula a função do hook aos presets do painel
+/>
 
             <AdminRoundRanking
               ranking={ranking}
