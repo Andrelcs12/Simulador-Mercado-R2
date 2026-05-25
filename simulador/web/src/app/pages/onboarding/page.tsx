@@ -34,10 +34,7 @@ const STEPS = [
 
 function formatTime(s: number) {
   if (!s || s <= 0) return "00:00";
-
-  return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(
-    s % 60
-  ).padStart(2, "0")}`;
+  return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 }
 
 export default function OnboardingPage() {
@@ -52,7 +49,7 @@ export default function OnboardingPage() {
     submitting,
     budget,
     player,
-    remainingBudget // ✅ FIX CRÍTICO
+    remainingBudget,
   } = useOnboarding();
 
   const { submit, categoriesLoaded } = useOnboardingSession(
@@ -62,17 +59,11 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const redirectedRef = useRef(false);
 
-  // =========================
-  // FINAL SUBMIT (SAFE)
-  // =========================
   const handleFinalize = async () => {
     if (!round?.roundId) return;
     if (!player?.id || !player?.sessionId) return;
     if (submitted || submitting) return;
-
-    if (!categoriesLoaded) {
-      return;
-    }
+    if (!categoriesLoaded) return;
 
     await submit({
       playerId: player.id,
@@ -82,26 +73,15 @@ export default function OnboardingPage() {
     });
   };
 
-  // =========================
-  // TIMEOUT ROUTE
-  // =========================
   useEffect(() => {
     if (!round?.roundId) return;
     if (timeLeft > 0) return;
     if (redirectedRef.current) return;
 
     redirectedRef.current = true;
-
-    router.replace(
-      submitted
-        ? "/pages/dashboard"
-        : "/pages/onboarding/processing"
-    );
+    router.replace(submitted ? "/pages/dashboard" : "/pages/onboarding/processing");
   }, [timeLeft, submitted, round, router]);
 
-  // =========================
-  // SUCCESS ROUTE
-  // =========================
   useEffect(() => {
     if (!submitted) return;
     if (redirectedRef.current) return;
@@ -110,191 +90,144 @@ export default function OnboardingPage() {
     router.replace("/pages/dashboard");
   }, [submitted, router]);
 
-  const pct = round?.duration
-    ? Math.min((timeLeft / round.duration) * 100, 100)
-    : 0;
+  const pct = round?.duration ? Math.min((timeLeft / round.duration) * 100, 100) : 0;
 
   const timerColor =
-    timeLeft > 120
-      ? "text-emerald-600"
-      : timeLeft > 30
-      ? "text-amber-500"
-      : "text-red-500";
+    timeLeft > 120 ? "text-emerald-400" : timeLeft > 30 ? "text-amber-400" : "text-red-400";
 
   const barColor =
-    timeLeft > 120
-      ? "bg-emerald-500"
-      : timeLeft > 30
-      ? "bg-amber-400"
-      : "bg-red-500";
+    timeLeft > 120 ? "bg-emerald-500" : timeLeft > 30 ? "bg-amber-400" : "bg-red-500";
 
   const activeStep = (i: number) => step === i + 1;
   const doneStep = (i: number) => step > i + 1;
 
-  // ─────────────────────────────
-  // RENDER
-  // ─────────────────────────────
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
+    <div className="min-h-screen bg-[#080D17] flex flex-col font-sans text-white">
       <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            background: "#fff",
-            color: "#0f172a",
-            border: "1px solid #e2e8f0",
+            background: "#1e2a3a",
+            color: "#ffffff",
+            border: "1px solid rgba(255,255,255,0.1)",
           },
         }}
       />
 
-     
-     {/* HEADER */}
-<header className="sticky top-0 z-40 bg-white border-b border-slate-200">
-  <div className="max-w-6xl mx-auto px-6 py-5">
-    <div className="flex flex-col gap-5">
+      {/* HEADER */}
+      <header className="sticky top-0 z-40 bg-[#080D17] border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-6 py-5">
+          <div className="flex flex-col gap-5">
 
-      {/* TOP */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-slate-900">
-            Configuração da Rodada
-          </h1>
+            {/* TOP */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-black text-white">
+                  Configuração da Rodada
+                </h1>
+                <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400 font-bold mt-1">
+                  Onboarding da simulação operacional
+                </p>
+              </div>
 
-          <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-bold mt-1">
-            Onboarding da simulação operacional
-          </p>
-        </div>
+              <div className="flex items-center gap-3">
+                {/* ROUND */}
+                <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-white/10 bg-white/5">
+                  <Layers3 size={15} className="text-orange-500" />
+                  <div className="flex flex-col leading-none">
+                    <span className="text-[10px] uppercase font-black text-slate-400">Rodada</span>
+                    <span className="text-sm font-black text-white">{round?.roundNumber || "--"}</span>
+                  </div>
+                </div>
 
-        <div className="flex items-center gap-3">
-
-          {/* ROUND */}
-          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 bg-slate-50">
-            <Layers3 size={15} className="text-orange-500" />
-
-            <div className="flex flex-col leading-none">
-              <span className="text-[10px] uppercase font-black text-slate-400">
-                Rodada
-              </span>
-
-              <span className="text-sm font-black text-slate-900">
-                {round?.roundNumber || "--"}
-              </span>
-            </div>
-          </div>
-
-          {/* TIMER */}
-          <div className={`flex items-center gap-2 font-black text-lg ${timerColor}`}>
-            <Timer size={18} />
-            {formatTime(timeLeft)}
-          </div>
-
-        </div>
-      </div>
-
-      {/* PROGRESS */}
-      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-        <motion.div
-          className={`h-full ${barColor}`}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.6, ease: "linear" }}
-        />
-      </div>
-
-      {/* 💰 ORÇAMENTO (HERO CENTER CARD) */}
-      <div className="flex justify-center">
-        <div className="w-full max-w-md">
-
-          <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg shadow-orange-500/20">
-
-            <div className="flex items-center gap-3">
-              <Wallet size={20} className="text-white" />
-
-              <div className="flex flex-col leading-none">
-                <span className="text-[10px] uppercase text-orange-100 font-black tracking-widest">
-                  Orçamento da Loja
-                </span>
-
-                <span className="text-lg font-black text-white">
-                  Capital Disponível
-                </span>
+                {/* TIMER */}
+                <div className={`flex items-center gap-2 font-black text-lg ${timerColor}`}>
+                  <Timer size={18} />
+                  {formatTime(timeLeft)}
+                </div>
               </div>
             </div>
 
-            <div className="text-right">
-  <div className="text-xl font-black text-white">
-    R$ {remainingBudget.toLocaleString("pt-BR")}
-  </div>
+            {/* PROGRESS */}
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full ${barColor}`}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.6, ease: "linear" }}
+              />
+            </div>
 
-  <div className="text-[10px] text-orange-100 uppercase font-bold tracking-widest">
-    Base inicial: R$ {budget.toLocaleString("pt-BR")}
-  </div>
-</div>
+            {/* ORÇAMENTO */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-md">
+                <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-lg shadow-orange-500/20">
+                  <div className="flex items-center gap-3">
+                    <Wallet size={20} className="text-white" />
+                    <div className="flex flex-col leading-none">
+                      <span className="text-[10px] uppercase text-orange-100 font-black tracking-widest">
+                        Orçamento da Loja
+                      </span>
+                      <span className="text-lg font-black text-white">Capital Disponível</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xl font-black text-white">
+                      R$ {remainingBudget.toLocaleString("pt-BR")}
+                    </div>
+                    <div className="text-[10px] text-orange-100 uppercase font-bold tracking-widest">
+                      Base inicial: R$ {budget.toLocaleString("pt-BR")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* STEPS */}
+            <div className="flex gap-4 w-full">
+              {STEPS.map((s, i) => {
+                const isActive = activeStep(i);
+                const isDone = doneStep(i);
+                const isAccessible = i + 1 <= step || remainingBudget >= 0;
+
+                return (
+                  <div key={s.label} className="flex flex-col gap-1.5 flex-1">
+                    <span className={`text-[12px] font-bold uppercase tracking-wider ${
+                      isActive ? "text-orange-400" : isDone ? "text-emerald-400" : "text-slate-500"
+                    }`}>
+                      Etapa {i + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => { if (isAccessible) setStep(i + 1); }}
+                      className={`px-4 py-3 w-full justify-center rounded-xl text-xs font-black uppercase border transition flex items-center gap-2 shadow-sm
+                        ${isActive
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : isDone
+                          ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30"
+                          : "bg-white/5 text-slate-400 border-white/10 hover:bg-white/10"
+                        }`}
+                    >
+                      {isDone ? <CheckCircle2 size={14} /> : null}
+                      {s.label}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
 
           </div>
-
         </div>
-      </div>
-
-      {/* STEPS */}
-<div className="flex gap-4 w-full">
-  {STEPS.map((s, i) => {
-    const isActive = activeStep(i);
-    const isDone = doneStep(i);
-    
-    // ✅ Permite clicar se já passou pela etapa, se for a etapa atual,
-    // ou se o orçamento não estourou (permitindo ir até o resumo)
-    const isAccessible = i + 1 <= step || remainingBudget >= 0;
-
-    return (
-      <div key={s.label} className="flex flex-col gap-1.5 flex-1">
-        {/* Indicador de Etapa Superior */}
-        <span className={`text-[12px] font-bold uppercase tracking-wider ${
-          isActive ? "text-orange-500" : isDone ? "text-emerald-600" : "text-slate-400"
-        }`}>
-          Etapa {i + 1}
-        </span>
-
-        {/* Card/Botão Individual */}
-        <button
-          type="button"
-          onClick={() => {
-            if (isAccessible) {
-              setStep(i + 1);
-            }
-          }}
-          className={`px-4 py-3 w-full justify-center rounded-xl text-xs font-black uppercase border transition flex items-center gap-2 shadow-sm
-            ${
-              isActive
-                ? "bg-orange-500 text-white border-orange-500"
-                : isDone
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/50"
-                : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100" // 💡 Ajustado: Visual limpo e clicável
-            }`}
-        >
-          {isDone ? <CheckCircle2 size={14} /> : null }
-          {s.label}
-        </button>
-      </div>
-    );
-  })}
-</div>
-
-      
-     
-    </div>
-  </div>
-</header>
+      </header>
 
       {/* ALERTS */}
       <AnimatePresence>
         {submitted && (
-          <motion.div className="bg-emerald-50 text-emerald-700 text-center py-2 text-xs font-bold border-b border-emerald-200">
+          <motion.div className="bg-emerald-500/20 text-emerald-400 text-center py-2 text-xs font-bold border-b border-emerald-500/20">
             Configuração enviada com sucesso
           </motion.div>
         )}
-
         {timeLeft <= 0 && !submitted && (
-          <motion.div className="bg-red-50 text-red-600 text-center py-2 text-xs font-bold border-b border-red-200">
+          <motion.div className="bg-red-500/20 text-red-400 text-center py-2 text-xs font-bold border-b border-red-500/20">
             Tempo esgotado
           </motion.div>
         )}
@@ -309,20 +242,11 @@ export default function OnboardingPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="bg-white border border-slate-200 rounded-3xl p-6 md:p-10 shadow-sm"
+              className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-10 shadow-sm"
             >
-              {step === 1 && (
-                <SetupStep config={config} setConfig={setConfig} />
-              )}
-
-              {step === 2 && (
-                <ComercialStep config={config} setConfig={setConfig} />
-              )}
-
-              {step === 3 && (
-                <EmployeeStep config={config} setConfig={setConfig} />
-              )}
-
+              {step === 1 && <SetupStep config={config} setConfig={setConfig} />}
+              {step === 2 && <ComercialStep config={config} setConfig={setConfig} />}
+              {step === 3 && <EmployeeStep config={config} setConfig={setConfig} />}
               {step === 4 && <SummaryStep config={config} />}
             </motion.div>
           </AnimatePresence>
@@ -330,24 +254,24 @@ export default function OnboardingPage() {
       </main>
 
       {/* FOOTER */}
-      <footer className="sticky bottom-0 bg-white border-t border-slate-200">
+      <footer className="sticky bottom-0 bg-[#080D17] border-t border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <button
             disabled={step === 1}
             onClick={() => setStep((s) => Math.max(1, s - 1))}
-            className="px-5 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold disabled:opacity-40"
+            className="px-5 py-2 rounded-xl bg-white/10 text-white font-bold disabled:opacity-40 hover:bg-white/15 transition"
           >
             Voltar
           </button>
 
-          <span className="text-xs font-bold text-slate-400">
+          <span className="text-xs font-bold text-slate-500">
             {step} / {STEPS.length}
           </span>
 
           {step < STEPS.length ? (
             <button
               onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))}
-              className="px-6 cursor-pointer py-2 rounded-xl bg-orange-500 text-white font-black"
+              className="px-6 cursor-pointer py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-black transition"
             >
               Próximo →
             </button>
@@ -355,13 +279,9 @@ export default function OnboardingPage() {
             <button
               onClick={handleFinalize}
               disabled={submitting || timeLeft <= 0 || submitted}
-              className="px-6 py-2 cursor-pointer rounded-xl bg-emerald-500 text-white font-black disabled:opacity-40"
+              className="px-6 py-2 cursor-pointer rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-black disabled:opacity-40 transition"
             >
-              {submitting
-                ? "Enviando..."
-                : submitted
-                ? "Enviado"
-                : "Finalizar"}
+              {submitting ? "Enviando..." : submitted ? "Enviado" : "Finalizar"}
             </button>
           )}
         </div>
@@ -369,5 +289,3 @@ export default function OnboardingPage() {
     </div>
   );
 }
-
-
