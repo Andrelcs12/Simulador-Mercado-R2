@@ -11,9 +11,10 @@ import {
   BarChart3,
   DollarSign,
   Target,
+  Layers,
 } from "lucide-react";
 
-import { useOnboarding, COMERCIAL_PRICES } from "../context/OnboardingContext";
+import { useOnboarding } from "../context/OnboardingContext";
 import type { AppConfig, CategoriaKey } from "../types/onboarding";
 
 interface SummaryStepProps {
@@ -36,20 +37,6 @@ const CATEGORIAS: Array<{ id: CategoriaKey; label: string }> = [
   { id: "hipel", label: "Higiene & Limpeza" },
 ];
 
-function calculateCSAT(operadoresCaixa: number, quizScore: number): number {
-  const operatorFactor = Math.min(operadoresCaixa / 10, 1);
-  const quizFactor = Math.min(Math.max(quizScore / 100, 0), 1);
-  return Math.round(operatorFactor * quizFactor * 100);
-}
-
-function calculateSLA(serviceOps: number): number {
-  if (serviceOps >= 8) return 95;
-  if (serviceOps >= 6) return 85;
-  if (serviceOps >= 4) return 75;
-  if (serviceOps >= 2) return 60;
-  return 40;
-}
-
 export default function SummaryStep({ config }: SummaryStepProps) {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -57,6 +44,7 @@ export default function SummaryStep({ config }: SummaryStepProps) {
     setIsMounted(true);
   }, []);
 
+  // 1. Consumindo dados 100% processados do Contexto Global
   const {
     budget,
     capexTotal,
@@ -66,6 +54,12 @@ export default function SummaryStep({ config }: SummaryStepProps) {
     maxStockMercearia,
     maxStockEletro,
     maxStockHipel,
+    estoqueAnalysis,
+    faturamentoAnalysis,
+    lucroAnalysis,
+    faturamentoPrevistoTotal,
+    lucroPrevistoTotal,
+    performanceMetrics, // 🟢 Todas as contas complexas saíram daqui!
   } = useOnboarding();
 
   const maxStockByCategory = useMemo<Record<CategoriaKey, number>>(
@@ -75,39 +69,12 @@ export default function SummaryStep({ config }: SummaryStepProps) {
       eletro: maxStockEletro,
       hipel: maxStockHipel,
     }),
-    [
-      maxStockPericiveis,
-      maxStockMercearia,
-      maxStockEletro,
-      maxStockHipel,
-    ]
+    [maxStockPericiveis, maxStockMercearia, maxStockEletro, maxStockHipel]
   );
-
-  const opCaixa = config.operadoresCaixa ?? 5;
-  const opAtendimento = config.operadoresAtendimento ?? 3;
-  const quiz = config.quizScore ?? 100;
 
   const okBudget = remainingBudget >= 0;
   const investimentoTotal = capexTotal + comercialTotal;
   const progressPct = Math.min((investimentoTotal / budget) * 100, 100);
-
-  const performanceData = useMemo(() => {
-    const totalOps = opCaixa + opAtendimento;
-    const csat = calculateCSAT(opCaixa, quiz);
-    const sla = calculateSLA(opAtendimento);
-
-    const totalCategorias = CATEGORIAS.length;
-    const margemMedia = totalCategorias > 0
-      ? CATEGORIAS.reduce((acc, c) => acc + (config.comercial?.[c.id]?.margem ?? 0), 0) / totalCategorias
-      : 0;
-
-    const revenue = comercialTotal * 1.65 * (1 + margemMedia / 100);
-    const opex = (investimentoTotal * 0.08) + (totalOps * 2400);
-    const ebitda = revenue - opex;
-    const ebitdaMargin = revenue > 0 ? (ebitda / revenue) * 100 : 0;
-
-    return { csat, sla, margemMedia, revenue, opex, ebitda, ebitdaMargin };
-  }, [opCaixa, opAtendimento, quiz, config.comercial, comercialTotal, investimentoTotal]);
 
   const capexSelecionados = useMemo(() => {
     return Object.entries(config.capex ?? {}).filter(([, v]) => (v ?? 0) > 0);
@@ -117,46 +84,46 @@ export default function SummaryStep({ config }: SummaryStepProps) {
     return <div className="p-8 text-slate-400 text-sm">Carregando resumo da simulação...</div>;
   }
 
-  const csatColor = performanceData.csat >= 80 
-    ? "text-emerald-600" 
-    : performanceData.csat >= 60 
-      ? "text-yellow-600" 
-      : "text-red-500";
+  const csatColor = performanceMetrics.csat >= 80 
+    ? "text-emerald-400" 
+    : performanceMetrics.csat >= 60 
+      ? "text-amber-400" 
+      : "text-rose-400";
 
   return (
-    <div className="space-y-10">
-      {/* HEADER */}
+    <div className="space-y-8">
+      {/* HEADER ESCURO */}
       <div className="border-l-4 border-orange-500 pl-5">
-        <p className="text-[11px] uppercase tracking-[0.35em] font-black text-orange-500">
+        <p className="text-[11px] uppercase tracking-[0.3em] font-black text-orange-500">
           Resumo executivo
         </p>
-        <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+        <h2 className="text-3xl font-black text-white tracking-tight">
           Performance da <span className="text-orange-500">Simulação</span>
         </h2>
-        <p className="text-sm text-slate-500 mt-1">
-          Consolidação de decisão operacional, comercial e financeira.
+        <p className="text-sm text-slate-400 mt-2">
+          Consolidação de decisão operacional, comercial e financeira de mercado.
         </p>
       </div>
 
       {/* ORÇAMENTO INTEGRADO */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-        <div className="flex justify-between text-xs font-black text-slate-500 uppercase tracking-wider">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider">
           <span>Orçamento da Operação</span>
-          <span>
+          <span className="text-white">
             R$ {investimentoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} / R$ {budget.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
           </span>
         </div>
 
-        <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden mt-3">
+        <div className="h-2.5 bg-white/5 rounded-full overflow-hidden mt-3 border border-white/5">
           <motion.div
-            className={`h-full ${okBudget ? "bg-orange-500" : "bg-red-500"}`}
+            className={`h-full ${okBudget ? "bg-orange-500" : "bg-rose-500"}`}
             initial={{ width: 0 }}
             animate={{ width: `${progressPct}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           />
         </div>
 
-        <p className={`text-sm font-black mt-3 ${okBudget ? "text-emerald-600" : "text-red-600"}`}>
+        <p className={`text-xs font-black mt-3 uppercase tracking-wider ${okBudget ? "text-emerald-400" : "text-rose-400"}`}>
           {okBudget
             ? `Saldo positivo disponível da loja: R$ ${remainingBudget.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
             : `Orçamento excedido em R$ ${Math.abs(remainingBudget).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
@@ -165,14 +132,81 @@ export default function SummaryStep({ config }: SummaryStepProps) {
 
       {/* KPIs PRINCIPAIS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KPI label="CSAT" value={`${performanceData.csat}%`} icon={<Users size={16} />} color={csatColor} />
-        <KPI label="SLA" value={`${performanceData.sla}%`} icon={<Target size={16} />} />
-        <KPI label="Margem Média" value={`${performanceData.margemMedia.toFixed(1)}%`} icon={<TrendingUp size={16} />} />
-        <KPI label="EBITDA Proved" value={`R$ ${performanceData.ebitda.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} icon={<DollarSign size={16} />} color={performanceData.ebitda >= 0 ? "text-emerald-600" : "text-red-500"} />
+        <KPI label="CSAT" value={`${performanceMetrics.csat}%`} icon={<Users size={14} />} color={csatColor} />
+        <KPI label="SLA" value={`${performanceMetrics.sla}%`} icon={<Target size={14} />} color="text-sky-400" />
+        <KPI label="Margem Média" value={`${performanceMetrics.margemMedia.toFixed(1)}%`} icon={<TrendingUp size={14} />} color="text-amber-400" />
+        <KPI label="EBITDA Previsto" value={`R$ ${performanceMetrics.ebitdaPrevisto.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} icon={<DollarSign size={14} />} color={performanceMetrics.ebitdaPrevisto >= 0 ? "text-emerald-400" : "text-rose-400"} />
       </div>
 
       {/* BREAKDOWN FINANCEIRO */}
-      <div className="grid md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-6">
+        
+        {/* TABELA COMERCIAL COMPLETA */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 overflow-x-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <Layers size={14} className="text-orange-500" />
+            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+              Detalhamento Comercial por Categoria de Gôndola
+            </p>
+          </div>
+          
+          <table className="w-full text-left border-collapse min-w-[620px]">
+            <thead>
+              <tr className="border-b border-white/10 text-[10px] uppercase font-black text-slate-400 tracking-wider">
+                <th className="py-3 pr-4">Categoria</th>
+                <th className="py-3 px-4 text-center">Qtd / Máx</th>
+                <th className="py-3 px-4 text-right">Investido (Custo)</th>
+                <th className="py-3 px-4 text-right">Margem</th>
+                <th className="py-3 px-4 text-right">Faturamento Ideal</th>
+                <th className="py-3 pl-4 text-right">Lucro Bruto</th>
+              </tr>
+            </thead>
+            <tbody className="text-xs font-medium text-slate-300 divide-y divide-white/5">
+              {CATEGORIAS.map((c) => {
+                const qtd = config.comercial?.[c.id]?.estoque ?? 0;
+                const maxEstoque = maxStockByCategory[c.id];
+                const margem = config.comercial?.[c.id]?.margem ?? 0;
+                
+                const investido = estoqueAnalysis[c.id]?.custoTotal ?? 0;
+                const faturamento = faturamentoAnalysis[c.id] ?? 0;
+                const lucroBruto = lucroAnalysis[c.id] ?? 0;
+
+                return (
+                  <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="py-3 pr-4 font-bold text-white">{c.label}</td>
+                    <td className="py-3 px-4 text-center text-slate-500 font-mono">{qtd} / {maxEstoque} u.</td>
+                    <td className="py-3 px-4 text-right font-semibold text-slate-400">
+                      R$ {investido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="py-3 px-4 text-right text-slate-400 font-bold">{margem}%</td>
+                    <td className="py-3 px-4 text-right font-bold text-blue-400">
+                      R$ {faturamento.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="py-3 pl-4 text-right font-black text-emerald-400">
+                      R$ {lucroBruto.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    </td>
+                  </tr>
+                );
+              })}
+              {/* LINHA DE TOTAIS COMERCIAIS */}
+              <tr className="bg-white/[0.02] font-black text-white text-xs">
+                <td className="py-4 pr-4" colSpan={2}>Subtotal Comercial</td>
+                <td className="py-4 px-4 text-right text-slate-300">
+                  R$ {comercialTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </td>
+                <td className="py-4 px-4 text-right text-slate-500">—</td>
+                <td className="py-4 px-4 text-right text-blue-400">
+                  R$ {faturamentoPrevistoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </td>
+                <td className="py-4 px-4 text-right text-emerald-400">
+                  R$ {lucroPrevistoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* APLICAÇÕES EM CAPEX */}
         <Card title="Aplicações em CAPEX">
           {capexSelecionados.length > 0 ? (
             capexSelecionados.map(([id]) => (
@@ -183,79 +217,45 @@ export default function SummaryStep({ config }: SummaryStepProps) {
               />
             ))
           ) : (
-            <p className="text-xs text-slate-400 italic py-2">Nenhum investimento em CAPEX selecionado.</p>
+            <p className="text-xs text-slate-500 italic py-2">Nenhum investimento em CAPEX selecionado.</p>
           )}
           {capexSelecionados.length > 0 && (
-            <div className="pt-2.5 mt-2 border-t border-slate-100 flex justify-between text-xs font-black text-slate-900">
+            <div className="pt-3 mt-2 border-t border-white/10 flex justify-between text-xs font-black text-white">
               <span>Subtotal CAPEX</span>
-              <span>R$ {capexTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+              <span className="text-orange-400">R$ {capexTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
             </div>
           )}
-        </Card>
-
-        <Card title="Alocação Comercial de Estoque">
-          <div className="flex justify-between text-[10px] uppercase font-black text-slate-400 px-0.5 mb-2 gap-4 tracking-wider">
-            <span className="flex-1">Categoria</span>
-            <span className="min-w-[95px] text-center">Qtd / Máx</span>
-            <span className="min-w-[50px] text-right">Part. %</span>
-            <span className="min-w-[100px] text-right">Total Investido</span>
-          </div>
-
-          {CATEGORIAS.map((c) => {
-            const qtd = config.comercial?.[c.id]?.estoque ?? 0;
-            const maxEstoque = maxStockByCategory[c.id];
-            const custoUnitarioReal = COMERCIAL_PRICES[c.id] || 0;
-            const itemTotalCost = qtd * custoUnitarioReal;
-
-            // Formatação limpa com un. embutido conforme solicitado
-            const fractionLabel = `${qtd} / ${maxEstoque} un.`;
-            const stockCapacityPercentage =
-              maxEstoque > 0 ? (qtd / maxEstoque) * 100 : 0;
-
-            return (
-              <Row
-                key={c.id}
-                label={c.label}
-                fraction={fractionLabel}
-                percentage={`${stockCapacityPercentage.toFixed(1)}%`}
-                value={itemTotalCost}
-              />
-            );
-          })}
-          <div className="pt-2.5 mt-2 border-t border-slate-100 flex justify-between text-xs font-black text-slate-900">
-            <span>Subtotal Estoque</span>
-            <span className="min-w-[100px] text-right">R$ {comercialTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
-          </div>
         </Card>
       </div>
 
       {/* DETALHAMENTO DO MODELO FINANCEIRO ESTIMADO */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
         <div className="flex items-center gap-2 mb-4">
-          <BarChart3 size={16} className="text-orange-500" />
-          <p className="font-black text-slate-900">Modelo Financeiro Estimado</p>
+          <BarChart3 size={14} className="text-orange-500" />
+          <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider">Modelo Financeiro Estimado da Loja</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <MiniStat label="Receita Bruta Estimada" value={`R$ ${performanceData.revenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} />
-          <MiniStat label="OPEX Projetado (Equipe + Operações)" value={`R$ ${performanceData.opex.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} />
-          <MiniStat label="Margem EBITDA" value={`${performanceData.ebitdaMargin.toFixed(1)}%`} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MiniStat label="Investimento Total" value={`R$ ${investimentoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
+          <MiniStat label="Faturamento Bruto" value={`R$ ${faturamentoPrevistoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
+          <MiniStat label="Lucro Bruto Comercial" value={`R$ ${lucroPrevistoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
+          <MiniStat label="Margem EBITDA" value={`${performanceMetrics.ebitdaMargin.toFixed(1)}%`} />
         </div>
       </div>
 
       {/* STATUS FINAL DE VALIDAÇÃO */}
       <div className={`rounded-2xl border p-4 flex items-center gap-3 transition-colors duration-200 ${
-        okBudget ? "bg-emerald-50/60 border-emerald-200" : "bg-red-50/60 border-red-200"
+        okBudget ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/10 border-rose-500/20"
       }`}>
         {okBudget ? (
-          <CheckCircle2 className="text-emerald-600 flex-shrink-0" size={20} />
+          <CheckCircle2 className="text-emerald-400 flex-shrink-0" size={18} />
         ) : (
-          <AlertTriangle className="text-red-600 flex-shrink-0" size={20} />
+          <AlertTriangle className="text-rose-400 flex-shrink-0" size={18} />
         )}
-        <p className={`font-black text-sm ${okBudget ? "text-emerald-700" : "text-red-700"}`}>
+        <p className={`font-black text-xs uppercase tracking-wider ${okBudget ? "text-emerald-400" : "text-rose-400"}`}>
           {okBudget
             ? "Simulação aprovada: O modelo atende às restrições orçamentárias de mercado."
-            : "Simulação recusada: Corrija a alocação de estoque ou remova investimentos em CAPEX."}
+            : "Simulação recusada: Alocação estourou o caixa. Reduza o estoque ou corte investimentos de CAPEX."}
         </p>
       </div>
     </div>
@@ -263,7 +263,7 @@ export default function SummaryStep({ config }: SummaryStepProps) {
 }
 
 // ─────────────────────────────────────────────
-// COMPONENTES SUB-UI AUXILIARES
+// COMPONENTES AUXILIARES ADAPTADOS AO DARK MODE
 // ─────────────────────────────────────────────
 interface KPICardProps {
   label: string;
@@ -274,12 +274,12 @@ interface KPICardProps {
 
 function KPI({ label, value, icon, color }: KPICardProps) {
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all hover:shadow-md">
-      <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-wider">
-        {icon}
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-all duration-200 hover:border-white/20">
+      <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-wider">
+        <span className="text-slate-500">{icon}</span>
         {label}
       </div>
-      <p className={`text-2xl font-black mt-2 tracking-tight ${color ?? "text-slate-900"}`}>
+      <p className={`text-2xl font-black mt-2 tracking-tight ${color ?? "text-white"}`}>
         {value}
       </p>
     </div>
@@ -293,43 +293,25 @@ interface StructuralCardProps {
 
 function Card({ title, children }: StructuralCardProps) {
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-      <p className="text-xs font-black uppercase tracking-wider text-slate-400 mb-4">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
         {title}
       </p>
-      <div className="space-y-3">{children}</div>
+      <div className="space-y-1">{children}</div>
     </div>
   );
 }
 
 interface RowProps {
   label: string;
-  fraction?: string;    
-  percentage?: string;  
   value: number;
 }
 
-function Row({ label, fraction, percentage, value }: RowProps) {
+function Row({ label, value }: RowProps) {
   return (
-    <div className="flex justify-between items-center text-xs text-slate-600 py-2 border-b border-slate-100/70 last:border-0 gap-4">
-      <span className="font-medium text-slate-700 min-w-[100px] flex-1">{label}</span>
-      
-      {/* Coluna 2: Qtd / Máx com a mesma família de fontes elegante */}
-      {fraction && (
-        <span className="font-medium text-slate-400 text-center min-w-[95px]">
-          {fraction}
-        </span>
-      )}
-
-      {/* Coluna 3: Part. % alinhada */}
-      {percentage && (
-        <span className="font-semibold text-slate-500 text-right min-w-[50px]">
-          {percentage}
-        </span>
-      )}
-      
-      {/* Coluna 4: Total Investido */}
-      <span className="font-bold text-slate-900 text-right min-w-[100px]">
+    <div className="flex justify-between items-center text-xs py-2.5 border-b border-white/5 last:border-0 gap-4">
+      <span className="font-semibold text-slate-300 flex-1">{label}</span>
+      <span className="font-bold text-white font-mono">
         R$ {value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </span>
     </div>
@@ -343,11 +325,11 @@ interface MiniStatProps {
 
 function MiniStat({ label, value }: MiniStatProps) {
   return (
-    <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-      <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider">
+    <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+      <p className="text-[9px] uppercase font-black text-slate-500 tracking-wider">
         {label}
       </p>
-      <p className="text-lg font-black text-slate-900 mt-1 tracking-tight">
+      <p className="text-base font-black text-white mt-1 tracking-tight">
         {value}
       </p>
     </div>

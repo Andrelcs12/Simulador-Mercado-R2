@@ -12,7 +12,7 @@ import {
   Layers3,
   Wallet,
 } from "lucide-react";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 import { useOnboardingSession } from "./hooks/useOnboardingSession";
 import { useOnboarding } from "./context/OnboardingContext";
@@ -23,7 +23,6 @@ import EmployeeStep from "./components/EmployeeStep";
 import SummaryStep from "./components/SummaryStep";
 
 import { useRouter } from "next/navigation";
-
 
 const STEPS = [
   { label: "CAPEX", Icon: Settings2 },
@@ -40,9 +39,8 @@ function formatTime(s: number) {
 export default function OnboardingPage() {
   const router = useRouter();
 
+  // Consumindo o estado global centralizado
   const {
-    config,
-    setConfig,
     round,
     timeLeft,
     submitted,
@@ -64,6 +62,10 @@ export default function OnboardingPage() {
     if (!player?.id || !player?.sessionId) return;
     if (submitted || submitting) return;
     if (!categoriesLoaded) return;
+    if (remainingBudget < 0) {
+      toast.error("Você não pode finalizar a rodada com saldo negativo!");
+      return;
+    }
 
     await submit({
       playerId: player.id,
@@ -100,6 +102,15 @@ export default function OnboardingPage() {
 
   const activeStep = (i: number) => step === i + 1;
   const doneStep = (i: number) => step > i + 1;
+
+  // Impede navegação direta pelos botões do topo se o orçamento estiver estourado
+  const handleStepChange = (targetStep: number) => {
+    if (remainingBudget < 0 && targetStep > step) {
+      toast.error("Ajuste seu orçamento antes de avançar!");
+      return;
+    }
+    setStep(targetStep);
+  };
 
   return (
     <div className="min-h-screen bg-[#080D17] flex flex-col font-sans text-white">
@@ -171,7 +182,7 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-xl font-black text-white">
+                    <div className={`text-xl font-black ${remainingBudget < 0 ? "text-red-200" : "text-white"}`}>
                       R$ {remainingBudget.toLocaleString("pt-BR")}
                     </div>
                     <div className="text-[10px] text-orange-100 uppercase font-bold tracking-widest">
@@ -198,7 +209,7 @@ export default function OnboardingPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => { if (isAccessible) setStep(i + 1); }}
+                      onClick={() => { if (isAccessible) handleStepChange(i + 1); }}
                       className={`px-4 py-3 w-full justify-center rounded-xl text-xs font-black uppercase border transition flex items-center gap-2 shadow-sm
                         ${isActive
                           ? "bg-orange-500 text-white border-orange-500"
@@ -233,7 +244,7 @@ export default function OnboardingPage() {
         )}
       </AnimatePresence>
 
-      {/* MAIN */}
+      {/* MAIN CONTENT - COMPONENTES PUROS SEM PROPS DE ESTADO */}
       <main className="flex-1 flex justify-center p-6">
         <div className="w-full max-w-6xl">
           <AnimatePresence mode="wait">
@@ -244,10 +255,10 @@ export default function OnboardingPage() {
               exit={{ opacity: 0, y: -12 }}
               className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-10 shadow-sm"
             >
-              {step === 1 && <SetupStep config={config} setConfig={setConfig} />}
-              {step === 2 && <ComercialStep config={config} setConfig={setConfig} />}
-              {step === 3 && <EmployeeStep config={config} setConfig={setConfig} />}
-              {step === 4 && <SummaryStep config={config} />}
+              {step === 1 && <SetupStep />}
+              {step === 2 && <ComercialStep />}
+              {step === 3 && <EmployeeStep />}
+              {step === 4 && <SummaryStep />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -270,7 +281,7 @@ export default function OnboardingPage() {
 
           {step < STEPS.length ? (
             <button
-              onClick={() => setStep((s) => Math.min(STEPS.length, s + 1))}
+              onClick={() => handleStepChange(step + 1)}
               className="px-6 cursor-pointer py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-black transition"
             >
               Próximo →

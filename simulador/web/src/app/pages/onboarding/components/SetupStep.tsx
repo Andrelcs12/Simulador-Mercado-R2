@@ -33,7 +33,6 @@ export default function SetupStep({
   config: AppConfig;
   setConfig: React.Dispatch<React.SetStateAction<AppConfig>>;
 }) {
-  // Consome as informações centralizadas do contexto integrado
   const { budget, remainingBudget } = useOnboarding();
 
   const CAPEX_ITEMS: CapexItem[] = [
@@ -133,7 +132,6 @@ export default function SetupStep({
     }));
   };
 
-  // Soma o total gasto estritamente com as escolhas de CAPEX na tela atual
   const capexTotalAtual = useMemo(() => {
     return Object.values(config.capex).reduce((a, b) => a + (b || 0), 0);
   }, [config.capex]);
@@ -142,7 +140,6 @@ export default function SetupStep({
     return Object.values(config.capex).filter((v) => v > 0).length;
   }, [config.capex]);
 
-  // Calcula a barra de progresso baseada estritamente no caixa total disponível de R$ 700k
   const porcentagemUso = useMemo(() => {
     return Math.min((capexTotalAtual / budget) * 100, 100);
   }, [capexTotalAtual, budget]);
@@ -156,24 +153,23 @@ export default function SetupStep({
             Etapa 1 de 4
           </p>
 
-          <h2 className="text-3xl font-black text-[#001F3F]">
+          <h2 className="text-3xl font-black text-white">
             Decisões de <span className="text-orange-500">CAPEX</span>
           </h2>
 
-          <p className="text-sm text-slate-500 mt-2">
+          <p className="text-sm text-slate-400 mt-2">
             Configure investimentos estruturais da operação da loja.
           </p>
         </div>
 
         <div className="text-right">
-          <p className="text-[10px] uppercase font-black text-slate-400">
+          <p className="text-[10px] uppercase font-black text-slate-500 tracking-wider">
             Saldo Real Restante (Global)
           </p>
 
-          {/* Renderiza o remainingBudget global reativo do contexto (Estoque + CAPEX deduzidos) */}
           <p
             className={`text-2xl font-black ${
-              remainingBudget < 0 ? "text-red-500" : "text-[#001F3F]"
+              remainingBudget < 0 ? "text-red-500" : "text-emerald-400"
             }`}
           >
             R$ {remainingBudget.toLocaleString("pt-BR")}
@@ -183,12 +179,12 @@ export default function SetupStep({
 
       {/* PROGRESSO */}
       <div className="space-y-2">
-        <div className="flex justify-between text-xs font-bold text-slate-500 uppercase">
-          <span>{selecionadosCount} investidos</span>
+        <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <span>{selecionadosCount} Ativos Selecionados</span>
           <span>Investimento CAPEX: R$ {capexTotalAtual.toLocaleString("pt-BR")}</span>
         </div>
 
-        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-orange-500"
             animate={{ width: `${porcentagemUso}%` }}
@@ -205,66 +201,53 @@ export default function SetupStep({
           return (
             <motion.button
               key={item.id}
+              type="button"
               onClick={() => toggle(item.id, item.custo)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className={`text-left cursor-pointer rounded-2xl border p-5 transition focus:outline-none ${
+              className={`text-left cursor-pointer rounded-2xl border p-5 transition focus:outline-none relative overflow-hidden flex flex-col justify-between ${
                 isSelected
-                  ? "bg-[#001F3F] text-white border-[#001F3F] shadow-lg shadow-blue-900/20"
-                  : "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                  ? "bg-orange-500/10 border-orange-500 shadow-lg shadow-orange-500/5"
+                  : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
               }`}
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    isSelected ? "bg-white/10" : "bg-slate-100"
-                  }`}
-                >
-                  <item.Icon
-                    size={18}
-                    className={isSelected ? "text-orange-300" : "text-orange-500"}
-                  />
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                      isSelected ? "bg-orange-500/20" : "bg-white/5"
+                    }`}
+                  >
+                    <item.Icon
+                      size={18}
+                      className={isSelected ? "text-orange-400" : "text-slate-400"}
+                    />
+                  </div>
+
+                  <p className="font-black text-sm text-white">{item.label}</p>
                 </div>
 
-                <p className="font-black text-sm">{item.label}</p>
+                <p className="text-xs mb-4 leading-relaxed text-slate-300">
+                  {item.descricao}
+                </p>
+
+                <div className="space-y-1.5 text-[11px] text-slate-400">
+                  <div>
+                    <span className="font-bold text-white/90">Impacto:</span> {item.impacto}
+                  </div>
+                  <div>
+                    <span className="font-bold text-white/90">Regra:</span> {item.regra}
+                  </div>
+                  <div>
+                    <span className="font-bold text-white/90">Benefício:</span> {item.beneficio}
+                  </div>
+                </div>
               </div>
 
-              <p
-                className={`text-xs mb-3 leading-relaxed ${
-                  isSelected ? "text-white/80" : "text-slate-600"
-                }`}
-              >
-                {item.descricao}
-              </p>
-
-              <div
-                className={`text-[11px] mb-1.5 ${
-                  isSelected ? "text-white/70" : "text-slate-500"
-                }`}
-              >
-                <span className="font-bold">Impacto:</span> {item.impacto}
-              </div>
-
-              <div
-                className={`text-[11px] mb-1.5 ${
-                  isSelected ? "text-white/70" : "text-slate-500"
-                }`}
-              >
-                <span className="font-bold">Regra:</span> {item.regra}
-              </div>
-
-              <div
-                className={`text-[11px] ${
-                  isSelected ? "text-white/70" : "text-slate-500"
-                }`}
-              >
-                <span className="font-bold">Benefício:</span> {item.beneficio}
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-dashed border-slate-200/30 text-sm font-black flex justify-between items-center">
-                <span>Custo Ativo:</span>
-                <span className={isSelected ? "text-orange-300" : "text-orange-600"}>
+              <div className="w-full mt-5 pt-3 border-t border-dashed border-white/10 text-xs font-black flex justify-between items-center shrink-0">
+                <span className="text-slate-400 uppercase tracking-wider">Custo Ativo:</span>
+                <span className={isSelected ? "text-orange-400 text-sm" : "text-white text-sm"}>
                   R$ {item.custo.toLocaleString("pt-BR")}
                 </span>
               </div>
@@ -273,15 +256,15 @@ export default function SetupStep({
         })}
       </div>
 
-      {/* AVISO DE ORÇAMENTO EXCEDIDO (JUROS DE 12% DO BACKEND) */}
+      {/* AVISO DE ORÇAMENTO EXCEDIDO */}
       {remainingBudget < 0 && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-red-50 border border-red-200 text-red-700 font-bold p-4 rounded-2xl text-sm"
+          className="bg-red-500/10 border border-red-500/20 text-red-400 font-bold p-5 rounded-2xl text-sm"
         >
           ⚠️ Orçamento global da loja excedido em R$ {Math.abs(remainingBudget).toLocaleString("pt-BR")}. 
-          <span className="block font-normal mt-1 text-red-600/90">
+          <span className="block font-normal mt-1.5 text-red-300/80 leading-relaxed">
             Atenção: Conforme o regulamento, uma taxa de juros punitiva de **12% ao mês** incidirá sobre o valor excedente no cálculo do EBITDA final no fechamento da rodada.
           </span>
         </motion.div>
