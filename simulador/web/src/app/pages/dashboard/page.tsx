@@ -9,6 +9,7 @@ import StrategyPanel from "./components/StrategyPanel";
 import RoundSummary from "./components/RoundSummary";
 import ComercialDetails from "./components/ComercialDetails";
 import { useDashboard } from "./hooks/useDashboard";
+import WaitingStatus from "./components/WaitingStatus";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -24,7 +25,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#080D17] text-white flex items-center justify-center font-bold uppercase tracking-wider text-xs">
-        Carregando terminal de controle...
+        <WaitingStatus />
       </div>
     );
   }

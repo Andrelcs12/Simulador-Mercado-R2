@@ -16,10 +16,13 @@ import { RankingService } from "./services/ranking.service";
 
 import { SimulationService } from "./simulation.service";
 
-// gateways
+// gateways (Tratados estritamente como Providers de lógica pelo NestJS)
 import { PlayerGateway } from "./gateways/player.gateway";
 import { RoundGateway } from "./gateways/round.gateway";
 import { AdminGateway } from "./gateways/admin.gateway";
+import { PlayerHandler } from "./handlers/player.handler";
+import { RoundHandler } from "./handlers/round.handler";
+import { AdminHandler } from "./handlers/admin.handler";
 
 @Module({
   imports: [],
@@ -30,11 +33,17 @@ import { AdminGateway } from "./gateways/admin.gateway";
     // core
     MinigameService,
 
-    // gateways
+    // gateway principal (o único que expõe a porta/namespace WS)
     MinigameGateway,
+
+    // gateways secundários (funcionando como provedores isolados de lógica)
     PlayerGateway,
     RoundGateway,
     AdminGateway,
+
+    PlayerHandler,
+    RoundHandler,
+    AdminHandler,
 
     // services
     SessionService,
