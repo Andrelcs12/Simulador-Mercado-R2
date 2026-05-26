@@ -1,0 +1,105 @@
+"filename", "language", "JSON", "JSON with Comments", "Log", "JavaScript", "TypeScript", "Markdown", "PostCSS", "TypeScript JSX", "Prisma", "MS SQL", "comment", "blank", "total"
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\.prettierrc", "JSON", 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\README.md", "Markdown", 0, 0, 0, 0, 0, 68, 0, 0, 0, 0, 2, 29, 99
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\eslint.config.mjs", "JavaScript", 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 25
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\nest-cli.json", "JSON", 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\package-lock.json", "JSON", 12199, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 12200
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\package.json", "JSON", 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 91
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma.config.ts", "TypeScript", 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 2, 2, 16
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260314133055_config_schema\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 13, 20, 106
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260324184403_teste\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 2, 3, 17
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260512235503_init_minigame\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 57, 45, 197
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260513111816\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 21, 11, 49
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260513154648_init_minigame_engine\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 87, 40, 232
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260514023844_remove_player_email\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8, 2, 12
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260514142808\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 17, 8, 34
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260514143724\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 1, 9
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\migrations\20260515113446_add_round_result_metrics\migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 4
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\schema.prisma", "Prisma", 0, 0, 0, 0, 0, 0, 0, 0, 215, 0, 0, 23, 238
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\prisma\seed.ts", "TypeScript", 0, 0, 0, 0, 154, 0, 0, 0, 0, 0, 18, 16, 188
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\app.controller.spec.ts", "TypeScript", 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 5, 23
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\app.controller.ts", "TypeScript", 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 4, 18
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\app.module.ts", "TypeScript", 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 1, 1, 19
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\app.service.ts", "TypeScript", 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 8, 20
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\main.ts", "TypeScript", 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 5, 9, 55
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\contracts\simulation-input.ts", "TypeScript", 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 12, 12, 64
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\gateways\admin.gateway.ts", "TypeScript", 0, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 20, 85
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\gateways\player.gateway.ts", "TypeScript", 0, 0, 0, 0, 164, 0, 0, 0, 0, 0, 3, 36, 203
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\gateways\round.gateway.ts", "TypeScript", 0, 0, 0, 0, 156, 0, 0, 0, 0, 0, 19, 45, 220
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\minigame.controller.spec.ts", "TypeScript", 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 5, 21
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\minigame.controller.ts", "TypeScript", 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 6, 17, 83
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\minigame.gateway.ts", "TypeScript", 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 15, 20, 115
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\minigame.module.ts", "TypeScript", 0, 0, 0, 0, 39, 0, 0, 0, 0, 0, 6, 12, 57
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\minigame.service.spec.ts", "TypeScript", 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 5, 19
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\minigame.service.ts", "TypeScript", 0, 0, 0, 0, 121, 0, 0, 0, 0, 0, 8, 35, 164
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\services\dashboard.service.ts", "TypeScript", 0, 0, 0, 0, 153, 0, 0, 0, 0, 0, 12, 19, 184
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\services\player.service.ts", "TypeScript", 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 1, 19, 120
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\services\ranking.service.ts", "TypeScript", 0, 0, 0, 0, 141, 0, 0, 0, 0, 0, 20, 32, 193
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\services\round.service.ts", "TypeScript", 0, 0, 0, 0, 253, 0, 0, 0, 0, 0, 12, 64, 329
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\services\session.service.ts", "TypeScript", 0, 0, 0, 0, 203, 0, 0, 0, 0, 0, 10, 33, 246
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\services\submission.service.ts", "TypeScript", 0, 0, 0, 0, 240, 0, 0, 0, 0, 0, 27, 71, 338
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\simulation.service.ts", "TypeScript", 0, 0, 0, 0, 139, 0, 0, 0, 0, 0, 6, 51, 196
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\modules\minigame\types\round-simulation-input.ts", "TypeScript", 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 4, 20
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\src\prisma.service.ts", "TypeScript", 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 5, 17
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\test\app.e2e-spec.ts", "TypeScript", 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 5, 26
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\test\jest-e2e.json", "JSON", 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\tsconfig.build.json", "JSON", 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\api\tsconfig.json", "JSON with Comments", 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\package-lock.json", "JSON", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\README.md", "Markdown", 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 14, 37
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\biome.json", "JSON", 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 38
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\next.config.ts", "TypeScript", 0, 0, 0, 0, 45, 0, 0, 0, 0, 0, 1, 8, 54
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\package-lock.json", "JSON", 2468, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2469
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\package.json", "JSON", 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 33
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\postcss.config.mjs", "JavaScript", 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\globals.css", "PostCSS", 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 3, 5, 28
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\hooks\useRoundWatcher.ts", "TypeScript", 0, 0, 0, 0, 79, 0, 0, 0, 0, 0, 13, 18, 110
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 3, 8, 56
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 140, 0, 0, 9, 19, 168
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\components\Header.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 131, 0, 0, 9, 39, 179
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\components\Modals.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 19, 28, 183
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\components\PlayersTable.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 205, 0, 0, 9, 59, 273
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\components\RoundConfigPanel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 275, 0, 0, 7, 21, 303
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\components\RoundRankingBoard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 270, 0, 0, 6, 101, 377
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\components\RoundTimer.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 177, 0, 0, 3, 42, 222
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\components\StatsCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 177, 0, 0, 3, 35, 215
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\hooks\useAdminSocket.ts", "TypeScript", 0, 0, 0, 0, 142, 0, 0, 0, 0, 0, 21, 33, 196
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 230, 0, 0, 10, 45, 285
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\dashboard\types.ts", "TypeScript", 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 5, 43
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\results\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 293, 0, 0, 15, 32, 340
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\admin\setup\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 132, 0, 0, 5, 13, 150
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\components\DashboardHeader.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 2, 6, 64
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\components\KPISection.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 7, 47
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\components\RankingPanel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 43, 0, 0, 1, 4, 48
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\components\RoundSummary.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 3, 32
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\components\StrategyPanel.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 3, 8, 75
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\components\WaitingStatus.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 42, 0, 0, 3, 10, 55
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 61, 0, 0, 5, 13, 79
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\dashboard\types.ts", "TypeScript", 0, 0, 0, 0, 49, 0, 0, 0, 0, 0, 2, 16, 67
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\components\InfoCards.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 3, 37, 152
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\components\LobbyHeader.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 82, 0, 0, 3, 33, 118
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\components\ReadyBanner.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 58, 0, 0, 2, 12, 72
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\components\RoundStartOverlay.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 15, 71
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\components\StatsMetrics.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 3, 29, 121
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\hooks\useLobbySocket.ts", "TypeScript", 0, 0, 0, 0, 153, 0, 0, 0, 0, 0, 1, 23, 177
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 9, 28, 149
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\lobby\types.ts", "TypeScript", 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 1, 14
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\components\ComercialStep.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 250, 0, 0, 10, 28, 288
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\components\EmployeeStep.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 237, 0, 0, 11, 22, 270
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\components\SetupStep.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 245, 0, 0, 4, 24, 273
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\components\SummaryStep.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 288, 0, 0, 10, 33, 331
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\context\OnboardingContext.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 509, 0, 0, 12, 67, 588
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\hooks\useOnboardingController.ts", "TypeScript", 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 4, 7, 34
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\hooks\useOnboardingSession.ts", "TypeScript", 0, 0, 0, 0, 129, 0, 0, 0, 0, 0, 4, 28, 161
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 2, 6
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 266, 0, 0, 12, 35, 313
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\processing\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 202, 0, 0, 13, 26, 241
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\onboarding\types\onboarding.ts", "TypeScript", 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 13, 19, 73
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\registro-do-usuario\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 165, 0, 0, 10, 17, 192
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\simulation\hooks\useSimulation.ts", "TypeScript", 0, 0, 0, 0, 228, 0, 0, 0, 0, 0, 11, 41, 280
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\pages\simulation\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 387, 0, 0, 27, 35, 449
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\src\app\providers.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 4, 10
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\tailwind.config.js", "JavaScript", 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 1, 0, 13
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\tsconfig.json", "JSON with Comments", 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 35
+"c:\Users\apglu\Desktop\projetos 2026\Simulador Mercado R2\simulador\web\web-dev.log", "Log", 0, 0, 69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69
+"Total", "-", 14857, 57, 69, 43, 3241, 91, 20, 5614, 215, 316, 713, 1909, 27145

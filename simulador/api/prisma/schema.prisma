@@ -40,14 +40,16 @@ model GameRound {
   @@unique([sessionId, roundNumber])
 }
 
+
 model Player {
   id        String      @id @default(cuid())
   name      String
   socketId  String?
   sessionId String
-  createdAt DateTime    @default(now())
   storeId   String?
   role      PlayerRole
+  isReady   Boolean     @default(false)   // ✅ adicionar
+  createdAt DateTime    @default(now())
   session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   store     Store?      @relation(fields: [storeId], references: [id])
 }
@@ -85,6 +87,7 @@ model CategoryMaster {
 
 model CapexMaster {
   id                   String       @id @default(uuid())
+  slug  String @unique  // <--- Adicione este campo
   name                 String
   description          String
   cost                 Float

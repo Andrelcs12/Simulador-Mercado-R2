@@ -1,8 +1,9 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import { Player, GameConfig } from "../types";
-import { persistMaxStockConfig } from "../../onboarding/context/OnboardingContext";
 
 interface UseLobbySocketReturn {
   connected: boolean;
@@ -37,7 +38,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     adminName: "Aguardando Mestre...",
   });
 
-  // ── Carga inicial + socket ────────────────────────────
   useEffect(() => {
     const savedData = localStorage.getItem("player_data");
     if (!savedData) {
@@ -55,7 +55,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     });
     socketRef.current = socket;
 
-    // Entra no room após connect (e após cada reconexão)
     socket.on("connect", () => {
       setConnected(true);
       socket.emit("join_session", {
@@ -71,13 +70,11 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       if (newConfig.duration) setTempoRestante(newConfig.duration);
     });
 
-    // Normaliza shape do backend: { store: { name } } ou { storeName }
     const normalize = (p: any): Player => ({
       ...p,
       storeName: p.storeName ?? p.store?.name ?? "Sem loja",
     });
 
-    // Lista completa — fonte da verdade
     socket.on("session:players_updated", (list: any[]) => {
       const normalized = (list ?? []).map(normalize);
       setPlayers(normalized);
@@ -85,7 +82,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       if (me?.isReady) setIsReady(true);
     });
 
-    // Novo jogador entrou (Kahoot-style: atualiza lista sem F5)
     socket.on("player:joined", (newPlayer: any) => {
       const normalized = normalize(newPlayer);
       setPlayers((prev) =>
@@ -101,9 +97,11 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
 
     socket.on("session:all_ready", () => setRoundLabel("Todos prontos"));
 
+    // CORREÇÃO: Usando localStorage e Evento para comunicar com o Contexto
     socket.on("round:started", (data: any) => {
       if (data.maxStock) {
-        persistMaxStockConfig(data.maxStock);
+        localStorage.setItem("round_config_max_stock", JSON.stringify(data.maxStock));
+        window.dispatchEvent(new Event("round_config_max_stock_updated"));
       }
 
       localStorage.setItem(
@@ -116,6 +114,7 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
           maxStock: data.maxStock,
         })
       );
+      
       setEndTime(data.endTime);
       setTempoRestante(data.duration);
       setRoundLabel(`Rodada ${data.roundNumber}`);
@@ -123,15 +122,10 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       setTimeout(() => router.push("/pages/onboarding"), 2200);
     });
 
-    // Carga HTTP inicial
     fetch(`${API_URL}/minigame/session/${player.sessionId}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.players) {
-          const normalize = (p: any): Player => ({
-            ...p,
-            storeName: p.storeName ?? p.store?.name ?? "Sem loja",
-          });
           setPlayers(data.players.map(normalize));
         }
         if (data.code) setSessionCode(data.code);
@@ -148,7 +142,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     };
   }, [API_URL, router]);
 
-  // ── Timer ─────────────────────────────────────────────
   useEffect(() => {
     if (!isGameStarted || !endTime) return;
     const id = setInterval(() => {
@@ -159,7 +152,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     return () => clearInterval(id);
   }, [isGameStarted, endTime]);
 
-  // ── Confirmar pronto ──────────────────────────────────
   const confirmarPronto = useCallback(() => {
     if (!myPlayerData || !socketRef.current) return;
     socketRef.current.emit("player:ready", {

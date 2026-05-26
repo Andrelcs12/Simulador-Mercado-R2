@@ -15,11 +15,7 @@ import {
 } from "lucide-react";
 
 import { useOnboarding } from "../context/OnboardingContext";
-import type { AppConfig, CategoriaKey } from "../types/onboarding";
-
-interface SummaryStepProps {
-  config: AppConfig;
-}
+import type { CategoriaKey } from "../types/onboarding";
 
 const CAPEX_META: Record<string, { label: string; value: number }> = {
   seguranca: { label: "CAPEX Segurança", value: 50000 },
@@ -37,15 +33,15 @@ const CATEGORIAS: Array<{ id: CategoriaKey; label: string }> = [
   { id: "hipel", label: "Higiene & Limpeza" },
 ];
 
-export default function SummaryStep({ config }: SummaryStepProps) {
+export default function SummaryStep() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // 1. Consumindo dados 100% processados do Contexto Global
   const {
+    config,
     budget,
     capexTotal,
     comercialTotal,
@@ -57,9 +53,10 @@ export default function SummaryStep({ config }: SummaryStepProps) {
     estoqueAnalysis,
     faturamentoAnalysis,
     lucroAnalysis,
-    faturamentoPrevistoTotal,
     lucroPrevistoTotal,
-    performanceMetrics, // 🟢 Todas as contas complexas saíram daqui!
+    faturamentoBrutoTotal, // Usando a propriedade correta de soma do Contexto
+    ebitdaPrevistoProjecao, // Usando a propriedade correta de soma do Contexto
+    performanceMetrics,
   } = useOnboarding();
 
   const maxStockByCategory = useMemo<Record<CategoriaKey, number>>(
@@ -77,8 +74,8 @@ export default function SummaryStep({ config }: SummaryStepProps) {
   const progressPct = Math.min((investimentoTotal / budget) * 100, 100);
 
   const capexSelecionados = useMemo(() => {
-    return Object.entries(config.capex ?? {}).filter(([, v]) => (v ?? 0) > 0);
-  }, [config.capex]);
+    return Object.entries(config?.capex ?? {}).filter(([, v]) => (v ?? 0) > 0);
+  }, [config?.capex]);
 
   if (!isMounted) {
     return <div className="p-8 text-slate-400 text-sm">Carregando resumo da simulação...</div>;
@@ -92,7 +89,7 @@ export default function SummaryStep({ config }: SummaryStepProps) {
 
   return (
     <div className="space-y-8">
-      {/* HEADER ESCURO */}
+      {/* HEADER */}
       <div className="border-l-4 border-orange-500 pl-5">
         <p className="text-[11px] uppercase tracking-[0.3em] font-black text-orange-500">
           Resumo executivo
@@ -135,13 +132,12 @@ export default function SummaryStep({ config }: SummaryStepProps) {
         <KPI label="CSAT" value={`${performanceMetrics.csat}%`} icon={<Users size={14} />} color={csatColor} />
         <KPI label="SLA" value={`${performanceMetrics.sla}%`} icon={<Target size={14} />} color="text-sky-400" />
         <KPI label="Margem Média" value={`${performanceMetrics.margemMedia.toFixed(1)}%`} icon={<TrendingUp size={14} />} color="text-amber-400" />
-        <KPI label="EBITDA Previsto" value={`R$ ${performanceMetrics.ebitdaPrevisto.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} icon={<DollarSign size={14} />} color={performanceMetrics.ebitdaPrevisto >= 0 ? "text-emerald-400" : "text-rose-400"} />
+        <KPI label="EBITDA Previsto" value={`R$ ${ebitdaPrevistoProjecao.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} icon={<DollarSign size={14} />} color={ebitdaPrevistoProjecao >= 0 ? "text-emerald-400" : "text-rose-400"} />
       </div>
 
       {/* BREAKDOWN FINANCEIRO */}
       <div className="grid grid-cols-1 gap-6">
-        
-        {/* TABELA COMERCIAL COMPLETA */}
+        {/* TABELA COMERCIAL */}
         <div className="rounded-2xl border border-white/10 bg-white/5 p-5 overflow-x-auto">
           <div className="flex items-center gap-2 mb-4">
             <Layers size={14} className="text-orange-500" />
@@ -163,13 +159,14 @@ export default function SummaryStep({ config }: SummaryStepProps) {
             </thead>
             <tbody className="text-xs font-medium text-slate-300 divide-y divide-white/5">
               {CATEGORIAS.map((c) => {
-                const qtd = config.comercial?.[c.id]?.estoque ?? 0;
+                const qtd = config?.comercial?.[c.id]?.estoque ?? 0;
                 const maxEstoque = maxStockByCategory[c.id];
-                const margem = config.comercial?.[c.id]?.margem ?? 0;
+                const margem = config?.comercial?.[c.id]?.margem ?? 0;
                 
                 const investido = estoqueAnalysis[c.id]?.custoTotal ?? 0;
-                const faturamento = faturamentoAnalysis[c.id] ?? 0;
-                const lucroBruto = lucroAnalysis[c.id] ?? 0;
+                // 🔴 Correção aqui: acessando a propriedade numérica interna do objeto
+                const faturamento = faturamentoAnalysis[c.id]?.faturamentoBruto ?? 0;
+                const lucroBruto = lucroAnalysis[c.id]?.lucroBruto ?? 0;
 
                 return (
                   <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
@@ -188,7 +185,6 @@ export default function SummaryStep({ config }: SummaryStepProps) {
                   </tr>
                 );
               })}
-              {/* LINHA DE TOTAIS COMERCIAIS */}
               <tr className="bg-white/[0.02] font-black text-white text-xs">
                 <td className="py-4 pr-4" colSpan={2}>Subtotal Comercial</td>
                 <td className="py-4 px-4 text-right text-slate-300">
@@ -196,7 +192,7 @@ export default function SummaryStep({ config }: SummaryStepProps) {
                 </td>
                 <td className="py-4 px-4 text-right text-slate-500">—</td>
                 <td className="py-4 px-4 text-right text-blue-400">
-                  R$ {faturamentoPrevistoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  R$ {faturamentoBrutoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </td>
                 <td className="py-4 px-4 text-right text-emerald-400">
                   R$ {lucroPrevistoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
@@ -206,7 +202,7 @@ export default function SummaryStep({ config }: SummaryStepProps) {
           </table>
         </div>
 
-        {/* APLICAÇÕES EM CAPEX */}
+        {/* CAPEX */}
         <Card title="Aplicações em CAPEX">
           {capexSelecionados.length > 0 ? (
             capexSelecionados.map(([id]) => (
@@ -228,7 +224,7 @@ export default function SummaryStep({ config }: SummaryStepProps) {
         </Card>
       </div>
 
-      {/* DETALHAMENTO DO MODELO FINANCEIRO ESTIMADO */}
+      {/* MODELO ESTIMADO */}
       <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
         <div className="flex items-center gap-2 mb-4">
           <BarChart3 size={14} className="text-orange-500" />
@@ -237,13 +233,13 @@ export default function SummaryStep({ config }: SummaryStepProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <MiniStat label="Investimento Total" value={`R$ ${investimentoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
-          <MiniStat label="Faturamento Bruto" value={`R$ ${faturamentoPrevistoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
-          <MiniStat label="Lucro Bruto Comercial" value={`R$ ${lucroPrevistoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
-          <MiniStat label="Margem EBITDA" value={`${performanceMetrics.ebitdaMargin.toFixed(1)}%`} />
+          <MiniStat label="Faturamento Bruto" value={`R$ ${faturamentoBrutoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
+          <MiniStat label="Lucro Líquido Comercial" value={`R$ ${lucroPrevistoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
+          <MiniStat label="Margem Média" value={`${performanceMetrics.margemMedia.toFixed(1)}%`} />
         </div>
       </div>
 
-      {/* STATUS FINAL DE VALIDAÇÃO */}
+      {/* STATUS DE VALIDAÇÃO */}
       <div className={`rounded-2xl border p-4 flex items-center gap-3 transition-colors duration-200 ${
         okBudget ? "bg-emerald-500/10 border-emerald-500/20" : "bg-rose-500/10 border-rose-500/20"
       }`}>
@@ -262,9 +258,7 @@ export default function SummaryStep({ config }: SummaryStepProps) {
   );
 }
 
-// ─────────────────────────────────────────────
-// COMPONENTES AUXILIARES ADAPTADOS AO DARK MODE
-// ─────────────────────────────────────────────
+// COMPONENTES AUXILIARES
 interface KPICardProps {
   label: string;
   value: string;

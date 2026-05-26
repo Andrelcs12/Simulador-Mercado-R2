@@ -135,6 +135,11 @@ export class MinigameService {
     return this.dashboardService.getLatestDashboard(sessionId, storeId);
   }
 
+  // Adicione dentro de MinigameService
+getHistory(sessionId: string, storeId?: string) {
+  return this.dashboardService.getHistory(sessionId, storeId);
+}
+
   // ================= SIMULATION =================
 
   calculateBaseMetrics(input: {

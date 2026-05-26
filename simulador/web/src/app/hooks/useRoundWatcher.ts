@@ -4,16 +4,41 @@ import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { persistMaxStockConfig } from "../pages/onboarding/context/OnboardingContext";
+
+// Importando as constantes e chaves que você já definiu no OnboardingContext
+import { 
+  MAX_STOCK_STORAGE_KEY, 
+  MAX_STOCK_UPDATED_EVENT 
+} from "../pages/onboarding/context/OnboardingContext";
+
+/**
+ * Função auxiliar para persistir a configuração de estoque máximo recebida do backend
+ * e disparar o CustomEvent para que o OnboardingProvider atualize o estado imediatamente.
+ */
+function persistMaxStockConfig(maxStock: any) {
+  if (!maxStock || typeof window === "undefined") return;
+  
+  try {
+    const serialized = JSON.stringify({
+      pereciveis: Number(maxStock.pereciveis || 5000),
+      mercearia: Number(maxStock.mercearia || 4000),
+      eletro: Number(maxStock.eletro || 400),
+      hipel: Number(maxStock.hipel || 3000),
+    });
+    
+    window.localStorage.setItem(MAX_STOCK_STORAGE_KEY, serialized);
+    // Dispara o evento que o useEffect do seu OnboardingProvider já está ouvindo
+    window.dispatchEvent(new Event(MAX_STOCK_UPDATED_EVENT));
+  } catch (error) {
+    console.error("Erro ao persistir maxStockConfig no watcher:", error);
+  }
+}
 
 /**
  * useRoundWatcher
- * 
- * Use este hook em páginas onde o player está aguardando
+ * * Use este hook em páginas onde o player está aguardando
  * (dashboard, resultados) para ser redirecionado automaticamente
  * quando o admin iniciar uma nova rodada.
- * 
- * Uso: basta chamar useRoundWatcher() dentro do componente.
  */
 export const useRoundWatcher = (API_URL: string) => {
   const router = useRouter();
@@ -23,7 +48,13 @@ export const useRoundWatcher = (API_URL: string) => {
     const savedPlayer = localStorage.getItem("player_data");
     if (!savedPlayer) return;
 
-    const player = JSON.parse(savedPlayer);
+    let player: any;
+    try {
+      player = JSON.parse(savedPlayer);
+    } catch (e) {
+      return;
+    }
+    
     if (!player?.sessionId) return;
 
     const socket = io(`${API_URL}/simulation`, {

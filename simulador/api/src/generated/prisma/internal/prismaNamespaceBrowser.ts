@@ -112,9 +112,10 @@ export const PlayerScalarFieldEnum = {
   name: 'name',
   socketId: 'socketId',
   sessionId: 'sessionId',
-  createdAt: 'createdAt',
   storeId: 'storeId',
-  role: 'role'
+  role: 'role',
+  isReady: 'isReady',
+  createdAt: 'createdAt'
 } as const
 
 export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof PlayerScalarFieldEnum]
@@ -150,6 +151,7 @@ export type CategoryMasterScalarFieldEnum = (typeof CategoryMasterScalarFieldEnu
 
 export const CapexMasterScalarFieldEnum = {
   id: 'id',
+  slug: 'slug',
   name: 'name',
   description: 'description',
   cost: 'cost',

@@ -119,6 +119,24 @@ export class DashboardService {
     };
   }
 
+  // Adicione dentro de DashboardService
+async getHistory(sessionId: string, storeId?: string) {
+  // Busca todas as rodadas que já possuem resultados
+  const history = await this.prisma.roundResult.findMany({
+    where: { sessionId, storeId },
+    include: { round: true, store: true },
+    orderBy: { round: { roundNumber: 'asc' } },
+  });
+
+  // Retorna os dados formatados para o front
+  return history.map(r => ({
+    roundNumber: r.round.roundNumber,
+    ebitda: r.ebitdaValue,
+    position: r.sla, // Ajuste conforme seu critério de posição no histórico
+    marketShare: r.marketShare
+  }));
+}
+
   // ======================================================
   // DASHBOARD AUTOMÁTICO (SEM ROUND ID)
   // ======================================================

@@ -1,12 +1,9 @@
 "use client";
 
-
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { RefreshCw, Clock } from "lucide-react"; // Importado Clock para a UI de tempo
-
-
+import { RefreshCw, Clock } from "lucide-react";
 
 import { Header } from "./components/Header";
 import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
@@ -16,19 +13,17 @@ import AdminRoundRanking from "./components/RoundRankingBoard";
 import { RoundTimer } from "./components/RoundTimer";
 import { StatsCards } from "./components/StatsCard";
 import { useAdminSocket } from "./hooks/useAdminSocket";
-import { useOnboarding } from "../../onboarding/context/OnboardingContext";
-
+import { useOnboarding, MaxStockConfig } from "../../onboarding/context/OnboardingContext";
+import { Player, RoundConfig } from "./types";
 
 type DashboardState = {
   ranking?: Parameters<typeof AdminRoundRanking>[0]["ranking"];
 };
-import { Player, RoundConfig } from "./types";
 
 const AdminMestre = () => {
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  // Desestruturada a nova função 'alterarTempoRodada' do hook
   const {
     connected,
     players,
@@ -39,8 +34,16 @@ const AdminMestre = () => {
     setSession,
     conectar,
     emit,
-    alterarTempoRodada, 
+    alterarTempoRodada,
   } = useAdminSocket(API_URL);
+
+  const {
+    maxStockPericiveis,
+    maxStockMercearia,
+    maxStockEletro,
+    maxStockHipel,
+    setMaxStockConfig,
+  } = useOnboarding();
 
   const [adminName, setAdminName] = useState("Administrador");
   const [loading, setLoading] = useState(true);
@@ -51,17 +54,6 @@ const AdminMestre = () => {
   const [dashboard] = useState<DashboardState | null>(null);
 
   const connectedRef = useRef(false);
-
-  const {
-    maxStockPericiveis,
-    setMaxStockPericiveis,
-    maxStockMercearia,
-    setMaxStockMercearia,
-    maxStockEletro,
-    setMaxStockEletro,
-    maxStockHipel,
-    setMaxStockHipel,
-  } = useOnboarding();
 
   const [config, setConfig] = useState<RoundConfig>({
     durationMinutes: 15,
@@ -99,23 +91,16 @@ const AdminMestre = () => {
 
   const handleConfigChange = (patch: Partial<RoundConfig>) => {
     const nextConfig = { ...config, ...patch };
-
     setConfig(nextConfig);
 
-    if (patch.maxPereciveis !== undefined) {
-      setMaxStockPericiveis(nextConfig.maxPereciveis);
-    }
+    const maxStockPatch: Partial<MaxStockConfig> = {};
+    if (patch.maxPereciveis !== undefined) maxStockPatch.pereciveis = nextConfig.maxPereciveis;
+    if (patch.maxMercearia !== undefined)  maxStockPatch.mercearia  = nextConfig.maxMercearia;
+    if (patch.maxEletro !== undefined)     maxStockPatch.eletro     = nextConfig.maxEletro;
+    if (patch.maxHipel !== undefined)      maxStockPatch.hipel      = nextConfig.maxHipel;
 
-    if (patch.maxMercearia !== undefined) {
-      setMaxStockMercearia(nextConfig.maxMercearia);
-    }
-
-    if (patch.maxEletro !== undefined) {
-      setMaxStockEletro(nextConfig.maxEletro);
-    }
-
-    if (patch.maxHipel !== undefined) {
-      setMaxStockHipel(nextConfig.maxHipel);
+    if (Object.keys(maxStockPatch).length > 0) {
+      setMaxStockConfig((prev) => ({ ...prev, ...maxStockPatch }));
     }
   };
 
@@ -178,7 +163,6 @@ const AdminMestre = () => {
 
     tick();
     const interval = setInterval(tick, 500);
-
     return () => clearInterval(interval);
   }, [endTime, gameStarted]);
 
@@ -215,7 +199,6 @@ const AdminMestre = () => {
       sessionId: session?.id,
       playerId: player.id,
     });
-
     setPlayers((prev) => prev.filter((p) => p.id !== player.id));
     setConfirmKick(null);
   };
@@ -225,7 +208,6 @@ const AdminMestre = () => {
     router.push("/pages/admin/setup");
   };
 
-  // Função disparada pelos botões rápidos de controle de tempo
   const handleAlterarTempoRapido = (minutos: number) => {
     if (!session?.id) return;
     alterarTempoRodada(minutos, session.id);
@@ -261,15 +243,15 @@ const AdminMestre = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <div className="mb-4"> 
+        <div className="mb-4">
           <StatsCards
-              session={session}
-              players={players}
-              playersCount={players.length}
-              submittedCount={submittedCount}
-            />
+            session={session}
+            players={players}
+            playersCount={players.length}
+            submittedCount={submittedCount}
+          />
         </div>
-        
+
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
           <div className="xl:col-span-8 space-y-6">
@@ -284,32 +266,31 @@ const AdminMestre = () => {
               readyCount={readyCount}
             />
 
-            {/* ======================================================= */}
-            {/* COMPONENTE VISUAL INJETADO: PRESETS DE CONTROLE DE TEMPO */}
-            {/* ======================================================= */}
             {gameStarted && (
               <div className="bg-[#0f192b] border border-slate-800 p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <Clock className="text-orange-500" size={20} />
                   <div>
                     <h3 className="font-semibold text-sm">Controle de Tempo em Tempo Real</h3>
-                    <p className="text-xs text-slate-400">Modifique a duração restante da rodada atual para todos.</p>
+                    <p className="text-xs text-slate-400">
+                      Modifique a duração restante da rodada atual para todos.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={() => handleAlterarTempoRapido(1)}
                     className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded text-xs font-medium transition"
                   >
                     +1 Minuto
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleAlterarTempoRapido(5)}
                     className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 rounded text-xs font-medium transition"
                   >
                     +5 Minutos
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleAlterarTempoRapido(-1)}
                     className="px-3 py-1.5 bg-rose-700 hover:bg-rose-600 rounded text-xs font-medium transition"
                   >
@@ -318,21 +299,20 @@ const AdminMestre = () => {
                 </div>
               </div>
             )}
-            {/* ======================================================= */}
 
             <RoundConfigPanel
-  config={config}
-  gameStarted={gameStarted}
-  showConfig={showConfig}
-  canGoNext={(session?.currentRound ?? 0) > 0}
-  sessionId={session?.id || ""} // 🚀 Correção aqui: Passando o sessionId obrigatório
-  onToggle={() => setShowConfig((v) => !v)}
-  onConfigChange={handleConfigChange}
-  onIniciar={iniciarRodada}
-  onParar={pararRodada}
-  onProxima={proximaRodada}
-  onAlterarTempoTempoReal={alterarTempoRodada} // 🚀 Vincula a função do hook aos presets do painel
-/>
+              config={config}
+              gameStarted={gameStarted}
+              showConfig={showConfig}
+              canGoNext={(session?.currentRound ?? 0) > 0}
+              sessionId={session?.id || ""}
+              onToggle={() => setShowConfig((v) => !v)}
+              onConfigChange={handleConfigChange}
+              onIniciar={iniciarRodada}
+              onParar={pararRodada}
+              onProxima={proximaRodada}
+              onAlterarTempoTempoReal={alterarTempoRodada}
+            />
 
             <AdminRoundRanking
               ranking={ranking}

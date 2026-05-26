@@ -1373,9 +1373,10 @@ export const PlayerScalarFieldEnum = {
   name: 'name',
   socketId: 'socketId',
   sessionId: 'sessionId',
-  createdAt: 'createdAt',
   storeId: 'storeId',
-  role: 'role'
+  role: 'role',
+  isReady: 'isReady',
+  createdAt: 'createdAt'
 } as const
 
 export type PlayerScalarFieldEnum = (typeof PlayerScalarFieldEnum)[keyof typeof PlayerScalarFieldEnum]
@@ -1411,6 +1412,7 @@ export type CategoryMasterScalarFieldEnum = (typeof CategoryMasterScalarFieldEnu
 
 export const CapexMasterScalarFieldEnum = {
   id: 'id',
+  slug: 'slug',
   name: 'name',
   description: 'description',
   cost: 'cost',
@@ -1647,6 +1649,13 @@ export type ListEnumPlayerRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1657,13 +1666,6 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 /**

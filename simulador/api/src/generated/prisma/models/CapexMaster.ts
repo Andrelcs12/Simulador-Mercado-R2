@@ -44,6 +44,7 @@ export type CapexMasterSumAggregateOutputType = {
 
 export type CapexMasterMinAggregateOutputType = {
   id: string | null
+  slug: string | null
   name: string | null
   description: string | null
   cost: number | null
@@ -55,6 +56,7 @@ export type CapexMasterMinAggregateOutputType = {
 
 export type CapexMasterMaxAggregateOutputType = {
   id: string | null
+  slug: string | null
   name: string | null
   description: string | null
   cost: number | null
@@ -66,6 +68,7 @@ export type CapexMasterMaxAggregateOutputType = {
 
 export type CapexMasterCountAggregateOutputType = {
   id: number
+  slug: number
   name: number
   description: number
   cost: number
@@ -95,6 +98,7 @@ export type CapexMasterSumAggregateInputType = {
 
 export type CapexMasterMinAggregateInputType = {
   id?: true
+  slug?: true
   name?: true
   description?: true
   cost?: true
@@ -106,6 +110,7 @@ export type CapexMasterMinAggregateInputType = {
 
 export type CapexMasterMaxAggregateInputType = {
   id?: true
+  slug?: true
   name?: true
   description?: true
   cost?: true
@@ -117,6 +122,7 @@ export type CapexMasterMaxAggregateInputType = {
 
 export type CapexMasterCountAggregateInputType = {
   id?: true
+  slug?: true
   name?: true
   description?: true
   cost?: true
@@ -215,6 +221,7 @@ export type CapexMasterGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type CapexMasterGroupByOutputType = {
   id: string
+  slug: string
   name: string
   description: string
   cost: number
@@ -249,6 +256,7 @@ export type CapexMasterWhereInput = {
   OR?: Prisma.CapexMasterWhereInput[]
   NOT?: Prisma.CapexMasterWhereInput | Prisma.CapexMasterWhereInput[]
   id?: Prisma.StringFilter<"CapexMaster"> | string
+  slug?: Prisma.StringFilter<"CapexMaster"> | string
   name?: Prisma.StringFilter<"CapexMaster"> | string
   description?: Prisma.StringFilter<"CapexMaster"> | string
   cost?: Prisma.FloatFilter<"CapexMaster"> | number
@@ -261,6 +269,7 @@ export type CapexMasterWhereInput = {
 
 export type CapexMasterOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
@@ -273,6 +282,7 @@ export type CapexMasterOrderByWithRelationInput = {
 
 export type CapexMasterWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  slug?: string
   AND?: Prisma.CapexMasterWhereInput | Prisma.CapexMasterWhereInput[]
   OR?: Prisma.CapexMasterWhereInput[]
   NOT?: Prisma.CapexMasterWhereInput | Prisma.CapexMasterWhereInput[]
@@ -284,10 +294,11 @@ export type CapexMasterWhereUniqueInput = Prisma.AtLeast<{
   recurringLicenseCost?: Prisma.FloatFilter<"CapexMaster"> | number
   slaImpact?: Prisma.FloatFilter<"CapexMaster"> | number
   storeCapexes?: Prisma.StoreCapexListRelationFilter
-}, "id">
+}, "id" | "slug">
 
 export type CapexMasterOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
@@ -307,6 +318,7 @@ export type CapexMasterScalarWhereWithAggregatesInput = {
   OR?: Prisma.CapexMasterScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CapexMasterScalarWhereWithAggregatesInput | Prisma.CapexMasterScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CapexMaster"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"CapexMaster"> | string
   name?: Prisma.StringWithAggregatesFilter<"CapexMaster"> | string
   description?: Prisma.StringWithAggregatesFilter<"CapexMaster"> | string
   cost?: Prisma.FloatWithAggregatesFilter<"CapexMaster"> | number
@@ -318,6 +330,7 @@ export type CapexMasterScalarWhereWithAggregatesInput = {
 
 export type CapexMasterCreateInput = {
   id?: string
+  slug: string
   name: string
   description: string
   cost: number
@@ -330,6 +343,7 @@ export type CapexMasterCreateInput = {
 
 export type CapexMasterUncheckedCreateInput = {
   id?: string
+  slug: string
   name: string
   description: string
   cost: number
@@ -342,6 +356,7 @@ export type CapexMasterUncheckedCreateInput = {
 
 export type CapexMasterUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -354,6 +369,7 @@ export type CapexMasterUpdateInput = {
 
 export type CapexMasterUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -366,6 +382,7 @@ export type CapexMasterUncheckedUpdateInput = {
 
 export type CapexMasterCreateManyInput = {
   id?: string
+  slug: string
   name: string
   description: string
   cost: number
@@ -377,6 +394,7 @@ export type CapexMasterCreateManyInput = {
 
 export type CapexMasterUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -388,6 +406,7 @@ export type CapexMasterUpdateManyMutationInput = {
 
 export type CapexMasterUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -399,6 +418,7 @@ export type CapexMasterUncheckedUpdateManyInput = {
 
 export type CapexMasterCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
@@ -418,6 +438,7 @@ export type CapexMasterAvgOrderByAggregateInput = {
 
 export type CapexMasterMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
@@ -429,6 +450,7 @@ export type CapexMasterMaxOrderByAggregateInput = {
 
 export type CapexMasterMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   cost?: Prisma.SortOrder
@@ -467,6 +489,7 @@ export type CapexMasterUpdateOneRequiredWithoutStoreCapexesNestedInput = {
 
 export type CapexMasterCreateWithoutStoreCapexesInput = {
   id?: string
+  slug: string
   name: string
   description: string
   cost: number
@@ -478,6 +501,7 @@ export type CapexMasterCreateWithoutStoreCapexesInput = {
 
 export type CapexMasterUncheckedCreateWithoutStoreCapexesInput = {
   id?: string
+  slug: string
   name: string
   description: string
   cost: number
@@ -505,6 +529,7 @@ export type CapexMasterUpdateToOneWithWhereWithoutStoreCapexesInput = {
 
 export type CapexMasterUpdateWithoutStoreCapexesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -516,6 +541,7 @@ export type CapexMasterUpdateWithoutStoreCapexesInput = {
 
 export type CapexMasterUncheckedUpdateWithoutStoreCapexesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -558,6 +584,7 @@ export type CapexMasterCountOutputTypeCountStoreCapexesArgs<ExtArgs extends runt
 
 export type CapexMasterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  slug?: boolean
   name?: boolean
   description?: boolean
   cost?: boolean
@@ -571,6 +598,7 @@ export type CapexMasterSelect<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type CapexMasterSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  slug?: boolean
   name?: boolean
   description?: boolean
   cost?: boolean
@@ -582,6 +610,7 @@ export type CapexMasterSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
 
 export type CapexMasterSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  slug?: boolean
   name?: boolean
   description?: boolean
   cost?: boolean
@@ -593,6 +622,7 @@ export type CapexMasterSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 
 export type CapexMasterSelectScalar = {
   id?: boolean
+  slug?: boolean
   name?: boolean
   description?: boolean
   cost?: boolean
@@ -602,7 +632,7 @@ export type CapexMasterSelectScalar = {
   slaImpact?: boolean
 }
 
-export type CapexMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "cost" | "csatImpact" | "productivityImpact" | "recurringLicenseCost" | "slaImpact", ExtArgs["result"]["capexMaster"]>
+export type CapexMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "description" | "cost" | "csatImpact" | "productivityImpact" | "recurringLicenseCost" | "slaImpact", ExtArgs["result"]["capexMaster"]>
 export type CapexMasterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   storeCapexes?: boolean | Prisma.CapexMaster$storeCapexesArgs<ExtArgs>
   _count?: boolean | Prisma.CapexMasterCountOutputTypeDefaultArgs<ExtArgs>
@@ -617,6 +647,7 @@ export type $CapexMasterPayload<ExtArgs extends runtime.Types.Extensions.Interna
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    slug: string
     name: string
     description: string
     cost: number
@@ -1049,6 +1080,7 @@ export interface Prisma__CapexMasterClient<T, Null = never, ExtArgs extends runt
  */
 export interface CapexMasterFieldRefs {
   readonly id: Prisma.FieldRef<"CapexMaster", 'String'>
+  readonly slug: Prisma.FieldRef<"CapexMaster", 'String'>
   readonly name: Prisma.FieldRef<"CapexMaster", 'String'>
   readonly description: Prisma.FieldRef<"CapexMaster", 'String'>
   readonly cost: Prisma.FieldRef<"CapexMaster", 'Float'>

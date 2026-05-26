@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Users, Headphones, Target, ShieldCheck, Minus, Plus, HelpCircle } from "lucide-react";
-import { useOnboarding } from "../context/OnboardingContext"; // Ajuste o caminho se necessário
+import { useOnboarding } from "../context/OnboardingContext";
 
 const MAX_OPERATORS = 20;
 
@@ -48,17 +48,23 @@ function getSLAMeta(sla: number): SLAMetaInfo {
 }
 
 export default function EmployeeStep() {
-  // Consumindo tudo do estado global centralizado
-  const { config, setConfig, performanceMetrics } = useOnboarding();
+  // Consumindo diretamente os métodos de atualização centralizados do Context
+  const { 
+    config, 
+    performanceMetrics, 
+    updateOperators, 
+    updateQuizScore 
+  } = useOnboarding();
 
-  const opCaixa = config.operadoresCaixa ?? 5;
-  const opAtendimento = config.operadoresAtendimento ?? 3;
-  const quiz = config.quizScore ?? 100;
+  const opCaixa = config?.operadoresCaixa ?? 5;
+  const opAtendimento = config?.operadoresAtendimento ?? 3;
+  const quiz = config?.quizScore ?? 100;
 
   const totalOps = useMemo(() => opCaixa + opAtendimento, [opCaixa, opAtendimento]);
   
-  // Pegando a verdade única calculada no Context
-  const { csat, sla } = performanceMetrics;
+  const csat = performanceMetrics?.csat ?? 0;
+  const sla = performanceMetrics?.sla ?? 0;
+
   const slaInfo = useMemo(() => getSLAMeta(sla), [sla]);
 
   const csatColor = useMemo(() => {
@@ -66,20 +72,6 @@ export default function EmployeeStep() {
     if (csat >= 60) return "text-amber-400";
     return "text-rose-400";
   }, [csat]);
-
-  const updateOperators = (field: "operadoresCaixa" | "operadoresAtendimento", value: number) => {
-    setConfig((prev) => ({
-      ...prev,
-      [field]: Math.max(0, Math.min(MAX_OPERATORS, value)),
-    }));
-  };
-
-  const updateQuizScore = (value: number) => {
-    setConfig((prev) => ({
-      ...prev,
-      quizScore: Math.max(0, Math.min(100, value)),
-    }));
-  };
 
   return (
     <div className="space-y-8">
@@ -117,9 +109,14 @@ export default function EmployeeStep() {
               placeholder="0"
               onChange={(e) => {
                 const val = e.target.value;
-                updateQuizScore(val === "" ? 0 : Number(val));
+                // Evita travamento de digitação ao limpar o campo
+                if (val === "") {
+                  updateQuizScore(0);
+                  return;
+                }
+                updateQuizScore(parseInt(val, 10));
               }}
-              className="w-24 h-11 text-center font-black rounded-xl border border-white/10 bg-white/5 focus:border-white/30 focus:outline-none text-white outline-none transition-all cursor-text"
+              className="w-24 h-11 text-center font-black rounded-xl border border-white/10 bg-black/20 focus:border-orange-500 focus:outline-none text-white font-mono outline-none transition-all"
             />
             <span className="font-black text-slate-400">%</span>
           </div>
@@ -144,7 +141,7 @@ export default function EmployeeStep() {
                 <p className="text-xs text-slate-400 mt-0.5">Capacidade de vazão dos checkouts</p>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-slate-500 bg-white/5 px-2 py-1 rounded-md border border-white/5">
+            <span className="text-[10px] font-bold text-slate-500 bg-black/20 px-2 py-1 rounded-md border border-white/5 font-mono">
               Máx: {MAX_OPERATORS}
             </span>
           </div>
@@ -158,7 +155,7 @@ export default function EmployeeStep() {
             >
               <Minus size={14} />
             </button>
-            <p className="text-4xl font-black text-white select-none">{opCaixa}</p>
+            <p className="text-4xl font-black text-white select-none font-mono">{opCaixa}</p>
             <button
               type="button"
               disabled={opCaixa >= MAX_OPERATORS}
@@ -186,7 +183,7 @@ export default function EmployeeStep() {
                 <p className="text-xs text-slate-400 mt-0.5">Suporte e reposição interna</p>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-slate-500 bg-white/5 px-2 py-1 rounded-md border border-white/5">
+            <span className="text-[10px] font-bold text-slate-500 bg-black/20 px-2 py-1 rounded-md border border-white/5 font-mono">
               Máx: {MAX_OPERATORS}
             </span>
           </div>
@@ -200,7 +197,7 @@ export default function EmployeeStep() {
             >
               <Minus size={14} />
             </button>
-            <p className="text-4xl font-black text-white select-none">{opAtendimento}</p>
+            <p className="text-4xl font-black text-white select-none font-mono">{opAtendimento}</p>
             <button
               type="button"
               disabled={opAtendimento >= MAX_OPERATORS}
@@ -222,7 +219,7 @@ export default function EmployeeStep() {
               Dimensionamento Geral
             </p>
             <p className="text-sm font-medium text-slate-300 mt-0.5">
-              Headcount Ativo: <span className="font-black text-white">{totalOps} funcionários</span> escalados na unidade.
+              Headcount Ativo: <span className="font-black text-white font-mono">{totalOps} funcionários</span> escalados na unidade.
             </p>
           </div>
         </div>
@@ -237,7 +234,7 @@ export default function EmployeeStep() {
               <ShieldCheck className="text-sky-400" size={16} />
               <p className="text-xs uppercase font-black text-slate-400 tracking-wider">Métrica CSAT</p>
             </div>
-            <p className={`text-4xl font-black mt-4 ${csatColor}`}>{csat}%</p>
+            <p className={`text-4xl font-black mt-4 font-mono ${csatColor}`}>{csat}%</p>
           </div>
           
           <div className="mt-5 pt-3 border-t border-white/5 flex items-center gap-2 text-slate-400">
@@ -255,7 +252,7 @@ export default function EmployeeStep() {
               <Headphones className={slaInfo.color} size={16} />
               <p className="text-xs uppercase font-black text-slate-400 tracking-wider">Nível de SLA</p>
             </div>
-            <p className={`text-4xl font-black mt-4 ${slaInfo.color}`}>{sla}%</p>
+            <p className={`text-4xl font-black mt-4 font-mono ${slaInfo.color}`}>{sla}%</p>
           </div>
 
           <div className="mt-5 pt-3 border-t border-white/5 flex flex-col gap-0.5 text-slate-400">

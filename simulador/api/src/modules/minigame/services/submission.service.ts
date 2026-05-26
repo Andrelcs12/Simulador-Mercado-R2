@@ -20,100 +20,29 @@ export class SubmissionService {
   // CONFIG SUBMISSION
   // =========================
 
+
   async submitConfiguration(data: PlayerConfigurationInput) {
     this.logger.log("====================================");
     this.logger.log("NOVA SUBMISSÃO RECEBIDA");
     this.logger.log("====================================");
 
-    // DEBUG PAYLOAD COMPLETO
-    this.logger.debug(
-      JSON.stringify(
-        {
-          playerId: data.playerId,
-          sessionId: data.sessionId,
-          roundId: data.roundId,
-          operatorsQty: data.operatorsQty,
-          serviceOperatorsQty: data.serviceOperatorsQty,
-          stockInputs: data.stockInputs,
-          capexSelections: data.capexSelections,
-        },
-        null,
-        2,
-      ),
-    );
-
     await this.validateSubmissionWindow(data.roundId);
-
     const storeId = await this.getStoreId(data.playerId);
-
-    this.logger.debug(`STORE ID: ${storeId}`);
-
     await this.ensureUniqueConfig(data.roundId, storeId);
 
-    // =========================
-    // BUSCA CATEGORIAS REAIS
-    // =========================
+    // 1. Busca Categorias e Capex Master (incluindo o SLUG agora)
+    const [categories, capexMasters] = await Promise.all([
+      this.prisma.categoryMaster.findMany({ select: { id: true } }),
+      this.prisma.capexMaster.findMany({ select: { id: true, slug: true } }),
+    ]);
 
-    const categories = await this.prisma.categoryMaster.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+    const validCategoryIds = new Set(categories.map((c) => c.id));
 
-    this.logger.debug(
-      `CATEGORIAS ENCONTRADAS: ${categories.length}`,
-    );
-
-    this.logger.debug(
-      JSON.stringify(categories, null, 2),
-    );
-
-    // SET DE IDS VÁLIDOS
-    const validCategoryIds = new Set(
-      categories.map((c) => c.id),
-    );
-
-    // =========================
-    // VALIDAÇÃO STOCK INPUTS
-    // =========================
-
-    const parsedStockInputs = data.stockInputs.map((s, index) => {
-      this.logger.debug(
-        `[STOCK ${index}] categoryId recebido: ${s.categoryId}`,
-      );
-
-      const exists = validCategoryIds.has(s.categoryId);
-
-      this.logger.debug(
-        `[STOCK ${index}] categoria existe? ${exists}`,
-      );
-
-      if (!exists) {
-        this.logger.error(
-          `Categoria inválida detectada: ${s.categoryId}`,
-        );
-
-        this.logger.error(
-          "Categorias válidas disponíveis:",
-        );
-
-        this.logger.error(
-          JSON.stringify(
-            categories.map((c) => ({
-              id: c.id,
-              name: c.name,
-            })),
-            null,
-            2,
-          ),
-        );
-
-        throw new BadRequestException(
-          `Categoria inválida: ${s.categoryId}`,
-        );
+    // 2. Validação e Mapeamento de Stock Inputs
+    const parsedStockInputs = data.stockInputs.map((s) => {
+      if (!validCategoryIds.has(s.categoryId)) {
+        throw new BadRequestException(`Categoria inválida: ${s.categoryId}`);
       }
-
       return {
         categoryId: s.categoryId,
         buyQty: s.buyQty,
@@ -122,51 +51,44 @@ export class SubmissionService {
       };
     });
 
-    // =========================
-    // DEBUG FINAL
-    // =========================
+    // 3. Validação e Mapeamento de Capex Selections via SLUG
+    // O front envia um objeto com 'capexId' que agora contém o slug (ex: 'seguranca')
+    const parsedCapexSelections = data.capexSelections.map((c) => {
+      const master = capexMasters.find((m) => m.slug === c.capexId);
+      
+      if (!master) {
+        this.logger.error(`Capex não encontrado no banco: ${c.capexId}`);
+        throw new BadRequestException(`Capex inválido: ${c.capexId}`);
+      }
+      
+      // Retornamos o ID real que está no banco, mapeado a partir do slug
+      return { capexId: master.id };
+    });
 
-    this.logger.debug(
-      "STOCK INPUTS PARSEADOS:",
-    );
-
-    this.logger.debug(
-      JSON.stringify(parsedStockInputs, null, 2),
-    );
-
-    // =========================
-    // CREATE CONFIG
-    // =========================
-
+    // 4. Criação da Configuração
     try {
       const config = await this.prisma.configuration.create({
         data: {
           sessionId: data.sessionId,
           roundId: data.roundId,
           storeId,
-
           operatorsQty: data.operatorsQty,
           serviceOperatorsQty: data.serviceOperatorsQty,
           quizScore: data.quizScore,
-
           stockInputs: {
             create: parsedStockInputs,
           },
-
           capexSelections: {
-            create: data.capexSelections,
+            create: parsedCapexSelections,
           },
         },
-
         include: {
           stockInputs: true,
           capexSelections: true,
         },
       });
 
-      this.logger.log(
-        `CONFIGURAÇÃO CRIADA COM SUCESSO: ${config.id}`,
-      );
+      this.logger.log(`CONFIGURAÇÃO CRIADA COM SUCESSO: ${config.id}`);
 
       return {
         success: true,
@@ -174,21 +96,12 @@ export class SubmissionService {
         submittedAt: config.submittedAt,
       };
     } catch (error) {
-      this.logger.error(
-        "ERRO AO CRIAR CONFIGURAÇÃO",
-      );
-
-      this.logger.error(error);
-
-      if (error instanceof Error) {
-        this.logger.error(error.message);
-        this.logger.error(error.stack);
-      }
-
+      this.logger.error("ERRO AO CRIAR CONFIGURAÇÃO NO BANCO", error);
       throw error;
     }
   }
 
+  
   // =========================
   // HELPERS
   // =========================
