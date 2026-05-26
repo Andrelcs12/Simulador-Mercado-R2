@@ -75,13 +75,9 @@ export class MinigameService {
 
   // ================= ROUND =================
 
-  async getCategories() {
-  return this.prisma.categoryMaster.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  });
+  // Altere o getCategories dentro do MinigameService
+async getCategories() {
+  return this.submissionService.getCategories();
 }
 
   startRound(sessionId: string, duration: number) {

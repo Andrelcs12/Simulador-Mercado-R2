@@ -101,10 +101,21 @@ export class SubmissionService {
     }
   }
 
+  // Adicione este método ao seu SubmissionService
+async getCategories() {
+  return this.prisma.categoryMaster.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+}
   
   // =========================
   // HELPERS
   // =========================
+
+  
 
   private async getStoreId(playerId: string) {
     this.logger.debug(

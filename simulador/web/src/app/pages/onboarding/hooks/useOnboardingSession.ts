@@ -283,78 +283,88 @@ export function useOnboardingSession(API_URL: string) {
     startTimer,
   ]);
 
-  // ✅ submit retorna Promise e aguarda confirmação do servidor
-  const submit = useCallback(
-    async (payload: {
-      playerId: string;
-      sessionId: string;
-      roundId: string;
-      storeId?: string;
-    }): Promise<void> => {
-      if (!socketRef.current) throw new Error("Socket não conectado.");
-      if (submitting || submitted) return;
-      if (!categoriesLoaded)
-        throw new Error("Categorias ainda não carregadas.");
+  
 
-      const stockInputs = Object.entries(config.comercial).map(
-        ([key, val]) => {
-          const categoryId = categoryMap[key];
-          if (!categoryId) {
-            // ✅ Log detalhado para debug
-            console.error(
-              `[submit] Chave "${key}" não encontrada no mapa.`,
-              "\nMapa atual:",
-              categoryMap,
-              "\nChaves esperadas:",
-              Object.keys(config.comercial)
-            );
-            throw new Error(
-              `Categoria "${key}" não mapeada. Nomes no banco incompatíveis. Veja o console.`
-            );
-          }
-          return {
-            categoryId,
-            buyQty: val.estoque,
-            commercialMargin: val.margem,
-            expectedSellPrice: 0,
-          };
-        }
-      );
+  // ✅ submit corrigido e padronizado com os slugs do banco
+const submit = useCallback(
+  async (payload: {
+    playerId: string;
+    sessionId: string;
+    roundId: string;
+    storeId?: string;
+  }): Promise<void> => {
+    if (!socketRef.current) throw new Error("Socket não conectado.");
+    if (submitting || submitted) return;
+    if (!categoriesLoaded) throw new Error("Categorias ainda não carregadas.");
 
-      const capexSelections = Object.entries(config.capex)
-        .filter(([, v]) => (v ?? 0) > 0)
-        .map(([capexId]) => ({ capexId }));
+    // Mapeamento de chaves amigáveis (UI) para Slugs reais (Banco/Seed)
+const CAPEX_SLUG_MAP: Record<string, string> = {
+  "seguranca": "seguranca",
+  "equipamentos": "freezer", // 👈 Adicione esta linha (ou altere "freezer" para o slug exato do banco, ex: "balanca")
+  "freezer": "freezer",
+  "balanca": "freezer", 
+  "redes": "redes",
+  "selfcheckout": "self-checkout",
+  "self-checkout": "self-checkout",
+  "site": "site",
+  "bi": "bi",
+  "melhoria": "bi", // 👈 Mapeia também a chave "melhoria" usada na UI do seu SetupStep
+  "melhoriacontinua": "bi"
+};
 
-      return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error("Timeout: servidor não confirmou o envio."));
-        }, 10000);
+    // 1. Processar Estoque
+    const stockInputs = Object.entries(config.comercial).map(([key, val]) => {
+      const categoryId = categoryMap[key];
+      if (!categoryId) {
+        console.error(`[submit] Categoria "${key}" não encontrada no mapa.`, categoryMap);
+        throw new Error(`Categoria "${key}" não mapeada.`);
+      }
+      return {
+        categoryId,
+        buyQty: val.estoque,
+        commercialMargin: val.margem,
+        expectedSellPrice: 0,
+      };
+    });
 
-        socketRef.current!.once("player:config_submitted", () => {
-          clearTimeout(timeout);
-          resolve();
-        });
+    // 2. Processar CAPEX com conversão de Slug
+    const capexSelections = Object.entries(config.capex)
+      .filter(([, v]) => (v ?? 0) > 0)
+      .map(([key]) => ({
+        // Converte a chave da UI para o slug técnico do banco
+        capexId: CAPEX_SLUG_MAP[key.toLowerCase()] || key.toLowerCase()
+      }));
 
-        socketRef.current!.once(
-          "player:submit_error",
-          (data: { message: string }) => {
-            clearTimeout(timeout);
-            reject(new Error(data.message || "Erro no envio."));
-          }
-        );
+    // 3. Envio via Socket
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Timeout: servidor não confirmou o envio."));
+      }, 10000);
 
-        socketRef.current!.emit("player:submit_config", {
-          ...payload,
-          operatorsQty: config.operadoresCaixa,
-          serviceOperatorsQty: config.operadoresAtendimento,
-          quizScore: config.quizScore,
-          stockInputs,
-          capexSelections,
-        });
+      socketRef.current!.once("player:config_submitted", () => {
+        clearTimeout(timeout);
+        resolve();
       });
-    },
-    [categoryMap, categoriesLoaded, submitting, submitted, config]
-  );
+
+      socketRef.current!.once("player:submit_error", (data: { message: string }) => {
+        clearTimeout(timeout);
+        reject(new Error(data.message || "Erro no envio das configurações."));
+      });
+
+      socketRef.current!.emit("player:submit_config", {
+        ...payload,
+        operatorsQty: config.operadoresCaixa,
+        serviceOperatorsQty: config.operadoresAtendimento,
+        quizScore: config.quizScore,
+        stockInputs,
+        capexSelections,
+      });
+    });
+  },
+  [categoryMap, categoriesLoaded, submitting, submitted, config]
+);
+
+
 
   const timeUp =
     (round?.endTime ?? 0) > 0 ? Date.now() >= (round?.endTime ?? 0) : false;
