@@ -6,10 +6,8 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
-
 import { Injectable, Logger } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
-
 import { PlayerGateway } from "./gateways/player.gateway";
 import { RoundGateway } from "./gateways/round.gateway";
 import { AdminGateway } from "./gateways/admin.gateway";
@@ -35,13 +33,10 @@ export class MinigameGateway implements OnGatewayInit {
 
   afterInit(server: Server) {
     this.server = server;
-
     this.playerGateway.server = server;
     this.roundGateway.server = server;
     this.adminGateway.server = server;
-
     this.sessionService.setServer(server);
-
     this.logger.log("Simulation websocket initialized");
   }
 
@@ -53,17 +48,11 @@ export class MinigameGateway implements OnGatewayInit {
     this.logger.log(`Socket disconnected: ${client.id}`);
   }
 
-  // =========================
-  // JOIN SESSION
-  // =========================
   @SubscribeMessage("join_session")
   async join(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     return this.playerGateway.join(client, data);
   }
 
-  // =========================
-  // PLAYER
-  // =========================
   @SubscribeMessage("player:submit_config")
   async submitConfig(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     return this.playerGateway.submitConfiguration(client, data);
@@ -74,9 +63,6 @@ export class MinigameGateway implements OnGatewayInit {
     return this.playerGateway.ready(data);
   }
 
-  // =========================
-  // ROUND
-  // =========================
   @SubscribeMessage("admin:start_round")
   async startRound(@MessageBody() data: any) {
     return this.roundGateway.startRound(data);
@@ -92,9 +78,24 @@ export class MinigameGateway implements OnGatewayInit {
     return this.roundGateway.forceStop(data);
   }
 
-  // =========================
-  // ADMIN
-  // =========================
+  @SubscribeMessage("round:update_time")
+  async updateRoundTime(@MessageBody() data: { sessionId: string; minutesDelta: number }) {
+    const { sessionId, minutesDelta } = data;
+    
+    if (!sessionId || minutesDelta === undefined) {
+      return { success: false, error: "Dados inválidos." };
+    }
+
+    // Repassa o objeto com a assinatura idêntica ao que o RoundGateway espera
+    const result = await this.roundGateway.updateTime({ sessionId, minutesDelta });
+
+    if (!result.success) {
+      return { success: false, error: result.reason };
+    }
+
+    return { success: true, endTime: result.newEndTime };
+  }
+
   @SubscribeMessage("admin:finish_session")
   async finishSession(@MessageBody() data: any) {
     return this.adminGateway.finishSession(data);
@@ -105,9 +106,6 @@ export class MinigameGateway implements OnGatewayInit {
     return this.adminGateway.kickPlayer(data);
   }
 
-  // =========================
-  // STATE
-  // =========================
   @SubscribeMessage("session:get_state")
   async getState(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
     return this.playerGateway.getState(client, data);

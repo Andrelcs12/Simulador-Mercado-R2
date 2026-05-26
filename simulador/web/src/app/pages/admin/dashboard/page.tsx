@@ -208,11 +208,12 @@ const AdminMestre = () => {
     router.push("/pages/admin/setup");
   };
 
-  const handleAlterarTempoRapido = (minutos: number) => {
-    if (!session?.id) return;
-    alterarTempoRodada(minutos, session.id);
+ // 🚀 PADRONIZAÇÃO: O handle de alteração agora é direto
+  const handleAlterarTempo = (deltaMinutes: number) => {
+    if (session?.id) {
+      alterarTempoRodada(deltaMinutes, session.id);
+    }
   };
-
   // =========================
   // LOADING
   // =========================
@@ -266,53 +267,25 @@ const AdminMestre = () => {
               readyCount={readyCount}
             />
 
-            {gameStarted && (
-              <div className="bg-[#0f192b] border border-slate-800 p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <Clock className="text-orange-500" size={20} />
-                  <div>
-                    <h3 className="font-semibold text-sm">Controle de Tempo em Tempo Real</h3>
-                    <p className="text-xs text-slate-400">
-                      Modifique a duração restante da rodada atual para todos.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleAlterarTempoRapido(1)}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded text-xs font-medium transition"
-                  >
-                    +1 Minuto
-                  </button>
-                  <button
-                    onClick={() => handleAlterarTempoRapido(5)}
-                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 rounded text-xs font-medium transition"
-                  >
-                    +5 Minutos
-                  </button>
-                  <button
-                    onClick={() => handleAlterarTempoRapido(-1)}
-                    className="px-3 py-1.5 bg-rose-700 hover:bg-rose-600 rounded text-xs font-medium transition"
-                  >
-                    -1 Minuto
-                  </button>
-                </div>
-              </div>
-            )}
+            
 
             <RoundConfigPanel
-              config={config}
-              gameStarted={gameStarted}
-              showConfig={showConfig}
-              canGoNext={(session?.currentRound ?? 0) > 0}
-              sessionId={session?.id || ""}
-              onToggle={() => setShowConfig((v) => !v)}
-              onConfigChange={handleConfigChange}
-              onIniciar={iniciarRodada}
-              onParar={pararRodada}
-              onProxima={proximaRodada}
-              onAlterarTempoTempoReal={alterarTempoRodada}
-            />
+        config={config}
+        gameStarted={gameStarted}
+        showConfig={showConfig}
+        canGoNext={(session?.currentRound ?? 0) > 0}
+        currentRound={session?.currentRound ? session.currentRound + 1 : config.roundNumber}
+        totalRounds={session?.totalRounds ?? 3}
+        sessionId={session?.id ?? ""}
+        timeLeft={timeLeft}
+        onToggle={() => setShowConfig((v) => !v)}
+        onConfigChange={handleConfigChange}
+        onIniciar={iniciarRodada}
+        onParar={pararRodada}
+        onProxima={proximaRodada}
+        // Passamos a função padronizada aqui
+        onAlterarTempoTempoReal={handleAlterarTempo}
+      />
 
             <AdminRoundRanking
               ranking={ranking}

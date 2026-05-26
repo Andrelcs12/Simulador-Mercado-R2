@@ -145,36 +145,31 @@ export class RoundGateway {
     return payload;
   }
 
-  // ✅ Corrigido: ajusta sobre o endTime real, não Date.now() + delta
-  async updateTime(data: { sessionId: string; minutesDelta: number }) {
-    const currentEndTime = this.endTimes.get(data.sessionId);
+  
+  // No RoundGateway:
+async updateTime(data: { sessionId: string; minutesDelta: number }) {
+  const currentEndTime = this.endTimes.get(data.sessionId);
+  if (!currentEndTime) return { success: false, reason: "No active round" };
 
-    if (!currentEndTime) {
-      // Rodada não está ativa
-      return { success: false, reason: "No active round" };
-    }
+  const adjustmentMs = data.minutesDelta * 60 * 1000;
+  const novoEndTime = currentEndTime + adjustmentMs;
 
-    const adjustmentMs = data.minutesDelta * 60 * 1000;
-    const novoEndTime = currentEndTime + adjustmentMs;
+  // 1. Atualiza a memória
+  this.endTimes.set(data.sessionId, novoEndTime);
+  this.scheduleFinish(data.sessionId, Math.max(0, novoEndTime - Date.now()));
 
-    // Não deixa o timer ir abaixo de 5 segundos restantes
-    const remainingMs = novoEndTime - Date.now();
-    if (remainingMs < 5000 && data.minutesDelta < 0) {
-      return { success: false, reason: "Cannot reduce below 5 seconds" };
-    }
+  // 2. Atualiza o banco (Passando o timestamp absoluto)
+  await this.minigameService.updateTime(data.sessionId, novoEndTime);
 
-    // ✅ Atualiza o endTime salvo
-    this.endTimes.set(data.sessionId, novoEndTime);
-    this.scheduleFinish(data.sessionId, Math.max(0, remainingMs));
+  // 3. Emite para todos
+  this.server.to(data.sessionId).emit("round:time_updated", {
+    endTime: novoEndTime,
+    duration: Math.max(0, novoEndTime - Date.now()) / 1000,
+  });
 
-    // ✅ Emite para todos (admin + jogadores) com o endTime correto
-    this.server.to(data.sessionId).emit("round:time_updated", {
-      endTime: novoEndTime,
-      duration: Math.max(0, remainingMs) / 1000,
-    });
+  return { success: true, newEndTime: novoEndTime };
+}
 
-    return { success: true, newEndTime: novoEndTime };
-  }
 
   async finishRoundManually(sessionId: string) {
     return this.finishRoundInternal(sessionId, "MANUAL");

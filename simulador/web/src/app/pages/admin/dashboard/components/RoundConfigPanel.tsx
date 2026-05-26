@@ -17,9 +17,7 @@ import type {
   RoundConfigCategoryLimitKey,
 } from "../types";
 
-const DURATION_PRESETS = [
-  5, 10, 15, 20, 25, 30, 45, 60, 90,
-];
+const DURATION_PRESETS = [5, 10, 15, 20, 25, 30, 45, 60, 90];
 
 const CATEGORY_LIMIT_FIELDS: Array<{
   label: string;
@@ -31,6 +29,13 @@ const CATEGORY_LIMIT_FIELDS: Array<{
   { label: "Hipel", key: "maxHipel" },
 ];
 
+function formatMs(ms: number): string {
+  const total = Math.ceil(ms / 1000);
+  const minutes = Math.floor(total / 60);
+  const seconds = total % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
 interface RoundConfigPanelProps {
   config: RoundConfig;
   gameStarted: boolean;
@@ -38,15 +43,14 @@ interface RoundConfigPanelProps {
   canGoNext: boolean;
   currentRound?: number;
   totalRounds?: number;
-  sessionId: string; // 🚀 Adicionado para rastrear a sessão ativa no Socket
+  sessionId: string;
+  timeLeft: number; // 🌟 Conectado ao cronômetro global
   onToggle: () => void;
-  onConfigChange: (
-    patch: Partial<RoundConfig>
-  ) => void;
+  onConfigChange: (patch: Partial<RoundConfig>) => void;
   onIniciar: () => void;
   onParar: () => void;
   onProxima: () => void;
-  onAlterarTempoTempoReal?: (minutes: number, sessionId: string) => void; // 🚀 Ajustado para aceitar o ID da sessão
+  onAlterarTempoTempoReal?: (minutes: number, sessionId: string) => void;
 }
 
 export const RoundConfigPanel = ({
@@ -56,17 +60,17 @@ export const RoundConfigPanel = ({
   canGoNext,
   currentRound = 1,
   totalRounds = 3,
-  sessionId, // 🚀 Desestruturado aqui
+  sessionId,
+  timeLeft,
   onToggle,
   onConfigChange,
   onIniciar,
   onParar,
   onProxima,
-  onAlterarTempoTempoReal, 
+  onAlterarTempoTempoReal,
 }: RoundConfigPanelProps) => {
   return (
     <section className="w-full rounded-3xl border border-white/[0.06] bg-[#111827] overflow-hidden">
-
       {/* HEADER */}
       <button
         type="button"
@@ -105,7 +109,6 @@ export const RoundConfigPanel = ({
             className="overflow-hidden"
           >
             <div className="border-t border-white/[0.06] p-5 space-y-5">
-
               {/* INFO */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
@@ -116,7 +119,9 @@ export const RoundConfigPanel = ({
                       </p>
                       <div className="mt-3 text-4xl font-black text-white leading-none">
                         {currentRound}
-                        <span className="text-lg text-slate-500 ml-1">/ {totalRounds}</span>
+                        <span className="text-lg text-slate-500 ml-1">
+                          / {totalRounds}
+                        </span>
                       </div>
                     </div>
                     <div className="w-11 h-11 rounded-2xl bg-orange-500/10 flex items-center justify-center">
@@ -129,7 +134,7 @@ export const RoundConfigPanel = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-black">
-                        Duração
+                        Duração Inicial
                       </p>
                       <div className="mt-3 text-4xl font-black text-white leading-none">
                         {config.durationMinutes}
@@ -163,13 +168,19 @@ export const RoundConfigPanel = ({
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {CATEGORY_LIMIT_FIELDS.map((item) => {
-                    const inputValue = config[item.key] === 0 || config[item.key] === null || config[item.key] === undefined 
-                      ? "" 
-                      : config[item.key];
+                    const inputValue =
+                      config[item.key] === 0 ||
+                      config[item.key] === null ||
+                      config[item.key] === undefined
+                        ? ""
+                        : config[item.key];
 
                     return (
                       <div key={item.key} className="flex flex-col gap-1.5">
-                        <label htmlFor={item.key} className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <label
+                          htmlFor={item.key}
+                          className="text-[11px] font-bold text-slate-400 uppercase tracking-wider"
+                        >
                           {item.label}
                         </label>
                         <input
@@ -199,56 +210,88 @@ export const RoundConfigPanel = ({
                 </div>
               </div>
 
-              {/* PRESETS */}
+              {/* SEÇÃO DINÂMICA COM MINI CRONÔMETRO INTEGRADO */}
               <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
                 <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-black">
-                      Tempo da Rodada
+                      {gameStarted ? "Controle de Tempo em Tempo Real" : "Tempo da Rodada"}
                     </p>
                     <p className="text-xs text-slate-600 mt-1">
-                      Duração da simulação
+                      {gameStarted
+                        ? "Adicione ou remova tempo da rodada ativa"
+                        : "Duração inicial da simulação"}
                     </p>
                   </div>
                   {gameStarted && (
-                    <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] uppercase tracking-widest font-black animate-pulse">
-                      Edição em Tempo Real
+                    <div className="flex items-center gap-3">
+                      {/* Mini Display Reflexivo Local */}
+                      <div className="px-3 py-1 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 font-mono text-sm font-black tabular-nums tracking-tight">
+                        {timeLeft > 0 ? formatMs(timeLeft) : "00:00"}
+                      </div>
+                      <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] uppercase tracking-widest font-black">
+                        Edição Ativa
+                      </div>
                     </div>
                   )}
                 </div>
 
-                <div className="grid grid-cols-3 sm:grid-cols-5 xl:grid-cols-9 gap-2">
-                  {DURATION_PRESETS.map((minutes) => {
-                    const active = config.durationMinutes === minutes;
-
-                    return (
+                <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-5 gap-2">
+                  {gameStarted ? (
+                    <>
                       <button
                         type="button"
-                        key={minutes}
-                        onClick={() => {
-                          if (gameStarted && onAlterarTempoTempoReal) {
-                            // 🚀 Passando os minutos e o ID da sessão para o socket enviar ao backend
-                            onAlterarTempoTempoReal(minutes, sessionId);
-                          } else {
+                        onClick={() => onAlterarTempoTempoReal?.(-5, sessionId)}
+                        className="h-10 rounded-xl text-xs font-black uppercase border bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                      >
+                        - 5 min
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onAlterarTempoTempoReal?.(-1, sessionId)}
+                        className="h-10 rounded-xl text-xs font-black uppercase border bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                      >
+                        - 1 min
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onAlterarTempoTempoReal?.(1, sessionId)}
+                        className="h-10 rounded-xl text-xs font-black uppercase border bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+                      >
+                        + 1 min
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onAlterarTempoTempoReal?.(5, sessionId)}
+                        className="h-10 rounded-xl text-xs font-black uppercase border bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+                      >
+                        + 5 min
+                      </button>
+                    </>
+                  ) : (
+                    DURATION_PRESETS.map((minutes) => {
+                      const active = config.durationMinutes === minutes;
+                      return (
+                        <button
+                          type="button"
+                          key={minutes}
+                          onClick={() =>
                             onConfigChange({
                               durationMinutes: minutes,
                               durationSeconds: 0,
-                            });
+                            })
                           }
-                        }}
-                        className={`
-                          h-10 rounded-xl text-xs font-black uppercase border transition-all cursor-pointer
-                          ${
+                          className={`h-10 rounded-xl text-xs font-black uppercase border transition-all cursor-pointer ${
                             active
                               ? "bg-orange-500 border-orange-400 text-white shadow-lg shadow-orange-500/20"
                               : "bg-white/[0.03] border-white/[0.06] text-slate-400 hover:bg-white/[0.06] hover:text-white"
-                          }
-                        `}
-                      >
-                        {minutes}m
-                      </button>
-                    );
-                  })}
+                          }`}
+                        >
+                          {minutes}m
+                        </button>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 
@@ -293,7 +336,6 @@ export const RoundConfigPanel = ({
                   </button>
                 )}
               </div>
-
             </div>
           </motion.div>
         )}
