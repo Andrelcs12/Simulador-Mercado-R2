@@ -69,9 +69,15 @@ export class MinigameController {
 
   // ================= DASHBOARD =================
 
+
+  // ================= DASHBOARD =================
+
   @Get("session/:id/dashboard/latest")
-  getLatestDashboard(@Param("id") id: string) {
-    return this.service.getLatestDashboard(id);
+  getLatestDashboard(
+    @Param("id") id: string,
+    @Query("storeId") storeId?: string, // 🌟 Adicionado
+  ) {
+    return this.service.getLatestDashboard(id, storeId);
   }
 
   @Get("session/:id/dashboard/history")
@@ -82,13 +88,13 @@ export class MinigameController {
     return this.service.getHistory(id, storeId);
   }
 
-  // ✅ Deve vir DEPOIS das rotas específicas /latest e /history
-  // para o Express não interpretar "latest" como :roundId
   @Get("session/:id/dashboard/:roundId")
   getDashboard(
     @Param("id") id: string,
     @Param("roundId") roundId: string,
+    @Query("storeId") storeId?: string, // 🌟 Adicionado
   ) {
-    return this.service.getDashboard(id, roundId);
+    return this.service.getDashboard(id, roundId, storeId);
   }
+
 }

@@ -7,24 +7,39 @@ export interface KPIs {
   sla: number;
 }
 
+export interface CommercialItem {
+  category: string;
+  stockQty: number;
+  investedCost: number;
+  markupMargin: number;
+  revenue: number;
+  grossProfit: number;
+}
+
+export interface CapexItem {
+  capexId: string;
+  name: string;
+  cost: number;
+}
+
 export interface DashboardResponse {
   sessionId: string;
-
   roundNumber: number;
   totalRounds: number;
-
   myStore: {
     storeId: string;
     name: string;
-
     position: number | null;
-
-    // ✅ FORA DOS KPIS
     marketShare: number;
-
     kpis: KPIs;
+    // 🌟 Correção do Erro: Adicionados no payload da Loja do Jogador
+    comercialBreakdown: CommercialItem[];
+    capexSelections: CapexItem[];
+    configurations: {
+      operatorsQty: number;
+      serviceOperatorsQty: number;
+    };
   };
-
   ranking: {
     storeId: string;
     name: string;
@@ -32,25 +47,17 @@ export interface DashboardResponse {
     finalScore: number;
     marketShare: number;
   }[];
-
-  configurations: any[];
 }
 
 export const EMPTY_DASHBOARD: DashboardResponse = {
   sessionId: "",
-
   roundNumber: 1,
   totalRounds: 3,
-
   myStore: {
     storeId: "",
     name: "Minha Loja",
-
     position: null,
-
-    // ✅ AQUI
     marketShare: 0,
-
     kpis: {
       ebitda: 0,
       revenue: 0,
@@ -59,9 +66,12 @@ export const EMPTY_DASHBOARD: DashboardResponse = {
       csat: 0,
       sla: 0,
     },
+    comercialBreakdown: [],
+    capexSelections: [],
+    configurations: {
+      operatorsQty: 0,
+      serviceOperatorsQty: 0,
+    },
   },
-
   ranking: [],
-
-  configurations: [],
 };

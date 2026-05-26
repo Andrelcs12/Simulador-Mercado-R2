@@ -1,12 +1,12 @@
-// src/app/pages/dashboard/hooks/useDashboard.ts
-import { useState, useEffect, useMemo, useRef } from "react";
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { DashboardResponse, EMPTY_DASHBOARD } from "../types";
 
-// Constantes do seu Onboarding
-const MAX_STOCK_STORAGE_KEY = "minigame_max_stock_config"; // Alinhe com sua chave real
+const MAX_STOCK_STORAGE_KEY = "minigame_max_stock_config";
 const MAX_STOCK_UPDATED_EVENT = "max_stock_config_updated";
 
 function persistMaxStockConfig(maxStock: any) {
@@ -31,11 +31,16 @@ export function useDashboard(API_URL: string) {
   const [activeRound, setActiveRound] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
+  // Reatividade em cadeia: se activeRound mudar, a interface inteira muda
   const currentData = useMemo(() => history[activeRound] || EMPTY_DASHBOARD, [history, activeRound]);
 
-  const loadDashboardData = async (sessionId: string) => {
+  const loadDashboardData = async (sessionId: string, storeId?: string) => {
     try {
-      const res = await fetch(`${API_URL}/minigame/session/${sessionId}/dashboard/latest`);
+      const url = storeId 
+        ? `${API_URL}/minigame/session/${sessionId}/dashboard/latest?storeId=${storeId}`
+        : `${API_URL}/minigame/session/${sessionId}/dashboard/latest`;
+
+      const res = await fetch(url);
       if (!res.ok) throw new Error();
       const json: DashboardResponse = await res.json();
       
@@ -50,7 +55,10 @@ export function useDashboard(API_URL: string) {
 
   useEffect(() => {
     const saved = localStorage.getItem("player_data");
-    if (!saved) return;
+    if (!saved) {
+      setLoading(false);
+      return;
+    }
     const player = JSON.parse(saved);
 
     if (!player.sessionId) {
@@ -58,10 +66,8 @@ export function useDashboard(API_URL: string) {
       return;
     }
 
-    // 1. Carga REST Inicial
-    loadDashboardData(player.sessionId);
+    loadDashboardData(player.sessionId, player.storeId || player.id);
 
-    // 2. Conexão Única Socket.io
     const socket: Socket = io(`${API_URL}/simulation`, {
       transports: ["websocket"],
       reconnection: true,
@@ -72,14 +78,12 @@ export function useDashboard(API_URL: string) {
       socket.emit("join_session", { sessionId: player.sessionId, playerId: player.id });
     });
 
-    // LISTENER A: Atualização do Painel da rodada calculada
     socket.on("dashboard:updated", (updatedData: DashboardResponse) => {
       setHistory((prev) => ({ ...prev, [updatedData.roundNumber]: updatedData }));
       setActiveRound(updatedData.roundNumber);
       toast.success(`Resultados da Rodada ${updatedData.roundNumber} computados!`);
     });
 
-    // LISTENER B: O Watcher de nova rodada (Redirecionamento)
     socket.on("round:started", (data: any) => {
       if (data.maxStock) {
         persistMaxStockConfig(data.maxStock);
