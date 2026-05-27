@@ -57,6 +57,7 @@ export default function DashboardPage() {
         <KPISection 
           results={currentData.myStore?.kpis} 
           cashBalance={currentData.myStore?.kpis?.cash || 0} 
+          isProjected={currentData.myStore?.isProjected || false}
         />
 
         {/* Layout Split Screen */}
@@ -71,6 +72,7 @@ export default function DashboardPage() {
             
             <ComercialDetails 
               comercialBreakdown={currentData.myStore?.comercialBreakdown || []} 
+              isProjected={currentData.myStore?.isProjected || false}
             />
           </div>
 
@@ -79,6 +81,7 @@ export default function DashboardPage() {
             <StrategyPanel 
               operatorsQty={currentData.myStore?.configurations?.operatorsQty || 0}
               serviceOperatorsQty={currentData.myStore?.configurations?.serviceOperatorsQty || 0}
+              quizScore={currentData.myStore?.configurations?.quizScore || 0}
               capexSelections={currentData.myStore?.capexSelections || []}
             />
           </div>
