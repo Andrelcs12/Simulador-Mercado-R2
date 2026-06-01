@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { RefreshCw, Clock } from "lucide-react";
+import { RefreshCw, Clock, Users } from "lucide-react";
 
 import { Header } from "./components/Header";
 import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
@@ -19,6 +19,20 @@ import { Player, RoundConfig } from "./types";
 type DashboardState = {
   ranking?: Parameters<typeof AdminRoundRanking>[0]["ranking"];
 };
+
+type RoundRankingBoardItem = {
+  roundId: string;
+  roundNumber: number;
+  rankings: Array<{
+    position: number;
+    playerId: string;
+    playerName: string;
+    storeId: string;
+    score: number;
+  }>;
+};
+
+type RoundRankingBoard = RoundRankingBoardItem[];
 
 const AdminMestre = () => {
   const router = useRouter();
@@ -52,8 +66,28 @@ const AdminMestre = () => {
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmKick, setConfirmKick] = useState<Player | null>(null);
   const [dashboard] = useState<DashboardState | null>(null);
+  const [roundRankingBoard, setRoundRankingBoard] = useState<RoundRankingBoard>([]);
 
   const connectedRef = useRef(false);
+
+  const fetchRoundRankingBoard = useCallback(
+    async (sessionId: string) => {
+      try {
+        const response = await fetch(
+          `${API_URL}/minigame/session/${sessionId}/dashboard/round-ranking-board`,
+        );
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        setRoundRankingBoard(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.warn("Erro ao carregar ranking por rodada", error);
+      }
+    },
+    [API_URL],
+  );
 
   const [config, setConfig] = useState<RoundConfig>({
     durationMinutes: 15,
@@ -87,7 +121,35 @@ const AdminMestre = () => {
         )
       : 0;
 
-  const ranking = dashboard?.ranking ?? [];
+  const ranking = useMemo(() => {
+    const currentRoundNumber =
+      session?.currentRound ||
+      roundRankingBoard[roundRankingBoard.length - 1]?.roundNumber ||
+      0;
+
+    const activeRound =
+      roundRankingBoard.find((round) => round.roundNumber === currentRoundNumber) ||
+      roundRankingBoard[roundRankingBoard.length - 1];
+
+    if (!activeRound) return [];
+
+    return activeRound.rankings.map((item) => ({
+      storeId: item.storeId,
+      name: item.playerName,
+      position: item.position,
+      finalScore: item.score,
+      marketShare: 0,
+      submitted: true,
+      ready: true,
+      rounds: roundRankingBoard.map((round) => ({
+        round: round.roundNumber,
+        score:
+          round.rankings.find((rank) => rank.storeId === item.storeId)
+            ?.score ?? 0,
+        marketShare: 0,
+      })),
+    }));
+  }, [roundRankingBoard, session?.currentRound]);
 
   const handleConfigChange = (patch: Partial<RoundConfig>) => {
     const nextConfig = { ...config, ...patch };
@@ -140,6 +202,8 @@ const AdminMestre = () => {
           ...prev,
           roundNumber: (sessionData.currentRound ?? 0) + 1,
         }));
+
+        fetchRoundRankingBoard(sessionData.id);
       } catch {
         toast.error("Erro ao carregar sessão");
       } finally {
@@ -148,7 +212,14 @@ const AdminMestre = () => {
     };
 
     fetchAll();
-  }, [API_URL, conectar, router, setPlayers, setSession]);
+  }, [API_URL, conectar, fetchRoundRankingBoard, router, setPlayers, setSession]);
+
+  useEffect(() => {
+    if (!session?.id) return;
+    if (gameStarted) return;
+
+    fetchRoundRankingBoard(session.id);
+  }, [fetchRoundRankingBoard, gameStarted, session?.id]);
 
   // =========================
   // TIMER
@@ -291,6 +362,84 @@ const AdminMestre = () => {
               ranking={ranking}
               roundNumber={config.roundNumber}
             />
+
+            <div className="mb-6 space-y-4">
+              <section className="rounded-3xl border border-white/[0.06] bg-[#111827] overflow-hidden">
+                <div className="px-5 py-5 border-b border-white/[0.06] bg-[#0F172A]">
+                  <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center">
+                        <Clock size={20} className="text-orange-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-black uppercase tracking-[0.18em] text-white">
+                          Ranking por Rodada
+                        </h2>
+                        <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 mt-1">
+                          múltiplas rodadas agrupadas por rodada
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 space-y-4">
+                  {roundRankingBoard.length === 0 ? (
+                    <div className="rounded-3xl border border-dashed border-white/[0.06] bg-[#0B1220] p-10 text-center">
+                      <Users size={34} className="mx-auto text-slate-700 mb-4" />
+                      <h3 className="text-sm font-black uppercase tracking-widest text-slate-300">
+                        Nenhum ranking por rodada disponível
+                      </h3>
+                      <p className="text-xs text-slate-600 mt-2">
+                        Aguardando resultados de rodada para exibir o board.
+                      </p>
+                    </div>
+                  ) : (
+                    roundRankingBoard.map((round) => (
+                      <div
+                        key={round.roundId}
+                        className="rounded-3xl border border-white/[0.06] bg-[#0B1220] overflow-hidden"
+                      >
+                        <div className="px-5 py-4 border-b border-white/[0.06]">
+                          <h3 className="text-sm font-black text-white">
+                            Rodada {round.roundNumber}
+                          </h3>
+                        </div>
+                        <div className="p-4">
+                          <div className="grid gap-3">
+                            {round.rankings.map((item) => (
+                              <div
+                                key={item.storeId}
+                                className="grid grid-cols-[auto_1fr_auto] gap-4 rounded-2xl border border-white/[0.08] bg-[#111827] p-4"
+                              >
+                                <div className="text-white font-black text-lg">
+                                  #{item.position}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-bold text-white">
+                                    {item.playerName}
+                                  </p>
+                                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                                    {item.storeId}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
+                                    Score
+                                  </p>
+                                  <p className="text-lg font-black text-white">
+                                    {item.score.toFixed(0)} pts
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
+            </div>
           </div>
 
           <div className="xl:col-span-4">
@@ -302,7 +451,6 @@ const AdminMestre = () => {
               />
             </div>
           </div>
-
         </div>
       </main>
 

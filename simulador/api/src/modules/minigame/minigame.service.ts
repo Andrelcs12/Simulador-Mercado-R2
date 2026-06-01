@@ -138,9 +138,13 @@ async updateTime(sessionId: string, newEndTime: number) {
   }
 
   // Adicione dentro de MinigameService
-getHistory(sessionId: string, storeId?: string) {
-  return this.dashboardService.getHistory(sessionId, storeId);
-}
+  getHistory(sessionId: string, storeId?: string) {
+    return this.dashboardService.getHistory(sessionId, storeId);
+  }
+
+  getRoundRankingBoard(sessionId: string) {
+    return this.dashboardService.getRoundRankingBoard(sessionId);
+  }
 
   // ================= SIMULATION =================
 

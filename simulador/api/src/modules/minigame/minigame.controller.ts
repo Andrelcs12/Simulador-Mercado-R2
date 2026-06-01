@@ -88,6 +88,11 @@ export class MinigameController {
     return this.service.getHistory(id, storeId);
   }
 
+  @Get("session/:id/dashboard/round-ranking-board")
+  getRoundRankingBoard(@Param("id") id: string) {
+    return this.service.getRoundRankingBoard(id);
+  }
+
   @Get("session/:id/dashboard/:roundId")
   getDashboard(
     @Param("id") id: string,

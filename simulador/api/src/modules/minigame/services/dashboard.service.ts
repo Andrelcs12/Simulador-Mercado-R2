@@ -47,7 +47,7 @@ export class DashboardService {
     const [ranking, myResult, myConfig] = await Promise.all([
       this.prisma.roundRanking.findMany({
         where: { sessionId, roundId },
-        include: { store: true },
+        include: { store: { include: { players: true } } },
         orderBy: { position: "asc" },
         take: 50,
       }),
@@ -131,10 +131,13 @@ export class DashboardService {
         : this.emptyMyStore(),
 
       ranking: ranking.map((r) => ({
+        roundId: r.roundId,
+        playerId: r.store.players?.[0]?.id ?? "",
+        playerName: r.store.players?.[0]?.name ?? r.store.name,
         storeId: r.storeId,
         name: r.store.name,
+        score: r.finalScore,
         position: r.position,
-        finalScore: r.finalScore,
         marketShare: (r.marketShare ?? 0) * 100,
       })),
     };
@@ -157,6 +160,72 @@ async getHistory(sessionId: string, storeId?: string) {
     marketShare: r.marketShare
   }));
 }
+
+  async getRoundRankingBoard(sessionId: string) {
+    const rankings = await this.prisma.roundRanking.findMany({
+      where: { sessionId },
+      include: {
+        round: {
+          select: {
+            id: true,
+            roundNumber: true,
+          },
+        },
+        store: {
+          include: {
+            players: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        { round: { roundNumber: "asc" } },
+        { position: "asc" },
+      ],
+    });
+
+    const grouped = new Map<string, {
+      roundId: string;
+      roundNumber: number;
+      rankings: Array<{
+        position: number;
+        playerId: string;
+        playerName: string;
+        storeId: string;
+        score: number;
+      }>;
+    }>();
+
+    for (const item of rankings) {
+      const roundId = item.roundId;
+      const roundNumber = item.round?.roundNumber ?? 0;
+      const player = item.store.players?.[0];
+
+      if (!grouped.has(roundId)) {
+        grouped.set(roundId, {
+          roundId,
+          roundNumber,
+          rankings: [],
+        });
+      }
+
+      grouped.get(roundId)!.rankings.push({
+        position: item.position,
+        playerId: player?.id ?? "",
+        playerName: player?.name ?? item.store.name,
+        storeId: item.storeId,
+        score: item.finalScore,
+      });
+    }
+
+    return Array.from(grouped.values()).sort(
+      (a, b) => a.roundNumber - b.roundNumber,
+    );
+  }
 
   // ======================================================
   // DASHBOARD AUTOMÁTICO (SEM ROUND ID)
