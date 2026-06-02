@@ -17,12 +17,14 @@ interface UseLobbySocketReturn {
   config: GameConfig;
   myPlayerData: Player | null;
   confirmarPronto: () => void;
+  isMounted: boolean; // Retornado para ajudar a evitar erros de hidratação na tela
 }
 
 export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
   const router = useRouter();
   const socketRef = useRef<Socket | null>(null);
 
+  const [isMounted, setIsMounted] = useState(false);
   const [connected, setConnected] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
   const [isReady, setIsReady] = useState(false);
@@ -39,7 +41,9 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
   });
 
   useEffect(() => {
-    const savedData = localStorage.getItem("player_data");
+    setIsMounted(true); // Indica que o código agora roda 100% no cliente
+
+    const savedData = typeof window !== "undefined" ? localStorage.getItem("player_data") : null;
     if (!savedData) {
       router.push("/pages/registro-do-usuario");
       return;
@@ -122,20 +126,44 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       setTimeout(() => router.push("/pages/onboarding"), 2200);
     });
 
-    fetch(`${API_URL}/minigame/session/${player.sessionId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.players) {
-          setPlayers(data.players.map(normalize));
-        }
-        if (data.code) setSessionCode(data.code);
-        if (data.adminName)
-          setConfig((prev) => ({ ...prev, adminName: data.adminName }));
-        if (data.currentRound) setRoundLabel(`Rodada ${data.currentRound}`);
-        const me = data.players?.find((p: Player) => p.id === player.id);
-        if (me?.isReady) setIsReady(true);
-      })
-      .catch(console.error);
+
+    // Carga HTTP inicial
+fetch(`${API_URL}/minigame/session/${player.sessionId}`)
+  .then((r) => {
+    if (!r.ok) throw new Error("Erro na requisição da sessão");
+    return r.json();
+  })
+  .then((data) => {
+    if (!data) return;
+
+    if (data.players && Array.isArray(data.players)) {
+      const normalizedPlayers = data.players.map(normalize);
+
+      setPlayers(normalizedPlayers);
+
+      const me = normalizedPlayers.find(
+        (p: Player) => p.id === player.id
+      );
+
+      if (me?.isReady) setIsReady(true);
+    }
+
+    if (data.code) setSessionCode(data.code);
+
+    if (data.adminName) {
+      setConfig((prev) => ({
+        ...prev,
+        adminName: data.adminName,
+      }));
+    }
+
+    if (data.currentRound) {
+      setRoundLabel(`Rodada ${data.currentRound}`);
+    }
+  })
+  .catch((err) =>
+    console.error("Erro ao buscar sessão inicial:", err)
+  );
 
     return () => {
       socket.disconnect();
@@ -173,5 +201,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     config,
     myPlayerData,
     confirmarPronto,
+    isMounted,
   };
 };
