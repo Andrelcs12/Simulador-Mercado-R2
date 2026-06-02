@@ -15,12 +15,14 @@ interface UseLobbySocketReturn {
   config: GameConfig;
   myPlayerData: Player | null;
   confirmarPronto: () => void;
+  isMounted: boolean; // Retornado para ajudar a evitar erros de hidratação na tela
 }
 
 export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
   const router = useRouter();
   const socketRef = useRef<Socket | null>(null);
 
+  const [isMounted, setIsMounted] = useState(false);
   const [connected, setConnected] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
   const [isReady, setIsReady] = useState(false);
@@ -38,7 +40,9 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
 
   // ── Carga inicial + socket ────────────────────────────
   useEffect(() => {
-    const savedData = localStorage.getItem("player_data");
+    setIsMounted(true); // Indica que o código agora roda 100% no cliente
+
+    const savedData = typeof window !== "undefined" ? localStorage.getItem("player_data") : null;
     if (!savedData) {
       router.push("/pages/registro-do-usuario");
       return;
@@ -54,7 +58,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     });
     socketRef.current = socket;
 
-    // Entra no room após connect (e após cada reconexão)
     socket.on("connect", () => {
       setConnected(true);
       socket.emit("join_session", {
@@ -70,13 +73,11 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       if (newConfig.duration) setTempoRestante(newConfig.duration);
     });
 
-    // Normaliza shape do backend: { store: { name } } ou { storeName }
     const normalize = (p: any): Player => ({
       ...p,
       storeName: p.storeName ?? p.store?.name ?? "Sem loja",
     });
 
-    // Lista completa — fonte da verdade
     socket.on("session:players_updated", (list: any[]) => {
       const normalized = (list ?? []).map(normalize);
       setPlayers(normalized);
@@ -84,7 +85,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       if (me?.isReady) setIsReady(true);
     });
 
-    // Novo jogador entrou (Kahoot-style: atualiza lista sem F5)
     socket.on("player:joined", (newPlayer: any) => {
       const normalized = normalize(newPlayer);
       setPlayers((prev) =>
@@ -117,25 +117,27 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       setTimeout(() => router.push("/pages/onboarding"), 2200);
     });
 
-    // Carga HTTP inicial
+    // Carga HTTP inicial (CORRIGIDO: Proteção contra null/erros de requisição)
     fetch(`${API_URL}/minigame/session/${player.sessionId}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Erro na requisição da sessão");
+        return r.json();
+      })
       .then((data) => {
-        if (data.players) {
-          const normalize = (p: any): Player => ({
-            ...p,
-            storeName: p.storeName ?? p.store?.name ?? "Sem loja",
-          });
+        if (!data) return; // Segurança extra caso venha vazio
+
+        if (data.players && Array.isArray(data.players)) {
           setPlayers(data.players.map(normalize));
+          const me = data.players.find((p: Player) => p.id === player.id);
+          if (me?.isReady) setIsReady(true);
         }
+        
         if (data.code) setSessionCode(data.code);
         if (data.adminName)
           setConfig((prev) => ({ ...prev, adminName: data.adminName }));
         if (data.currentRound) setRoundLabel(`Rodada ${data.currentRound}`);
-        const me = data.players?.find((p: Player) => p.id === player.id);
-        if (me?.isReady) setIsReady(true);
       })
-      .catch(console.error);
+      .catch((err) => console.error("Erro ao buscar sessão inicial:", err));
 
     return () => {
       socket.disconnect();
@@ -175,9 +177,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     config,
     myPlayerData,
     confirmarPronto,
+    isMounted,
   };
-
-  console.log(
-    "loja é", myPlayerData
-  )
 };

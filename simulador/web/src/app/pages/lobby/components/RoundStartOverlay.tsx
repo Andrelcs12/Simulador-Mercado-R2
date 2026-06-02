@@ -27,7 +27,7 @@ export const RoundStartOverlay = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1220]/90 backdrop-blur-xl"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B101D]/90 backdrop-blur-xl"
         >
           <motion.div
             initial={{ scale: 0.9, y: 20, opacity: 0 }}
@@ -37,7 +37,7 @@ export const RoundStartOverlay = ({
             className="text-center px-6 max-w-md w-full"
           >
 
-            <div className="bg-[#111827] border border-white/[0.06] rounded-3xl p-8">
+            <div className="bg-[#131B2E] border border-white/[0.04] rounded-3xl p-8 shadow-2xl shadow-black/50">
 
               <div className="text-5xl mb-5">🚀</div>
 
@@ -45,7 +45,7 @@ export const RoundStartOverlay = ({
                 Rodada iniciada
               </h2>
 
-              <p className="text-orange-400 font-black uppercase tracking-[0.3em] mt-3 text-xs">
+              <p className="text-cyan-400 font-black uppercase tracking-[0.3em] mt-3 text-xs">
                 {roundLabel}
               </p>
 
