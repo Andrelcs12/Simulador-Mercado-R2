@@ -66,7 +66,8 @@ export function useDashboard(API_URL: string) {
       return;
     }
 
-    loadDashboardData(player.sessionId, player.storeId || player.id);
+    const storeId = player.storeId || player.store?.id;
+    loadDashboardData(player.sessionId, storeId);
 
     const socket: Socket = io(`${API_URL}/simulation`, {
       transports: ["websocket"],

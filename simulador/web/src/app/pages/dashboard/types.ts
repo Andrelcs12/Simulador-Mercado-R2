@@ -5,11 +5,14 @@ export interface KPIs {
   cash: number;
   csat: number;
   sla: number;
+  averagePrice?: number;
+  availabilityRate?: number;
 }
 
 export interface CommercialItem {
   category: string;
   stockQty: number;
+  maxEstoque?: number;
   investedCost: number;
   markupMargin: number;
   revenue: number;
@@ -35,9 +38,11 @@ export interface DashboardResponse {
     // 🌟 Correção do Erro: Adicionados no payload da Loja do Jogador
     comercialBreakdown: CommercialItem[];
     capexSelections: CapexItem[];
+    isProjected: boolean;
     configurations: {
       operatorsQty: number;
       serviceOperatorsQty: number;
+      quizScore: number;
     };
   };
   ranking: {
@@ -68,9 +73,11 @@ export const EMPTY_DASHBOARD: DashboardResponse = {
     },
     comercialBreakdown: [],
     capexSelections: [],
+    isProjected: true,
     configurations: {
       operatorsQty: 0,
       serviceOperatorsQty: 0,
+      quizScore: 0,
     },
   },
   ranking: [],

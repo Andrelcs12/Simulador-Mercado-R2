@@ -5,6 +5,79 @@ import { PrismaService } from "@/prisma.service";
 export class DashboardService {
   constructor(private prisma: PrismaService) {}
 
+  private buildCommercialBreakdown(config: any) {
+    return config?.stockInputs.map((stock) => {
+      const sellPrice =
+        stock.category.unitCost * (1 + (stock.commercialMargin || 30) / 100);
+      const investedCost = stock.buyQty * stock.category.unitCost;
+      const revenue = stock.buyQty * sellPrice;
+
+      return {
+        categoryId: stock.categoryId,
+        category: stock.category.name,
+        stockQty: stock.buyQty,
+        maxEstoque: stock.category.totalMarketStock,
+        investedCost,
+        markupMargin: stock.commercialMargin,
+        revenue,
+        grossProfit: revenue - investedCost,
+      };
+    }) ?? [];
+  }
+
+  private buildCapexSelections(config: any) {
+    return config?.capexSelections.map((sel) => ({
+      capexId: sel.capex.slug || sel.capexId,
+      name: sel.capex.name,
+      cost: sel.capex.cost,
+    })) ?? [];
+  }
+
+  private calculateProjectedSla(serviceOperatorsQty: number) {
+    if (serviceOperatorsQty >= 8) return 95;
+    if (serviceOperatorsQty >= 6) return 85;
+    if (serviceOperatorsQty >= 4) return 75;
+    if (serviceOperatorsQty >= 2) return 60;
+    return 40;
+  }
+
+  private buildProjectedKpis(config: any) {
+    const commercialBreakdown = this.buildCommercialBreakdown(config);
+    const capexSelections = this.buildCapexSelections(config);
+
+    const revenue = commercialBreakdown.reduce(
+      (acc, item) => acc + item.revenue,
+      0,
+    );
+    const stockCost = commercialBreakdown.reduce(
+      (acc, item) => acc + item.investedCost,
+      0,
+    );
+    const capexCosts = capexSelections.reduce(
+      (acc, item) => acc + item.cost,
+      0,
+    );
+
+    const operatingCosts =
+      (config?.operatorsQty ?? 0) * 2200 +
+      (config?.serviceOperatorsQty ?? 0) * 3200;
+
+    const expenses = stockCost + capexCosts + operatingCosts;
+    const cash = (config?.store?.cashBalance ?? 700000) - expenses;
+
+    const operatorFactor = Math.min((config?.operatorsQty ?? 0) / 10, 1);
+    const quizFactor = Math.min(Math.max((config?.quizScore ?? 0) / 100, 0), 1);
+
+    return {
+      ebitda: revenue - expenses,
+      revenue,
+      expenses,
+      cash,
+      csat: Math.round(operatorFactor * quizFactor * 100),
+      sla: this.calculateProjectedSla(config?.serviceOperatorsQty ?? 0),
+    };
+  }
+
   // ======================================================
   // EMPTY FALLBACK (NUNCA NULL PRO FRONT)
   // ======================================================
@@ -22,6 +95,14 @@ export class DashboardService {
         csat: 0,
         sla: 0,
       },
+      comercialBreakdown: [],
+      capexSelections: [],
+      configurations: {
+        operatorsQty: 0,
+        serviceOperatorsQty: 0,
+        quizScore: 0,
+      },
+      isProjected: true,
     };
   }
 
@@ -64,6 +145,7 @@ export class DashboardService {
         ? this.prisma.configuration.findUnique({
             where: { storeId_roundId: { storeId, roundId } },
             include: {
+              store: true,
               stockInputs: { include: { category: true } },
               capexSelections: { include: { capex: true } },
             },
@@ -76,6 +158,14 @@ export class DashboardService {
           where: { sessionId_roundId_storeId: { sessionId, roundId, storeId } },
         })
       : null;
+
+    const commercialBreakdown = this.buildCommercialBreakdown(myConfig);
+    const capexSelections = this.buildCapexSelections(myConfig);
+    const configurations = {
+      operatorsQty: myConfig?.operatorsQty ?? 0,
+      serviceOperatorsQty: myConfig?.serviceOperatorsQty ?? 0,
+      quizScore: myConfig?.quizScore ?? 0,
+    };
 
     return {
       sessionId,
@@ -100,35 +190,26 @@ export class DashboardService {
               availabilityRate: (myResult.availabilityRate ?? 0) * 100,
             },
             // 🌟 DETALHAMENTO COMERCIAL POR CATEGORIA PARA A TABELA DO FRONT
-            comercialBreakdown: myConfig?.stockInputs.map((stock) => {
-              const sellPrice = stock.category.unitCost * (1 + (stock.commercialMargin || 30) / 100);
-              const investidoCusto = stock.buyQty * stock.category.unitCost;
-              
-              // Como seu banco consolidou o faturamento, no MVP calculamos o proporcional baseado no Market Share / Demand da rodada
-              // Ou enviamos o Faturamento Ideal planejado para bater com o layout atual do seu front
-              const faturamentoIdeal = stock.buyQty * sellPrice; 
-              const lucroBrutoIdeal = faturamentoIdeal - investidoCusto;
-
-              return {
-                categoryId: stock.categoryId,
-                name: stock.category.name,
-                qtd: stock.buyQty,
-                maxEstoque: stock.category.totalMarketStock, // Limite contextual
-                investido: investidoCusto,
-                margem: stock.commercialMargin,
-                faturamento: faturamentoIdeal,
-                lucroBruto: lucroBrutoIdeal,
-              };
-            }) ?? [],
+            comercialBreakdown: commercialBreakdown,
 
             // 🌟 CAPEX COMPRADOS NA RODADA
-            capexSelections: myConfig?.capexSelections.map((sel) => ({
-              id: sel.capex.slug || sel.capexId,
-              label: sel.capex.name,
-              value: sel.capex.cost,
-            })) ?? [],
+            capexSelections,
+            configurations,
+            isProjected: false,
           }
-        : this.emptyMyStore(),
+        : myConfig
+          ? {
+              storeId: myConfig.storeId,
+              name: myConfig.store?.name ?? "Minha Loja",
+              position: null,
+              marketShare: 0,
+              kpis: this.buildProjectedKpis(myConfig),
+              comercialBreakdown: commercialBreakdown,
+              capexSelections,
+              configurations,
+              isProjected: true,
+            }
+          : this.emptyMyStore(),
 
       ranking: ranking.map((r) => ({
         storeId: r.storeId,
