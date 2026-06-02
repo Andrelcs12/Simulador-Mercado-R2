@@ -6,9 +6,10 @@ import { CommercialItem } from "../types";
 
 interface ComercialDetailsProps {
   comercialBreakdown: CommercialItem[];
+  isProjected?: boolean;
 }
 
-export default function ComercialDetails({ comercialBreakdown = [] }: ComercialDetailsProps) {
+export default function ComercialDetails({ comercialBreakdown = [], isProjected = false }: ComercialDetailsProps) {
   const totals = comercialBreakdown.reduce(
     (acc, cur) => {
       acc.investido += cur.investedCost || 0;
@@ -23,6 +24,11 @@ export default function ComercialDetails({ comercialBreakdown = [] }: ComercialD
     <div className="rounded-2xl border border-white/10 bg-white/5 p-5 overflow-x-auto">
       <div className="flex items-center gap-2 mb-4">
         <Layers size={14} className="text-orange-500" />
+        {isProjected && (
+          <span className="rounded border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-orange-400">
+            Projetado
+          </span>
+        )}
         <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
           Resultados Comerciais Auditados por Gôndola
         </p>

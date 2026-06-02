@@ -7,18 +7,20 @@ import { CapexItem } from "../types";
 interface StrategyPanelProps {
   operatorsQty: number;
   serviceOperatorsQty: number;
+  quizScore: number;
   capexSelections: CapexItem[];
 }
 
-export default function StrategyPanel({ operatorsQty, serviceOperatorsQty, capexSelections }: StrategyPanelProps) {
+export default function StrategyPanel({ operatorsQty, serviceOperatorsQty, quizScore, capexSelections }: StrategyPanelProps) {
   
   let slaLabel = "Sem Operação";
   let slaColor = "text-rose-400 border-rose-500/20 bg-rose-500/10";
   
-  if (serviceOperatorsQty >= 6) { slaLabel = "Excelente (95%)"; slaColor = "text-emerald-400 border-emerald-500/20 bg-emerald-500/10"; }
-  else if (serviceOperatorsQty >= 4) { slaLabel = "Bom (90%)"; slaColor = "text-sky-400 border-sky-500/20 bg-sky-500/10"; }
-  else if (serviceOperatorsQty >= 2) { slaLabel = "Regular (80%)"; slaColor = "text-orange-400 border-orange-500/20 bg-orange-500/10"; }
-  else if (serviceOperatorsQty === 1) { slaLabel = "Crítico (50%)"; slaColor = "text-amber-500 border-amber-500/20 bg-amber-500/10"; }
+  if (serviceOperatorsQty >= 8) { slaLabel = "Excelente (95%)"; slaColor = "text-emerald-400 border-emerald-500/20 bg-emerald-500/10"; }
+  else if (serviceOperatorsQty >= 6) { slaLabel = "Bom (85%)"; slaColor = "text-sky-400 border-sky-500/20 bg-sky-500/10"; }
+  else if (serviceOperatorsQty >= 4) { slaLabel = "Regular (75%)"; slaColor = "text-orange-400 border-orange-500/20 bg-orange-500/10"; }
+  else if (serviceOperatorsQty >= 2) { slaLabel = "Critico (60%)"; slaColor = "text-amber-500 border-amber-500/20 bg-amber-500/10"; }
+  else { slaLabel = "Critico (40%)"; }
 
   return (
     <div className="space-y-6">
@@ -34,6 +36,10 @@ export default function StrategyPanel({ operatorsQty, serviceOperatorsQty, capex
           <div className="flex justify-between items-center text-xs">
             <span className="text-slate-400 font-bold uppercase">Suporte de TI:</span>
             <span className="font-black text-white">{serviceOperatorsQty} Proffs</span>
+          </div>
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-slate-400 font-bold uppercase">Quiz Operacional:</span>
+            <span className="font-black text-white">{quizScore}%</span>
           </div>
           <div className="pt-3 border-t border-white/5 flex justify-between items-center">
             <span className="text-[10px] text-slate-500 uppercase font-black">Previsão SLA:</span>
