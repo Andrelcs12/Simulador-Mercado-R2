@@ -16,10 +16,9 @@ import { RankingService } from "./services/ranking.service";
 
 import { SimulationService } from "./simulation.service";
 
-// gateways
-import { PlayerGateway } from "./gateways/player.gateway";
-import { RoundGateway } from "./gateways/round.gateway";
-import { AdminGateway } from "./gateways/admin.gateway";
+import { PlayerHandler } from "./handlers/player.handler";
+import { RoundHandler } from "./handlers/round.handler";
+import { AdminHandler } from "./handlers/admin.handler";
 
 @Module({
   imports: [],
@@ -30,11 +29,13 @@ import { AdminGateway } from "./gateways/admin.gateway";
     // core
     MinigameService,
 
-    // gateways
+    // gateway principal (o único que expõe a porta/namespace WS)
     MinigameGateway,
-    PlayerGateway,
-    RoundGateway,
-    AdminGateway,
+
+
+    PlayerHandler,
+    RoundHandler,
+    AdminHandler,
 
     // services
     SessionService,

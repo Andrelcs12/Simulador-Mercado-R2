@@ -76,17 +76,19 @@ export class MinigameService {
   // ================= ROUND =================
 
   async getCategories() {
-  return this.prisma.categoryMaster.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-}
+    return this.submissionService.getCategories();
+  }
 
   startRound(sessionId: string, duration: number) {
     return this.roundService.startRound(sessionId, duration);
   }
+
+
+  // No MinigameService:
+async updateTime(sessionId: string, newEndTime: number) {
+  // Agora recebe o valor absoluto do tempo, não o delta
+  return this.roundService.updateRoundTime(sessionId, newEndTime);
+}
 
   finishRound(
     sessionId: string,
@@ -134,6 +136,11 @@ export class MinigameService {
   getLatestDashboard(sessionId: string, storeId?: string) {
     return this.dashboardService.getLatestDashboard(sessionId, storeId);
   }
+
+  // Adicione dentro de MinigameService
+getHistory(sessionId: string, storeId?: string) {
+  return this.dashboardService.getHistory(sessionId, storeId);
+}
 
   // ================= SIMULATION =================
 

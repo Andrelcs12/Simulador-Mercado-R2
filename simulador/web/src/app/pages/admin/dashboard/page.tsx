@@ -1,37 +1,27 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { RefreshCw } from "lucide-react";
-
-import { RoundConfig } from "./types";
-import { useAdminSocket } from "./hooks/useAdminSocket";
+import { RefreshCw, Clock } from "lucide-react";
 
 import { Header } from "./components/Header";
-import { StatsCards } from "./components/StatsCard";
-import { RoundTimer } from "./components/RoundTimer";
-import { RoundConfigPanel } from "./components/RoundConfigPanel";
-import { PlayersTable } from "./components/PlayersTable";
 import { ModalEncerrarSessao, ModalExpulsarJogador } from "./components/Modals";
+import { PlayersTable } from "./components/PlayersTable";
+import { RoundConfigPanel } from "./components/RoundConfigPanel";
 import AdminRoundRanking from "./components/RoundRankingBoard";
+import { RoundTimer } from "./components/RoundTimer";
+import { StatsCards } from "./components/StatsCard";
+import { useAdminSocket } from "./hooks/useAdminSocket";
+import { useOnboarding, MaxStockConfig } from "../../onboarding/context/OnboardingContext";
+import { Player, RoundConfig } from "./types";
 
-import { Player } from "./types";
-
-type SessionState = {
-  id: string;
-  currentRound: number;
-  totalRounds: number;
-  status: string;
-  activeRound?: {
-    id: string;
-    endTime: number | null;
-  };
+type DashboardState = {
+  ranking?: Parameters<typeof AdminRoundRanking>[0]["ranking"];
 };
 
 const AdminMestre = () => {
   const router = useRouter();
-
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const {
@@ -44,7 +34,16 @@ const AdminMestre = () => {
     setSession,
     conectar,
     emit,
+    alterarTempoRodada,
   } = useAdminSocket(API_URL);
+
+  const {
+    maxStockPericiveis,
+    maxStockMercearia,
+    maxStockEletro,
+    maxStockHipel,
+    setMaxStockConfig,
+  } = useOnboarding();
 
   const [adminName, setAdminName] = useState("Administrador");
   const [loading, setLoading] = useState(true);
@@ -52,7 +51,7 @@ const AdminMestre = () => {
   const [showConfig, setShowConfig] = useState(true);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmKick, setConfirmKick] = useState<Player | null>(null);
-  const [dashboard, setDashboard] = useState<any>(null);
+  const [dashboard] = useState<DashboardState | null>(null);
 
   const connectedRef = useRef(false);
 
@@ -61,6 +60,10 @@ const AdminMestre = () => {
     durationSeconds: 0,
     roundNumber: 1,
     intervalMinutes: 5,
+    maxPereciveis: maxStockPericiveis,
+    maxMercearia: maxStockMercearia,
+    maxEletro: maxStockEletro,
+    maxHipel: maxStockHipel,
   });
 
   const submittedCount = useMemo(
@@ -85,6 +88,21 @@ const AdminMestre = () => {
       : 0;
 
   const ranking = dashboard?.ranking ?? [];
+
+  const handleConfigChange = (patch: Partial<RoundConfig>) => {
+    const nextConfig = { ...config, ...patch };
+    setConfig(nextConfig);
+
+    const maxStockPatch: Partial<MaxStockConfig> = {};
+    if (patch.maxPereciveis !== undefined) maxStockPatch.pereciveis = nextConfig.maxPereciveis;
+    if (patch.maxMercearia !== undefined)  maxStockPatch.mercearia  = nextConfig.maxMercearia;
+    if (patch.maxEletro !== undefined)     maxStockPatch.eletro     = nextConfig.maxEletro;
+    if (patch.maxHipel !== undefined)      maxStockPatch.hipel      = nextConfig.maxHipel;
+
+    if (Object.keys(maxStockPatch).length > 0) {
+      setMaxStockConfig((prev) => ({ ...prev, ...maxStockPatch }));
+    }
+  };
 
   // =========================
   // LOAD INITIAL
@@ -133,7 +151,7 @@ const AdminMestre = () => {
   }, [API_URL, conectar, router, setPlayers, setSession]);
 
   // =========================
-  // TIMER (CORRIGIDO)
+  // TIMER
   // =========================
   useEffect(() => {
     if (!endTime || !gameStarted) return;
@@ -145,7 +163,6 @@ const AdminMestre = () => {
 
     tick();
     const interval = setInterval(tick, 500);
-
     return () => clearInterval(interval);
   }, [endTime, gameStarted]);
 
@@ -158,6 +175,12 @@ const AdminMestre = () => {
       duration: totalDurationSeconds,
       round: config.roundNumber,
       interval: config.intervalMinutes * 60,
+      maxStock: {
+        pereciveis: config.maxPereciveis,
+        mercearia: config.maxMercearia,
+        eletro: config.maxEletro,
+        hipel: config.maxHipel,
+      },
     });
 
     setPlayers((prev) =>
@@ -176,7 +199,6 @@ const AdminMestre = () => {
       sessionId: session?.id,
       playerId: player.id,
     });
-
     setPlayers((prev) => prev.filter((p) => p.id !== player.id));
     setConfirmKick(null);
   };
@@ -186,6 +208,12 @@ const AdminMestre = () => {
     router.push("/pages/admin/setup");
   };
 
+ // 🚀 PADRONIZAÇÃO: O handle de alteração agora é direto
+  const handleAlterarTempo = (deltaMinutes: number) => {
+    if (session?.id) {
+      alterarTempoRodada(deltaMinutes, session.id);
+    }
+  };
   // =========================
   // LOADING
   // =========================
@@ -216,23 +244,18 @@ const AdminMestre = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <div className="mb-4"> 
+        <div className="mb-4">
           <StatsCards
-              session={session}
-              players={players}
-              playersCount={players.length}
-              submittedCount={submittedCount}
-            />
+            session={session}
+            players={players}
+            playersCount={players.length}
+            submittedCount={submittedCount}
+          />
         </div>
-        
-
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
-          
           <div className="xl:col-span-8 space-y-6">
-
-            
 
             <RoundTimer
               gameStarted={gameStarted}
@@ -244,19 +267,25 @@ const AdminMestre = () => {
               readyCount={readyCount}
             />
 
+            
+
             <RoundConfigPanel
-              config={config}
-              gameStarted={gameStarted}
-              showConfig={showConfig}
-              canGoNext={(session?.currentRound ?? 0) > 0}
-              onToggle={() => setShowConfig((v) => !v)}
-              onConfigChange={(patch) =>
-                setConfig((prev) => ({ ...prev, ...patch }))
-              }
-              onIniciar={iniciarRodada}
-              onParar={pararRodada}
-              onProxima={proximaRodada}
-            />
+        config={config}
+        gameStarted={gameStarted}
+        showConfig={showConfig}
+        canGoNext={(session?.currentRound ?? 0) > 0}
+        currentRound={session?.currentRound ? session.currentRound + 1 : config.roundNumber}
+        totalRounds={session?.totalRounds ?? 3}
+        sessionId={session?.id ?? ""}
+        timeLeft={timeLeft}
+        onToggle={() => setShowConfig((v) => !v)}
+        onConfigChange={handleConfigChange}
+        onIniciar={iniciarRodada}
+        onParar={pararRodada}
+        onProxima={proximaRodada}
+        // Passamos a função padronizada aqui
+        onAlterarTempoTempoReal={handleAlterarTempo}
+      />
 
             <AdminRoundRanking
               ranking={ranking}

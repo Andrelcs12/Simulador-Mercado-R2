@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { MinigameService } from "./minigame.service";
 
 @Controller("minigame")
 export class MinigameController {
-  constructor(private readonly service: MinigameService) {}
+  constructor(private readonly service: MinigameService) {} // ✅ sempre "service"
 
   // ================= SESSION =================
 
@@ -52,6 +52,14 @@ export class MinigameController {
     return this.service.getPlayersBySession(id);
   }
 
+  // ================= CATEGORIES =================
+
+  // ✅ Corrigido: usa this.service (não this.minigameService)
+  @Get("categories")
+  getCategories() {
+    return this.service.getCategories();
+  }
+
   // ================= SUBMISSION =================
 
   @Post("submit-config")
@@ -61,23 +69,32 @@ export class MinigameController {
 
   // ================= DASHBOARD =================
 
-  // 🔥 FIX PRINCIPAL (não depende de roundId)
+
+  // ================= DASHBOARD =================
+
   @Get("session/:id/dashboard/latest")
-  getLatestDashboard(@Param("id") id: string) {
-    return this.service.getLatestDashboard(id);
+  getLatestDashboard(
+    @Param("id") id: string,
+    @Query("storeId") storeId?: string, // 🌟 Adicionado
+  ) {
+    return this.service.getLatestDashboard(id, storeId);
   }
 
-  // (opcional ainda manter)
+  @Get("session/:id/dashboard/history")
+  getHistory(
+    @Param("id") id: string,
+    @Query("storeId") storeId?: string,
+  ) {
+    return this.service.getHistory(id, storeId);
+  }
+
   @Get("session/:id/dashboard/:roundId")
   getDashboard(
     @Param("id") id: string,
     @Param("roundId") roundId: string,
+    @Query("storeId") storeId?: string, // 🌟 Adicionado
   ) {
-    return this.service.getDashboard(id, roundId);
+    return this.service.getDashboard(id, roundId, storeId);
   }
 
-  @Get("categories")
-getCategories() {
-  return this.service.getCategories();
-}
 }

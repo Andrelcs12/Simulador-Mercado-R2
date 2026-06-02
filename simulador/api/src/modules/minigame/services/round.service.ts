@@ -66,6 +66,28 @@ export class RoundService {
     };
   }
 
+  async updateRoundTime(sessionId: string, newEndTime: number) {
+    // 1. Busca a rodada atual que está aberta (OPEN) para esta sessão
+    const activeRound = await this.prisma.gameRound.findFirst({
+      where: { 
+        sessionId: sessionId,
+        status: "OPEN" 
+      }
+    });
+
+    if (!activeRound) {
+      return null;
+    }
+
+    // 2. Atualiza o campo 'endsAt' da rodada no banco de dados
+    return this.prisma.gameRound.update({
+      where: { id: activeRound.id },
+      data: {
+        endsAt: new Date(newEndTime)
+      }
+    });
+  }
+
   // =========================
   // FINISH ROUND
   // =========================

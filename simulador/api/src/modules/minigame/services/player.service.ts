@@ -77,23 +77,65 @@ export class PlayerService {
     });
   }
 
-  // 🔥 FIX PRINCIPAL: inclui store
-  async getPlayersSnapshot(sessionId: string) {
-    return this.prisma.player.findMany({
-      where: { sessionId },
+  // player.service.ts
+async getPlayersSnapshot(sessionId: string) {
+  const players = await this.prisma.player.findMany({
+    where: { sessionId },
+    include: {
+      store: {
+        select: { name: true },
+      },
+    },
+  });
+
+  // Busca as configurações da rodada atual para saber quem submeteu
+  const session = await this.prisma.gameSession.findUnique({
+    where: { id: sessionId },
+    include: {
+      rounds: {
+        where: { status: "OPEN" },
+        take: 1,
+      },
+    },
+  });
+
+  const activeRoundId = session?.rounds?.[0]?.id ?? null;
+
+  let submittedPlayerIds = new Set<string>();
+
+  if (activeRoundId) {
+    const configs = await this.prisma.configuration.findMany({
+      where: { sessionId, roundId: activeRoundId },
       select: {
-        id: true,
-        name: true,
-        role: true,
-        socketId: true,
+        storeId: true,
+        submittedAt: true,
         store: {
           select: {
-            name: true,
+            players: {
+              select: { id: true },
+            },
           },
         },
       },
     });
+
+    for (const config of configs) {
+      for (const p of config.store.players) {
+        submittedPlayerIds.add(p.id);
+      }
+    }
   }
+
+  return players.map((p) => ({
+    id: p.id,
+    name: p.name,
+    storeName: p.store?.name ?? "Sem loja",
+    isReady: p.isReady ?? false,          // precisa existir no schema
+    submittedAt: submittedPlayerIds.has(p.id)
+      ? new Date().toISOString()
+      : undefined,
+  }));
+}
 
   async updateSocketId(playerId: string, socketId: string) {
     return this.prisma.player.update({

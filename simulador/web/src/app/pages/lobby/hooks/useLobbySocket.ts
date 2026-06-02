@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useRouter } from "next/navigation";
@@ -38,7 +40,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     adminName: "Aguardando Mestre...",
   });
 
-  // ── Carga inicial + socket ────────────────────────────
   useEffect(() => {
     setIsMounted(true); // Indica que o código agora roda 100% no cliente
 
@@ -100,7 +101,13 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
 
     socket.on("session:all_ready", () => setRoundLabel("Todos prontos"));
 
+    // CORREÇÃO: Usando localStorage e Evento para comunicar com o Contexto
     socket.on("round:started", (data: any) => {
+      if (data.maxStock) {
+        localStorage.setItem("round_config_max_stock", JSON.stringify(data.maxStock));
+        window.dispatchEvent(new Event("round_config_max_stock_updated"));
+      }
+
       localStorage.setItem(
         "round_data",
         JSON.stringify({
@@ -108,8 +115,10 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
           roundNumber: data.roundNumber,
           duration: data.duration,
           endTime: data.endTime,
+          maxStock: data.maxStock,
         })
       );
+      
       setEndTime(data.endTime);
       setTempoRestante(data.duration);
       setRoundLabel(`Rodada ${data.roundNumber}`);
@@ -117,34 +126,50 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
       setTimeout(() => router.push("/pages/onboarding"), 2200);
     });
 
-    // Carga HTTP inicial (CORRIGIDO: Proteção contra null/erros de requisição)
-    fetch(`${API_URL}/minigame/session/${player.sessionId}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("Erro na requisição da sessão");
-        return r.json();
-      })
-      .then((data) => {
-        if (!data) return; // Segurança extra caso venha vazio
 
-        if (data.players && Array.isArray(data.players)) {
-          setPlayers(data.players.map(normalize));
-          const me = data.players.find((p: Player) => p.id === player.id);
-          if (me?.isReady) setIsReady(true);
-        }
-        
-        if (data.code) setSessionCode(data.code);
-        if (data.adminName)
-          setConfig((prev) => ({ ...prev, adminName: data.adminName }));
-        if (data.currentRound) setRoundLabel(`Rodada ${data.currentRound}`);
-      })
-      .catch((err) => console.error("Erro ao buscar sessão inicial:", err));
+    // Carga HTTP inicial
+fetch(`${API_URL}/minigame/session/${player.sessionId}`)
+  .then((r) => {
+    if (!r.ok) throw new Error("Erro na requisição da sessão");
+    return r.json();
+  })
+  .then((data) => {
+    if (!data) return;
+
+    if (data.players && Array.isArray(data.players)) {
+      const normalizedPlayers = data.players.map(normalize);
+
+      setPlayers(normalizedPlayers);
+
+      const me = normalizedPlayers.find(
+        (p: Player) => p.id === player.id
+      );
+
+      if (me?.isReady) setIsReady(true);
+    }
+
+    if (data.code) setSessionCode(data.code);
+
+    if (data.adminName) {
+      setConfig((prev) => ({
+        ...prev,
+        adminName: data.adminName,
+      }));
+    }
+
+    if (data.currentRound) {
+      setRoundLabel(`Rodada ${data.currentRound}`);
+    }
+  })
+  .catch((err) =>
+    console.error("Erro ao buscar sessão inicial:", err)
+  );
 
     return () => {
       socket.disconnect();
     };
   }, [API_URL, router]);
 
-  // ── Timer ─────────────────────────────────────────────
   useEffect(() => {
     if (!isGameStarted || !endTime) return;
     const id = setInterval(() => {
@@ -155,7 +180,6 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
     return () => clearInterval(id);
   }, [isGameStarted, endTime]);
 
-  // ── Confirmar pronto ──────────────────────────────────
   const confirmarPronto = useCallback(() => {
     if (!myPlayerData || !socketRef.current) return;
     socketRef.current.emit("player:ready", {

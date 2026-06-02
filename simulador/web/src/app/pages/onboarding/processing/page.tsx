@@ -9,14 +9,14 @@ import {
   Users,
   Cpu,
   Loader2,
-  CheckCircle2,
   Activity,
   Terminal,
   ShieldCheck
 } from "lucide-react";
-import { io, Socket } from "socket.io-client";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+// Definição estrita do tempo da animação (3000ms = 3 segundos)
+const TOTAL_DURATION_MS = 3000;
+const TICK_INTERVAL_MS = 30; // Atualização suave a cada 30ms
 
 const MESSAGES_MOCK = [
   { text: "Criptografando e enviando planejamento de gôndola...", icon: Database },
@@ -28,66 +28,45 @@ const MESSAGES_MOCK = [
 
 export default function ProcessingPage() {
   const router = useRouter();
-  const socketRef = useRef<Socket | null>(null);
   const redirectRef = useRef(false);
 
-  const [progress, setProgress] = useState(10);
+  const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
-    const socket = io(`${API_URL}/simulation`);
-    socketRef.current = socket;
-
-    const playerRaw = localStorage.getItem("player_data");
-    if (playerRaw) {
-      const player = JSON.parse(playerRaw);
-      socket.emit("join_session", {
-        sessionId: player.sessionId,
-        playerId: player.id,
-      });
-    }
-
-    const triggerRedirect = () => {
-      if (redirectRef.current) return;
-      redirectRef.current = true;
-
-      setCompleted(true);
-      setProgress(100);
-
-      setTimeout(() => {
-        router.replace("/pages/dashboard");
-      }, 1000);
-    };
-
-    socket.on("round:finished", () => {
-      triggerRedirect();
-    });
-
-    // Seguro estrito: Máximo 4.5s nesta tela
-    const safetyTimeout = setTimeout(() => {
-      triggerRedirect();
-    }, 4500);
+    const startTime = Date.now();
 
     const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (redirectRef.current) return 100;
-        // Sobe rápido no início e desacelera simulando processamento pesado
-        if (prev < 60) return prev + 4;
-        if (prev < 90) return prev + 2;
-        return prev >= 98 ? 98 : prev + 1;
-      });
-    }, 90);
+      const elapsedTime = Date.now() - startTime;
+      
+      // Calcula o percentual linear com base no tempo decorrido
+      const currentProgress = Math.min(100, Math.floor((elapsedTime / TOTAL_DURATION_MS) * 100));
+      
+      setProgress(currentProgress);
 
+      if (currentProgress >= 100) {
+        clearInterval(progressInterval);
+        if (!redirectRef.current) {
+          redirectRef.current = true;
+          setCompleted(true);
+          
+          // Aguarda 800ms com a barra cheia para o feedback visual de "Concluído" antes de mudar de tela
+          setTimeout(() => {
+            router.replace("/pages/dashboard");
+          }, 800);
+        }
+      }
+    }, TICK_INTERVAL_MS);
+
+    // Rotaciona as mensagens de forma acelerada (distribuídas dinamicamente dentro dos 3 segundos)
     const messageInterval = setInterval(() => {
       setMessageIndex((i) => (i + 1) % MESSAGES_MOCK.length);
-    }, 750);
+    }, TOTAL_DURATION_MS / MESSAGES_MOCK.length);
 
     return () => {
       clearInterval(progressInterval);
       clearInterval(messageInterval);
-      clearTimeout(safetyTimeout);
-      socket.disconnect();
     };
   }, [router]);
 
@@ -100,7 +79,6 @@ export default function ProcessingPage() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute w-[500px] h-[500px] bg-orange-500/10 blur-[150px] rounded-full -top-40 -left-20 animate-pulse" />
         <div className="absolute w-[400px] h-[400px] bg-cyan-500/5 blur-[130px] rounded-full bottom-10 right-10" />
-        {/* Linhas de grade sutis simulando interface de dados */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
 
@@ -143,7 +121,7 @@ export default function ProcessingPage() {
             </motion.div>
           </div>
 
-          {/* Títulos dinâmicos com tipografia forte */}
+          {/* Títulos dinâmicos */}
           <div className="text-center space-y-2">
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white uppercase">
               {completed ? (
@@ -163,7 +141,7 @@ export default function ProcessingPage() {
             </p>
           </div>
 
-          {/* MÓDULO PROGRESSO: Grosso e Neon */}
+          {/* MÓDULO PROGRESSO */}
           <div className="mt-10 bg-white/[0.02] border border-white/[0.04] rounded-2xl p-5 relative">
             <div className="flex justify-between items-end mb-3">
               <span className="text-[10px] font-mono uppercase tracking-widest font-bold text-slate-400 flex items-center gap-1.5">
@@ -175,7 +153,7 @@ export default function ProcessingPage() {
               </span>
             </div>
 
-            {/* Container da barra grossa */}
+            {/* Container da barra */}
             <div className="h-4 bg-[#080D16] rounded-full p-1 overflow-hidden border border-white/[0.05] shadow-inner">
               <motion.div
                 className={`h-full rounded-full relative ${
@@ -183,16 +161,15 @@ export default function ProcessingPage() {
                     ? "bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_15px_rgba(16,185,129,0.6)]" 
                     : "bg-gradient-to-r from-orange-600 via-orange-500 to-amber-400 shadow-[0_0_15px_rgba(249,115,22,0.6)]"
                 }`}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.15, ease: "linear" }}
+                style={{ width: `${progress}%` }}
+                transition={{ duration: 0.05, ease: "linear" }}
               >
-                {/* Linhas transversais de animação dentro da própria barra */}
                 <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[size:16px_16px] animate-[shimmer_1s_linear_infinite]" />
               </motion.div>
             </div>
           </div>
 
-          {/* Sub-status Flutuante com AnimatePresence */}
+          {/* Sub-status Flutuante */}
           <div className="mt-8 min-h-[56px] flex items-center justify-center bg-white/[0.01] border border-white/[0.03] rounded-xl px-4 py-2">
             <AnimatePresence mode="wait">
               {completed ? (
@@ -203,7 +180,7 @@ export default function ProcessingPage() {
                   exit={{ opacity: 0 }}
                   className="flex items-center gap-2.5 text-emerald-400 text-xs font-mono uppercase tracking-wider font-bold"
                 >
-                  <ShieldCheck size={16} className="text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)] animate-bounce" />
+                  <ShieldCheck size={16} className="text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
                   Redirecionando para o Dashboard corporativo...
                 </motion.div>
               ) : (
@@ -218,7 +195,7 @@ export default function ProcessingPage() {
                   <div className="p-1.5 rounded-lg bg-white/[0.03] border border-white/[0.05] text-orange-500">
                     <CurrentIcon
                       size={14}
-                      className={CurrentIcon === Loader2 || messageIndex === 4 ? "animate-spin text-orange-500" : ""}
+                      className={CurrentIcon === Loader2 ? "animate-spin text-orange-500" : ""}
                     />
                   </div>
                   <span className="truncate max-w-[320px]">{MESSAGES_MOCK[messageIndex].text}</span>
@@ -229,7 +206,6 @@ export default function ProcessingPage() {
         </motion.div>
       </div>
 
-      {/* Estilos injetados para a animação das listras da barra */}
       <style jsx global>{`
         @keyframes shimmer {
           0% { background-position: 0 0; }

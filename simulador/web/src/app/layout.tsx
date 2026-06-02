@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,7 +45,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-white">
         {/* Aqui você pode colocar um Header global se quiser que apareça em todas as 8 páginas */}
         <main className="flex-grow">
-          {children}
+          <Providers>{children}</Providers>
         </main>
         
        

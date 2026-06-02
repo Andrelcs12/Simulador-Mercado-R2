@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
-import { AppConfig } from "../types/onboarding";
-
 import { useOnboarding } from "../context/OnboardingContext";
 
 const normalizeEndTime = (raw: any): number | null => {
@@ -13,41 +11,75 @@ const normalizeEndTime = (raw: any): number | null => {
   return isNaN(ms) ? null : ms;
 };
 
-type SubmitPayload = {
-  playerId: string;
-  sessionId: string;
-  roundId: string;
-  storeId?: string;
-  operatorsQty: number;
-  serviceOperatorsQty: number;
-  quizScore: number;
-  stockInputs: {
-    categoryId: string;
-    buyQty: number;
-    commercialMargin: number;
-    expectedSellPrice: number;
-  }[];
-  capexSelections: { capexId: string }[];
+// ✅ Normaliza qualquer string para chave simples
+function normalizeKey(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "")
+    .trim();
+}
+
+// ✅ Dicionário de aliases: chave do config.comercial -> variações possíveis no banco
+const CATEGORY_ALIASES: Record<string, string[]> = {
+  pereciveis: [
+    "pereciveis", "perecivel", "perecíveis", "perecível",
+    "fresh", "hortifruti", "frescor", "resfriados",
+  ],
+  mercearia: [
+    "mercearia", "grocery", "merceariaseca", "seca",
+    "alimentos", "alimentosseco", "secoseembalados",
+  ],
+  eletro: [
+    "eletro", "eletronicos", "eletrodomesticos",
+    "electronics", "eletroeletronicos", "eletronico",
+  ],
+  hipel: [
+    "hipel", "higiene", "higienelimpeza", "limpeza",
+    "higienepessoal", "cleaning", "higieneebeleza",
+    "cuidadospessoais", "limpezaeconservacao",
+  ],
 };
+
+function matchCategory(dbName: string): string | null {
+  const normalized = normalizeKey(dbName);
+
+  // 1. Tentativa de match exato após normalização
+  for (const [key, aliases] of Object.entries(CATEGORY_ALIASES)) {
+    if (aliases.map(normalizeKey).includes(normalized)) {
+      return key;
+    }
+  }
+
+  // 2. Tentativa de match parcial (contém)
+  for (const [key, aliases] of Object.entries(CATEGORY_ALIASES)) {
+    const normalizedAliases = aliases.map(normalizeKey);
+    if (
+      normalizedAliases.some(
+        (alias) => normalized.includes(alias) || alias.includes(normalized)
+      )
+    ) {
+      return key;
+    }
+  }
+
+  return null;
+}
 
 export function useOnboardingSession(API_URL: string) {
   const {
     player,
     setPlayer,
-
     round,
     setRound,
-
-    timeLeft,
     setTimeLeft,
-
     submitted,
     setSubmitted,
-
     submitting,
     setSubmitting,
-
     config,
+    setMaxStockConfig,
   } = useOnboarding();
 
   const socketRef = useRef<Socket | null>(null);
@@ -57,92 +89,134 @@ export function useOnboardingSession(API_URL: string) {
   const [categoryMap, setCategoryMap] = useState<Record<string, string>>({});
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
 
-  const timeUp = timeLeft <= 0;
-
-  // ─────────────────────────────
-  // TIMER
-  // ─────────────────────────────
+  const applyMaxStockConfig = useCallback(
+    (maxStock?: {
+      pereciveis?: number;
+      mercearia?: number;
+      eletro?: number;
+      hipel?: number;
+    }) => {
+      if (!maxStock) return;
+      setMaxStockConfig((prev) => ({ ...prev, ...maxStock }));
+    },
+    [setMaxStockConfig]
+  );
 
   const startTimer = useCallback(
     (endTimeMs: number) => {
       if (timerRef.current) clearInterval(timerRef.current);
-
       const tick = () => {
-        const diff = Math.max(
-          0,
-          Math.floor((endTimeMs - Date.now()) / 1000)
-        );
+        const diff = Math.max(0, Math.floor((endTimeMs - Date.now()) / 1000));
         setTimeLeft(diff);
       };
-
       tick();
       timerRef.current = setInterval(tick, 1000);
     },
     [setTimeLeft]
   );
 
-  // ─────────────────────────────
-  // SOCKET INIT
-  // ─────────────────────────────
+  // ✅ Busca e mapeia categorias do backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${API_URL}/minigame/categories`);
+        if (!res.ok) throw new Error("Falha ao buscar categorias");
 
+        const data: { id: string; name: string }[] = await res.json();
+
+        // LOG para debug — remover após confirmar mapeamento correto
+        console.log(
+          "[categories] nomes no banco:",
+          data.map((c) => c.name)
+        );
+
+        const map: Record<string, string> = {};
+        const unmapped: string[] = [];
+
+        for (const cat of data) {
+          const key = matchCategory(cat.name);
+          if (key) {
+            map[key] = cat.id;
+            console.log(
+              `[categories] OK: "${cat.name}" -> "${key}" (${cat.id})`
+            );
+          } else {
+            unmapped.push(cat.name);
+            console.warn(`[categories] SEM MAPEAMENTO: "${cat.name}"`);
+          }
+        }
+
+        if (unmapped.length > 0) {
+          console.error(
+            "[categories] Categorias sem mapeamento:",
+            unmapped
+          );
+          toast.error(
+            `Categorias não mapeadas: ${unmapped.join(", ")}. Contate o suporte.`
+          );
+          // ✅ Mesmo com unmapped, carrega o que tiver para não bloquear tudo
+        }
+
+        setCategoryMap(map);
+        // ✅ Só bloqueia se NENHUMA categoria foi mapeada
+        setCategoriesLoaded(Object.keys(map).length > 0);
+      } catch (err) {
+        console.error("Erro ao carregar categorias:", err);
+        toast.error("Erro ao carregar categorias do servidor.");
+      }
+    };
+
+    fetchCategories();
+  }, [API_URL]);
+
+  // Inicialização do socket
   useEffect(() => {
     const saved = localStorage.getItem("player_data");
-
     if (!saved) return;
 
     const p = JSON.parse(saved);
     setPlayer(p);
 
-    const socket = io(`${API_URL}/simulation`);
+    const savedRound = localStorage.getItem("round_data");
+    if (savedRound) {
+      try {
+        const parsed = JSON.parse(savedRound);
+        if (parsed.maxStock) applyMaxStockConfig(parsed.maxStock);
+
+        const endMs = normalizeEndTime(parsed.endTime);
+        if (endMs && endMs > Date.now()) {
+          setRound({
+            roundId: parsed.roundId,
+            roundNumber: parsed.roundNumber,
+            duration: parsed.duration,
+            endTime: endMs,
+          });
+          startTimer(endMs);
+        }
+      } catch (e) {
+        console.error("Erro ao recuperar cache da rodada", e);
+      }
+    }
+
+    const socket = io(`${API_URL}/simulation`, {
+      reconnection: true,
+      transports: ["websocket"],
+    });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       if (joinedRef.current) return;
-
       socket.emit("join_session", {
         sessionId: p.sessionId,
         playerId: p.id,
       });
-
-      socket.emit("session:get_state", {
-        sessionId: p.sessionId,
-      });
-
+      socket.emit("session:get_state", { sessionId: p.sessionId });
       joinedRef.current = true;
-    });
-
-    socket.on("session:state", (session: any) => {
-      const active = session?.rounds?.find(
-        (r: any) => r.status === "OPEN"
-      );
-
-      if (!active?.endsAt) return;
-
-      const endMs = new Date(active.endsAt).getTime();
-      if (isNaN(endMs)) return;
-
-      const synced = {
-        roundId: active.id,
-        roundNumber: session.currentRound,
-        duration: active.startsAt
-          ? Math.round(
-              (new Date(active.endsAt).getTime() -
-                new Date(active.startsAt).getTime()) /
-                1000
-            )
-          : 0,
-        endTime: endMs,
-      };
-
-      setRound(synced);
-
-      localStorage.setItem("round_data", JSON.stringify(synced));
-
-      if (endMs > Date.now()) startTimer(endMs);
     });
 
     socket.on("round:started", (data: any) => {
       const endMs = normalizeEndTime(data.endTime);
+      applyMaxStockConfig(data.maxStock);
 
       const normalized = {
         roundId: data.roundId,
@@ -152,151 +226,148 @@ export function useOnboardingSession(API_URL: string) {
       };
 
       setRound(normalized);
-
       setSubmitted(false);
       setSubmitting(false);
 
-      localStorage.setItem("round_data", JSON.stringify(normalized));
+      localStorage.setItem(
+        "round_data",
+        JSON.stringify({ ...normalized, maxStock: data.maxStock })
+      );
 
       if (endMs) startTimer(endMs);
-
-      toast.success(`Rodada ${data.roundNumber} iniciada`);
+      toast.success(`Rodada ${data.roundNumber} iniciada!`);
     });
 
-    socket.on("submit:error", ({ message }) => {
+    socket.on(
+      "round:time_updated",
+      (data: { endTime: number; duration: number }) => {
+        const endMs = normalizeEndTime(data.endTime);
+        setRound((prev) =>
+          prev ? { ...prev, duration: data.duration, endTime: endMs } : null
+        );
+        if (endMs) {
+          startTimer(endMs);
+          toast("⏱️ Tempo da rodada alterado!");
+        }
+      }
+    );
+
+    socket.on("player:config_submitted", () => {
+      setSubmitted(true);
       setSubmitting(false);
-      setSubmitted(false); // Libera o estado do botão em caso de falha de validação do back
-      toast.error(message || "Erro ao enviar");
+      toast.success("Configurações salvas com sucesso!");
+    });
+
+    socket.on("player:submit_error", (data: { message: string }) => {
+      setSubmitting(false);
+      toast.error(data.message || "Erro ao salvar configurações.");
+    });
+
+    socket.on("round:finished", () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      setTimeLeft(0);
     });
 
     return () => {
       socket.disconnect();
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [API_URL, setPlayer, setRound, setSubmitting, setSubmitted, startTimer]);
+  }, [
+    API_URL,
+    applyMaxStockConfig,
+    setPlayer,
+    setRound,
+    setSubmitting,
+    setSubmitted,
+    setTimeLeft,
+    startTimer,
+  ]);
 
-  // ─────────────────────────────
-  // CATEGORIES MAP RECONCILIATION
-  // ─────────────────────────────
+  
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch(`${API_URL}/minigame/categories`);
-        const data = await res.json();
+  // ✅ submit corrigido e padronizado com os slugs do banco
+const submit = useCallback(
+  async (payload: {
+    playerId: string;
+    sessionId: string;
+    roundId: string;
+    storeId?: string;
+  }): Promise<void> => {
+    if (!socketRef.current) throw new Error("Socket não conectado.");
+    if (submitting || submitted) return;
+    if (!categoriesLoaded) throw new Error("Categorias ainda não carregadas.");
 
-        const map: Record<string, string> = {};
+    // Mapeamento de chaves amigáveis (UI) para Slugs reais (Banco/Seed)
+const CAPEX_SLUG_MAP: Record<string, string> = {
+  "seguranca": "seguranca",
+  "equipamentos": "freezer", // 👈 Adicione esta linha (ou altere "freezer" para o slug exato do banco, ex: "balanca")
+  "freezer": "freezer",
+  "balanca": "freezer", 
+  "redes": "redes",
+  "selfcheckout": "self-checkout",
+  "self-checkout": "self-checkout",
+  "site": "site",
+  "bi": "bi",
+  "melhoria": "bi", // 👈 Mapeia também a chave "melhoria" usada na UI do seu SetupStep
+  "melhoriacontinua": "bi"
+};
 
-        for (const c of data || []) {
-          if (!c?.id || !c?.name) continue;
-
-          const n = c.name;
-          const norm = n
-            .normalize("NFD")
-            .replace(/\p{Diacritic}/gu, "")
-            .toLowerCase();
-
-          // Vincula o ID vindo do back tanto para o nome cru quanto variantes normatizadas
-          map[n] = c.id;
-          map[n.toLowerCase()] = c.id;
-          map[norm] = c.id;
-
-          // Fallbacks inteligentes para bater as chaves estáticas do Front com as Strings do Back
-          if (norm.includes("pereci")) map["pereciveis"] = c.id;
-          if (norm.includes("mercea")) map["mercearia"] = c.id;
-          if (norm.includes("eletro")) map["eletro"] = c.id;
-          if (norm.includes("higien") || norm.includes("limp")) map["hipel"] = c.id;
-        }
-
-        setCategoryMap(map);
-        setCategoriesLoaded(true);
-      } catch (error) {
-        console.error("Falha ao reconciliar mapa de categorias do banco:", error);
-        setCategoriesLoaded(false);
+    // 1. Processar Estoque
+    const stockInputs = Object.entries(config.comercial).map(([key, val]) => {
+      const categoryId = categoryMap[key];
+      if (!categoryId) {
+        console.error(`[submit] Categoria "${key}" não encontrada no mapa.`, categoryMap);
+        throw new Error(`Categoria "${key}" não mapeada.`);
       }
-    }
+      return {
+        categoryId,
+        buyQty: val.estoque,
+        commercialMargin: val.margem,
+        expectedSellPrice: 0,
+      };
+    });
 
-    load();
-  }, [API_URL]);
+    // 2. Processar CAPEX com conversão de Slug
+    const capexSelections = Object.entries(config.capex)
+      .filter(([, v]) => (v ?? 0) > 0)
+      .map(([key]) => ({
+        // Converte a chave da UI para o slug técnico do banco
+        capexId: CAPEX_SLUG_MAP[key.toLowerCase()] || key.toLowerCase()
+      }));
 
-  // ─────────────────────────────
-  // SUBMIT CONFIG
-  // ─────────────────────────────
+    // 3. Envio via Socket
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Timeout: servidor não confirmou o envio."));
+      }, 10000);
 
-  const submit = useCallback(
-    (payload: {
-      playerId: string;
-      sessionId: string;
-      roundId: string;
-      storeId?: string;
-    }) => {
-      if (!socketRef.current) return;
-      if (submitting || submitted) return;
-      if (!categoriesLoaded) {
-        toast.error("Aguarde o carregamento das categorias estruturais.");
-        return;
-      }
+      socketRef.current!.once("player:config_submitted", () => {
+        clearTimeout(timeout);
+        resolve();
+      });
 
-      try {
-        const stockInputs = Object.entries(config.comercial).map(
-          ([key, val]) => {
-            const categoryId = categoryMap[key];
+      socketRef.current!.once("player:submit_error", (data: { message: string }) => {
+        clearTimeout(timeout);
+        reject(new Error(data.message || "Erro no envio das configurações."));
+      });
 
-            if (!categoryId) {
-              throw new Error(`Falha de sincronização. Chave local: "${key}" não mapeia para nenhum UUID de categoria ativo.`);
-            }
+      socketRef.current!.emit("player:submit_config", {
+        ...payload,
+        operatorsQty: config.operadoresCaixa,
+        serviceOperatorsQty: config.operadoresAtendimento,
+        quizScore: config.quizScore,
+        stockInputs,
+        capexSelections,
+      });
+    });
+  },
+  [categoryMap, categoriesLoaded, submitting, submitted, config]
+);
 
-            return {
-              categoryId,
-              buyQty: val.estoque,
-              commercialMargin: val.margem,
-              expectedSellPrice: 0,
-            };
-          }
-        );
 
-        const formatted: SubmitPayload = {
-          playerId: payload.playerId,
-          sessionId: payload.sessionId,
-          roundId: payload.roundId,
-          storeId: payload.storeId,
-          // Correção: operatorsQty representa o quadro total ativo na frente de caixas
-          operatorsQty: config.operadoresCaixa,
-          serviceOperatorsQty: config.operadoresAtendimento,
-          quizScore: config.quizScore,
-          stockInputs,
-          // Adaptação: filtra valores maiores que 0 já que o CAPEX agora armazena números (custo)
-          capexSelections: Object.entries(config.capex)
-            .filter(([, v]) => (v ?? 0) > 0)
-            .map(([capexId]) => ({ capexId })),
-        };
 
-        setSubmitting(true);
-        setSubmitted(true);
+  const timeUp =
+    (round?.endTime ?? 0) > 0 ? Date.now() >= (round?.endTime ?? 0) : false;
 
-        socketRef.current.emit("player:submit_config", formatted);
-        toast.success("Configurações enviadas com sucesso!");
-        
-      } catch (error: any) {
-        setSubmitting(false);
-        setSubmitted(false);
-        toast.error(error.message || "Erro ao mapear inputs de simulação");
-      }
-    },
-    [
-      categoryMap,
-      categoriesLoaded,
-      submitting,
-      submitted,
-      config,
-      setSubmitting,
-      setSubmitted,
-    ]
-  );
-
-  return {
-    submit,
-    categoriesLoaded,
-    timeUp,
-  };
+  return { submit, categoriesLoaded, timeUp };
 }

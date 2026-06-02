@@ -9,7 +9,7 @@ function normalizePlayer(p: any): Player {
     name: p.name,
     storeName: p.storeName ?? p.store?.name ?? "Sem loja",
     isReady: p.isReady ?? false,
-    submittedAt: p.submittedAt,
+    submittedAt: p.submittedAt ?? undefined,
   };
 }
 
@@ -18,130 +18,149 @@ export const useAdminSocket = (API_URL: string) => {
   const playersRef = useRef<Player[]>([]);
 
   const [connected, setConnected] = useState(false);
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayersState] = useState<Player[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [endTime, setEndTime] = useState<number | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSessionState] = useState<Session | null>(null);
+
+  const setPlayers = useCallback(
+    (updater: Player[] | ((prev: Player[]) => Player[])) => {
+      if (typeof updater === "function") {
+        setPlayersState((prev) => {
+          const next = updater(prev);
+          playersRef.current = next;
+          return next;
+        });
+      } else {
+        playersRef.current = updater;
+        setPlayersState(updater);
+      }
+    },
+    []
+  );
+
+  const setSession = useCallback(
+    (s: Session | null | ((prev: Session | null) => Session | null)) => {
+      if (typeof s === "function") {
+        setSessionState(s);
+      } else {
+        setSessionState(s);
+      }
+    },
+    []
+  );
 
   const syncPlayers = useCallback((data: Player[]) => {
     playersRef.current = data;
-    setPlayers([...data]);
+    setPlayersState([...data]);
   }, []);
 
-  const conectar = useCallback((sessionId: string) => {
-    if (socketRef.current?.connected) return;
+  const conectar = useCallback(
+    (sessionId: string) => {
+      if (socketRef.current?.connected) return;
 
-    const socket = io(`${API_URL}/simulation`, {
-      reconnection: true,
-      transports: ["websocket"],
-    });
-
-    socketRef.current = socket;
-
-    socket.on("connect", () => {
-      setConnected(true);
-
-      socket.emit("join_session", {
-        sessionId,
-        playerId: "ADMIN",
-        isAdmin: true,
+      const socket = io(`${API_URL}/simulation`, {
+        reconnection: true,
+        transports: ["websocket"],
       });
 
-      socket.emit("session:get_state", { sessionId });
-    });
+      socketRef.current = socket;
 
-    socket.on("disconnect", () => setConnected(false));
+      socket.on("connect", () => {
+        setConnected(true);
+        socket.emit("join_session", {
+          sessionId,
+          playerId: "ADMIN",
+          isAdmin: true,
+        });
+        socket.emit("session:get_state", { sessionId });
+      });
 
-    // =========================
-    // PLAYERS
-    // =========================
-    socket.on("session:players_updated", (data: any[]) => {
-      syncPlayers((data ?? []).map(normalizePlayer));
-    });
+      socket.on("disconnect", () => setConnected(false));
 
-    socket.on("player:joined", (player: any) => {
-      const normalized = normalizePlayer(player);
+      const handleRoundStateUpdate = (data: any) => {
+        if (data.endTime) {
+          setGameStarted(true);
+          setEndTime(
+            typeof data.endTime === "number"
+              ? data.endTime
+              : new Date(data.endTime).getTime()
+          );
+        }
+      };
 
-      if (!playersRef.current.find((p) => p.id === normalized.id)) {
-        syncPlayers([...playersRef.current, normalized]);
-      }
+      socket.on("round:started", handleRoundStateUpdate);
+      socket.on("round:next_started", handleRoundStateUpdate);
+      socket.on("round:time_updated", handleRoundStateUpdate);
 
-      toast(`🎮 ${normalized.storeName} entrou`);
-    });
+      socket.on("round:finished", () => {
+        setGameStarted(false);
+        setEndTime(null);
+        toast("⏱️ Rodada finalizada");
+      });
 
-    socket.on("player:ready_update", ({ playerId }) => {
-      syncPlayers(
-        playersRef.current.map((p) =>
-          p.id === playerId ? { ...p, isReady: true } : p
-        )
-      );
-    });
+      socket.on("session:state", (sessionData: any) => {
+        setSessionState(sessionData);
+        if (sessionData?.activeRound?.endTime) {
+          setEndTime(sessionData.activeRound.endTime);
+          setGameStarted(true);
+        }
+      });
 
-    socket.on("player:submitted", ({ playerId }) => {
-      syncPlayers(
-        playersRef.current.map((p) =>
-          p.id === playerId
-            ? {
-                ...p,
-                submittedAt: new Date().toLocaleTimeString("pt-BR"),
-              }
-            : p
-        )
-      );
-    });
-
-    socket.on("player:kicked", ({ playerId }) => {
-      syncPlayers(playersRef.current.filter((p) => p.id !== playerId));
-    });
-
-    // =========================
-    // ROUND START (UNIFICADO)
-    // =========================
-    const handleRoundStart = (data: any) => {
-      setGameStarted(true);
-      setEndTime(data.endTime);
-
-      setSession((prev) =>
-        prev
-          ? {
-              ...prev,
-              currentRound: data.roundNumber,
-              status: "IN_PROGRESS",
-            }
-          : prev
+      // ✅ Lista completa de players (snapshot)
+      socket.on("session:players_updated", (data: any[]) =>
+        syncPlayers((data ?? []).map(normalizePlayer))
       );
 
-      toast.success(`▶ Rodada ${data.roundNumber} iniciada`);
-    };
+      socket.on("player:joined", (p: any) => {
+        const n = normalizePlayer(p);
+        if (!playersRef.current.find((pl) => pl.id === n.id)) {
+          syncPlayers([...playersRef.current, n]);
+        }
+      });
 
-    socket.on("round:started", handleRoundStart);
-    socket.on("round:next_started", handleRoundStart);
+      // ✅ Atualiza submittedAt do player quando ele submete
+      socket.on(
+        "player:submitted",
+        (data: { playerId: string; roundId: string; submittedAt: string }) => {
+          setPlayersState((prev) => {
+            const next = prev.map((p) =>
+              p.id === data.playerId
+                ? { ...p, submittedAt: data.submittedAt }
+                : p
+            );
+            playersRef.current = next;
+            return next;
+          });
+        }
+      );
 
-    // =========================
-    // ROUND END (UNIFICADO)
-    // =========================
-    const handleRoundEnd = () => {
-      setGameStarted(false);
-      setEndTime(null);
-    };
+      // ✅ Atualiza isReady quando um player marca ready
+      socket.on(
+        "player:ready_update",
+        (data: { playerId: string; sessionId: string; totalReady: number }) => {
+          setPlayersState((prev) => {
+            const next = prev.map((p) =>
+              p.id === data.playerId ? { ...p, isReady: true } : p
+            );
+            playersRef.current = next;
+            return next;
+          });
+        }
+      );
+    },
+    [API_URL, syncPlayers]
+  );
 
-    socket.on("round:finished", handleRoundEnd);
-    socket.on("round:stopped", handleRoundEnd);
-
-    // =========================
-    // SESSION STATE (UNIFICADO)
-    // =========================
-    socket.on("session:state", (sessionData: any) => {
-      const session = sessionData?.activeRound
-        ? {
-            ...sessionData,
-            rounds: sessionData.rounds,
-          }
-        : sessionData;
-
-      setSession(session);
-    });
-  }, [API_URL, syncPlayers]);
+  const alterarTempoRodada = useCallback(
+    (minutes: number, sessionId: string) => {
+      socketRef.current?.emit("round:update_time", {
+        sessionId,
+        minutesDelta: minutes,
+      });
+    },
+    []
+  );
 
   const emit = useCallback((event: string, data: any) => {
     socketRef.current?.emit(event, data);
@@ -150,8 +169,7 @@ export const useAdminSocket = (API_URL: string) => {
   const disconnect = useCallback(() => {
     socketRef.current?.disconnect();
     socketRef.current = null;
-    playersRef.current = [];
-    setPlayers([]);
+    setPlayersState([]);
   }, []);
 
   return {
@@ -165,5 +183,6 @@ export const useAdminSocket = (API_URL: string) => {
     conectar,
     emit,
     disconnect,
+    alterarTempoRodada,
   };
 };
