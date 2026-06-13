@@ -93,6 +93,11 @@ export class MinigameController {
     return this.service.getRoundRankingBoard(id);
   }
 
+  @Get("session/:id/final-ranking")
+  getFinalRanking(@Param("id") id: string) {
+    return this.service.getFinalRanking(id);
+  }
+
   @Get("session/:id/dashboard/:roundId")
   getDashboard(
     @Param("id") id: string,

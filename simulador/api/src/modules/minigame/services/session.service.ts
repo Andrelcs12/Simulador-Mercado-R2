@@ -191,8 +191,12 @@ export class SessionService {
       },
     );
 
+    // Critério das regras: melhor % de EBITDA. Desempate pelo valor absoluto de
+    // EBITDA (quando ninguém teve receita, a margem fica 0 para todos e o valor decide).
     const ranking = [...finalResults].sort(
-      (a, b) => b.finalEbitdaMargin - a.finalEbitdaMargin,
+      (a, b) =>
+        b.finalEbitdaMargin - a.finalEbitdaMargin ||
+        b.finalEbitda - a.finalEbitda,
     );
 
     await Promise.all(
@@ -230,17 +234,51 @@ export class SessionService {
       ),
     );
 
+    // Ranking enriquecido (com nomes e posição) para o pódio/telas finais.
+    const enrichedRanking = await this.getFinalRanking(sessionId);
+
     this.server?.to(sessionId).emit("session:finalized", {
       sessionId,
       rounds: REQUIRED_ROUNDS,
-      ranking,
+      ranking: enrichedRanking,
     });
 
     return {
       success: true,
       sessionId,
       rounds: REQUIRED_ROUNDS,
-      ranking,
+      ranking: enrichedRanking,
     };
+  }
+
+  // =========================
+  // RANKING FINAL (ENRIQUECIDO)
+  // =========================
+  async getFinalRanking(sessionId: string) {
+    const results = await this.prisma.sessionResult.findMany({
+      where: { sessionId },
+      orderBy: { position: "asc" },
+      include: {
+        store: {
+          include: {
+            players: { select: { id: true, name: true } },
+          },
+        },
+      },
+    });
+
+    return results.map((r) => ({
+      position: r.position,
+      storeId: r.storeId,
+      storeName: r.store?.name ?? "Loja",
+      playerName: r.store?.players?.[0]?.name ?? r.store?.name ?? "",
+      playerId: r.store?.players?.[0]?.id ?? "",
+      finalEbitda: r.finalEbitda,
+      finalEbitdaMargin: r.finalEbitdaMargin, // já em %
+      finalMarketShare: (r.finalMarketShare ?? 0) * 100, // fração → %
+      finalCash: r.finalCash,
+      totalRevenue: r.totalRevenue,
+      totalExpenses: r.totalExpenses,
+    }));
   }
 }

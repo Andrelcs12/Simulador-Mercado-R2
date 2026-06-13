@@ -167,4 +167,8 @@ async updateTime(sessionId: string, newEndTime: number) {
   finalizeSession(sessionId: string) {
     return this.sessionService.finalizeSession(sessionId);
   }
+
+  getFinalRanking(sessionId: string) {
+    return this.sessionService.getFinalRanking(sessionId);
+  }
 }

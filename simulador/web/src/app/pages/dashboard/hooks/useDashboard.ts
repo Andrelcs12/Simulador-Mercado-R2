@@ -120,8 +120,17 @@ export function useDashboard(API_URL: string) {
       }, 800);
     });
 
+    // Fim NATURAL (todas as rodadas) → tela de resultado final (pódio).
+    socket.on("session:finalized", () => {
+      router.push("/pages/dashboard/final");
+    });
+
+    // Encerramento pelo facilitador → notifica todos e volta à página inicial.
     socket.on("session:finished", () => {
-      toast("Simulação encerrada pelo facilitador", { icon: "🏁" });
+      toast("A sessão foi encerrada pelo facilitador.", { icon: "🏁", duration: 4000 });
+      sessionStorage.removeItem("player_data");
+      sessionStorage.removeItem("round_data");
+      setTimeout(() => router.push("/"), 1500);
     });
 
     return () => {

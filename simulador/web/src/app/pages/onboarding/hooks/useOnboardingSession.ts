@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { useOnboarding } from "../context/OnboardingContext";
 
 const normalizeEndTime = (raw: any): number | null => {
@@ -81,6 +82,8 @@ export function useOnboardingSession(API_URL: string) {
     config,
     setMaxStockConfig,
   } = useOnboarding();
+
+  const router = useRouter();
 
   const socketRef = useRef<Socket | null>(null);
   const joinedRef = useRef(false);
@@ -289,6 +292,21 @@ export function useOnboardingSession(API_URL: string) {
       setTimeLeft(0);
     });
 
+    // Fim NATURAL (todas as rodadas) → tela de resultado final (pódio).
+    socket.on("session:finalized", () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      router.push("/pages/dashboard/final");
+    });
+
+    // Encerramento pelo facilitador → notifica e volta à página inicial.
+    socket.on("session:finished", () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      toast("A sessão foi encerrada pelo facilitador.", { icon: "🏁", duration: 4000 });
+      sessionStorage.removeItem("player_data");
+      sessionStorage.removeItem("round_data");
+      setTimeout(() => router.push("/"), 1500);
+    });
+
     return () => {
       socket.disconnect();
       if (timerRef.current) clearInterval(timerRef.current);
@@ -302,6 +320,7 @@ export function useOnboardingSession(API_URL: string) {
     setSubmitted,
     setTimeLeft,
     startTimer,
+    router,
   ]);
 
   

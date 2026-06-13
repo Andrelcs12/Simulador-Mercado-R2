@@ -41,6 +41,7 @@ interface RoundConfigPanelProps {
   gameStarted: boolean;
   showConfig: boolean;
   canGoNext: boolean;
+  gameOver?: boolean;
   currentRound?: number;
   totalRounds?: number;
   sessionId: string;
@@ -58,6 +59,7 @@ export const RoundConfigPanel = ({
   gameStarted,
   showConfig,
   canGoNext,
+  gameOver = false,
   currentRound = 1,
   totalRounds = 3,
   sessionId,
@@ -109,6 +111,18 @@ export const RoundConfigPanel = ({
             className="overflow-hidden"
           >
             <div className="border-t border-white/[0.06] p-5 space-y-5">
+              {gameOver ? (
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-8 text-center">
+                  <p className="text-sm font-black text-amber-400 uppercase tracking-wide">
+                    Jogo encerrado
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Todas as {totalRounds} rodadas foram concluídas. Não é possível
+                    iniciar ou editar novas rodadas.
+                  </p>
+                </div>
+              ) : (
+              <>
               {/* INFO */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-[#0B1220] border border-white/[0.05] rounded-2xl p-5">
@@ -336,6 +350,8 @@ export const RoundConfigPanel = ({
                   </button>
                 )}
               </div>
+              </>
+              )}
             </div>
           </motion.div>
         )}

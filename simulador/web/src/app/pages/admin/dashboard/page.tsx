@@ -47,6 +47,7 @@ const AdminMestre = () => {
     endTime,
     session,
     setSession,
+    finalRanking,
     conectar,
     emit,
     alterarTempoRodada,
@@ -113,6 +114,16 @@ const AdminMestre = () => {
 
   const totalDurationSeconds =
     config.durationMinutes * 60 + config.durationSeconds;
+
+  // Estado de rodadas: evita exibir "rodada +1" e bloqueia novas rodadas no fim do jogo.
+  // "Encerrado" só quando a ÚLTIMA rodada já TERMINOU (não está em andamento) — assim
+  // o admin ainda consegue encerrar a última rodada manualmente enquanto ela roda.
+  const sessionCurrentRound = session?.currentRound ?? 0;
+  const sessionTotalRounds = session?.totalRounds ?? 5;
+  const gameOver = sessionCurrentRound >= sessionTotalRounds && !gameStarted;
+  const displayRound = gameStarted
+    ? sessionCurrentRound
+    : Math.min(sessionCurrentRound + 1, sessionTotalRounds);
 
   const progressPercent =
     endTime && totalDurationSeconds > 0
@@ -237,6 +248,15 @@ const AdminMestre = () => {
     fetchRoundRankingBoard(session.id);
   }, [submittedCount, session?.id, fetchRoundRankingBoard]);
 
+  // Fim do jogo: navega para o pódio/ranking final.
+  useEffect(() => {
+    if (!finalRanking) return;
+    if (session?.id) {
+      sessionStorage.setItem("final_ranking", JSON.stringify(finalRanking));
+    }
+    router.push("/pages/admin/results");
+  }, [finalRanking, session?.id, router]);
+
   // =========================
   // TIMER
   // =========================
@@ -323,13 +343,32 @@ const AdminMestre = () => {
         session={session}
         connected={connected}
         gameStarted={gameStarted}
-        currentRoundNumber={config.roundNumber}
+        currentRoundNumber={displayRound}
         playersCount={players.length}
         adminName={adminName}
         onEncerrar={() => setConfirmFinish(true)}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {gameOver && (
+          <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
+            <div>
+              <p className="text-sm font-black text-amber-400 uppercase tracking-wide">
+                Jogo encerrado
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Todas as {sessionTotalRounds} rodadas foram concluídas.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/pages/admin/results")}
+              className="px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-xs font-black uppercase tracking-wide transition cursor-pointer"
+            >
+              Ver ranking final
+            </button>
+          </div>
+        )}
 
         <div className="mb-4">
           <StatsCards
@@ -348,7 +387,7 @@ const AdminMestre = () => {
               gameStarted={gameStarted}
               timeLeft={timeLeft}
               progressPercent={progressPercent}
-              roundNumber={config.roundNumber}
+              roundNumber={displayRound}
               playersCount={players.length}
               submittedCount={submittedCount}
               readyCount={readyCount}
@@ -360,9 +399,10 @@ const AdminMestre = () => {
         config={config}
         gameStarted={gameStarted}
         showConfig={showConfig}
-        canGoNext={(session?.currentRound ?? 0) > 0}
-        currentRound={session?.currentRound ? session.currentRound + 1 : config.roundNumber}
-        totalRounds={session?.totalRounds ?? 3}
+        canGoNext={sessionCurrentRound > 0 && !gameOver}
+        gameOver={gameOver}
+        currentRound={displayRound}
+        totalRounds={sessionTotalRounds}
         sessionId={session?.id ?? ""}
         timeLeft={timeLeft}
         onToggle={() => setShowConfig((v) => !v)}

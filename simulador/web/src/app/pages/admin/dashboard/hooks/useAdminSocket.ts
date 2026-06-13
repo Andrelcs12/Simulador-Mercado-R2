@@ -22,6 +22,7 @@ export const useAdminSocket = (API_URL: string) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [session, setSessionState] = useState<Session | null>(null);
+  const [finalRanking, setFinalRanking] = useState<any[] | null>(null);
 
   const setPlayers = useCallback(
     (updater: Player[] | ((prev: Player[]) => Player[])) => {
@@ -97,6 +98,13 @@ export const useAdminSocket = (API_URL: string) => {
         setGameStarted(false);
         setEndTime(null);
         toast("⏱️ Rodada finalizada");
+      });
+
+      // Fim do jogo (última rodada finalizada) → ranking final para o pódio.
+      socket.on("session:finalized", (data: any) => {
+        setGameStarted(false);
+        setEndTime(null);
+        setFinalRanking(Array.isArray(data?.ranking) ? data.ranking : []);
       });
 
       socket.on("session:state", (sessionData: any) => {
@@ -180,6 +188,7 @@ export const useAdminSocket = (API_URL: string) => {
     endTime,
     session,
     setSession,
+    finalRanking,
     conectar,
     emit,
     disconnect,
