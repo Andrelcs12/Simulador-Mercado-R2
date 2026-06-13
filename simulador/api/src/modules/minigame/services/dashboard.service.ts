@@ -159,6 +159,33 @@ export class DashboardService {
         })
       : null;
 
+    // EBITDA por loja para o "Comparativo de Mercado".
+    // Usa o resultado real da rodada quando existe; senão, projeta a partir da configuração.
+    const [allResults, allConfigs] = await Promise.all([
+      this.prisma.roundResult.findMany({
+        where: { sessionId, roundId },
+        select: { storeId: true, ebitdaValue: true },
+      }),
+      this.prisma.configuration.findMany({
+        where: { sessionId, roundId },
+        include: {
+          store: true,
+          stockInputs: { include: { category: true } },
+          capexSelections: { include: { capex: true } },
+        },
+      }),
+    ]);
+
+    const ebitdaByStore = new Map<string, number>();
+    for (const res of allResults) {
+      ebitdaByStore.set(res.storeId, res.ebitdaValue ?? 0);
+    }
+    for (const cfg of allConfigs) {
+      if (!ebitdaByStore.has(cfg.storeId)) {
+        ebitdaByStore.set(cfg.storeId, this.buildProjectedKpis(cfg).ebitda);
+      }
+    }
+
     const commercialBreakdown = this.buildCommercialBreakdown(myConfig);
     const capexSelections = this.buildCapexSelections(myConfig);
     const configurations = {
@@ -201,8 +228,10 @@ export class DashboardService {
           ? {
               storeId: myConfig.storeId,
               name: myConfig.store?.name ?? "Minha Loja",
-              position: null,
-              marketShare: 0,
+              // Mesmo antes da rodada ser simulada, o ranking (score/disponibilidade/CSAT)
+              // já existe pós-submissão — usa-o para manter consistência com a tela do admin.
+              position: myRanking?.position ?? null,
+              marketShare: (myRanking?.marketShare ?? 0) * 100,
               kpis: this.buildProjectedKpis(myConfig),
               comercialBreakdown: commercialBreakdown,
               capexSelections,
@@ -220,6 +249,7 @@ export class DashboardService {
         score: r.finalScore,
         position: r.position,
         marketShare: (r.marketShare ?? 0) * 100,
+        ebitda: ebitdaByStore.get(r.storeId) ?? 0,
       })),
     };
   }
@@ -278,6 +308,7 @@ async getHistory(sessionId: string, storeId?: string) {
         playerName: string;
         storeId: string;
         score: number;
+        marketShare: number;
       }>;
     }>();
 
@@ -300,6 +331,8 @@ async getHistory(sessionId: string, storeId?: string) {
         playerName: player?.name ?? item.store.name,
         storeId: item.storeId,
         score: item.finalScore,
+        // marketShare é fração (0–1) no banco → entrega em % para o front
+        marketShare: (item.marketShare ?? 0) * 100,
       });
     }
 

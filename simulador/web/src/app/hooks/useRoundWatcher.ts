@@ -45,7 +45,7 @@ export const useRoundWatcher = (API_URL: string) => {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const savedPlayer = localStorage.getItem("player_data");
+    const savedPlayer = sessionStorage.getItem("player_data");
     if (!savedPlayer) return;
 
     let player: any;
@@ -81,7 +81,7 @@ export const useRoundWatcher = (API_URL: string) => {
           ? data.endTime
           : new Date(data.endTime).getTime();
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "round_data",
         JSON.stringify({
           roundId: data.roundId,

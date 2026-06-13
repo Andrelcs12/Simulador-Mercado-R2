@@ -87,8 +87,8 @@ export const useSimulation = (API_URL: string) => {
 
   // ── Carga principal ───────────────────────────────────────
   useEffect(() => {
-    const savedPlayer = localStorage.getItem("player_data");
-    const savedRound = localStorage.getItem("round_data");
+    const savedPlayer = sessionStorage.getItem("player_data");
+    const savedRound = sessionStorage.getItem("round_data");
 
     if (!savedPlayer || !savedRound) {
       router.push("/pages/lobby");
@@ -155,7 +155,7 @@ export const useSimulation = (API_URL: string) => {
         endTime: endsAtMs,
       };
 
-      localStorage.setItem("round_data", JSON.stringify(syncedRound));
+      sessionStorage.setItem("round_data", JSON.stringify(syncedRound));
       setRoundData(syncedRound);
       startTimer(endsAtMs);
     });
@@ -174,7 +174,7 @@ export const useSimulation = (API_URL: string) => {
         endTime: endTimeMs,
       };
 
-      localStorage.setItem("round_data", JSON.stringify(newRound));
+      sessionStorage.setItem("round_data", JSON.stringify(newRound));
       setRoundData(newRound);
       setIsSubmitted(false);
       setIsTimeUp(false);

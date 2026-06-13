@@ -54,7 +54,7 @@ export function useDashboard(API_URL: string) {
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem("player_data");
+    const saved = sessionStorage.getItem("player_data");
     if (!saved) {
       setLoading(false);
       return;
@@ -85,6 +85,16 @@ export function useDashboard(API_URL: string) {
       toast.success(`Resultados da Rodada ${updatedData.roundNumber} computados!`);
     });
 
+    // Atualização em tempo real: o backend recalcula ranking/EBITDA a cada submissão
+    // e ao finalizar a rodada. Como não há push do dashboard pronto, re-buscamos aqui.
+    socket.on("player:submitted", () => {
+      loadDashboardData(player.sessionId, storeId);
+    });
+
+    socket.on("round:finished", () => {
+      loadDashboardData(player.sessionId, storeId);
+    });
+
     socket.on("round:started", (data: any) => {
       if (data.maxStock) {
         persistMaxStockConfig(data.maxStock);
@@ -92,7 +102,7 @@ export function useDashboard(API_URL: string) {
 
       const endTimeMs = typeof data.endTime === "number" ? data.endTime : new Date(data.endTime).getTime();
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "round_data",
         JSON.stringify({
           roundId: data.roundId,

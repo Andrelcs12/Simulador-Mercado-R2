@@ -45,7 +45,7 @@ export default function DashboardHeader({ roundNumber, totalRounds, isLatestRoun
             <TrendingUp size={16} className="text-sky-400" />
             <div>
               <p className="text-[9px] uppercase font-black text-slate-500 tracking-wider">Market Share</p>
-              <p className="text-sm font-black text-white">{((myStore?.marketShare ?? 0) * 100).toFixed(1)}%</p>
+              <p className="text-sm font-black text-white">{(myStore?.marketShare ?? 0).toFixed(1)}%</p>
             </div>
           </div>
 

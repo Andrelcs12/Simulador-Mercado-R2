@@ -29,6 +29,7 @@ type RoundRankingBoardItem = {
     playerName: string;
     storeId: string;
     score: number;
+    marketShare: number;
   }>;
 };
 
@@ -121,16 +122,23 @@ const AdminMestre = () => {
         )
       : 0;
 
-  const ranking = useMemo(() => {
+  const activeRound = useMemo(() => {
     const currentRoundNumber =
       session?.currentRound ||
       roundRankingBoard[roundRankingBoard.length - 1]?.roundNumber ||
       0;
 
-    const activeRound =
+    return (
       roundRankingBoard.find((round) => round.roundNumber === currentRoundNumber) ||
-      roundRankingBoard[roundRankingBoard.length - 1];
+      roundRankingBoard[roundRankingBoard.length - 1] ||
+      null
+    );
+  }, [roundRankingBoard, session?.currentRound]);
 
+  // Rótulo do board deve refletir a rodada DOS DADOS exibidos, não a próxima a configurar.
+  const rankingRoundNumber = activeRound?.roundNumber ?? config.roundNumber;
+
+  const ranking = useMemo(() => {
     if (!activeRound) return [];
 
     return activeRound.rankings.map((item) => ({
@@ -138,18 +146,19 @@ const AdminMestre = () => {
       name: item.playerName,
       position: item.position,
       finalScore: item.score,
-      marketShare: 0,
+      marketShare: item.marketShare ?? 0,
       submitted: true,
       ready: true,
-      rounds: roundRankingBoard.map((round) => ({
-        round: round.roundNumber,
-        score:
-          round.rankings.find((rank) => rank.storeId === item.storeId)
-            ?.score ?? 0,
-        marketShare: 0,
-      })),
+      rounds: roundRankingBoard.map((round) => {
+        const rank = round.rankings.find((r) => r.storeId === item.storeId);
+        return {
+          round: round.roundNumber,
+          score: rank?.score ?? 0,
+          marketShare: rank?.marketShare ?? 0,
+        };
+      }),
     }));
-  }, [roundRankingBoard, session?.currentRound]);
+  }, [activeRound, roundRankingBoard]);
 
   const handleConfigChange = (patch: Partial<RoundConfig>) => {
     const nextConfig = { ...config, ...patch };
@@ -220,6 +229,13 @@ const AdminMestre = () => {
 
     fetchRoundRankingBoard(session.id);
   }, [fetchRoundRankingBoard, gameStarted, session?.id]);
+
+  // Atualização em tempo real do ranking: cada submissão chega via socket
+  // (player:submitted → submittedCount). Re-busca o board mesmo com a rodada aberta.
+  useEffect(() => {
+    if (!session?.id) return;
+    fetchRoundRankingBoard(session.id);
+  }, [submittedCount, session?.id, fetchRoundRankingBoard]);
 
   // =========================
   // TIMER
@@ -360,7 +376,7 @@ const AdminMestre = () => {
 
             <AdminRoundRanking
               ranking={ranking}
-              roundNumber={config.roundNumber}
+              roundNumber={rankingRoundNumber}
             />
 
             <div className="mb-6 space-y-4">
