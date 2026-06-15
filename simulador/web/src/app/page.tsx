@@ -3,7 +3,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  ArrowRight, ShieldAlert, BarChart3, Presentation, Landmark, Store
+  ArrowRight, ShieldAlert, BarChart3, Presentation, Landmark, Store,
+  ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -137,6 +138,37 @@ const LandingPage = () => {
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
+
+          
+          <div className="pt-6 mt-6 border-t border-white/5 space-y-4">
+  <div className="flex items-center gap-3">
+    <div className="w-10 h-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center">
+      <ShieldCheck size={18} className="text-orange-500" />
+    </div>
+
+    <div>
+      <h4 className="text-sm font-black uppercase tracking-wide text-white">
+        Painel Administrativo
+      </h4>
+
+      <p className="text-[10px] text-slate-500 font-medium">
+        Configuração e controle da simulação
+      </p>
+    </div>
+  </div>
+
+  <Link
+    href="/pages/admin/setup"
+    className="group w-full flex items-center justify-center gap-3 border border-orange-500/30 bg-orange-500/10 text-orange-400 py-3 rounded-xl font-black text-[11px] uppercase tracking-wider hover:bg-orange-500/20 transition-all"
+  >
+    Entrar como Administrador
+
+    <ArrowRight
+      size={14}
+      className="group-hover:translate-x-1 transition-transform"
+    />
+  </Link>
+</div>
 
           <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
