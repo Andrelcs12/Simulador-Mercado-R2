@@ -58,10 +58,17 @@ export class RoundHandler {
     server.to(sessionId).emit("session:state", session);
 
     if (session.currentRound >= session.totalRounds) {
-      const final = await this.minigameService.finalizeSession(sessionId);
+      let ranking: any[] = [];
+      try {
+        const final: any = await this.minigameService.finalizeSession(sessionId);
+        ranking = Array.isArray(final?.ranking) ? final.ranking : [];
+      } catch (e) {
+        console.error("Falha ao finalizar sessão:", e);
+      }
+      // Emite sempre — a tela final busca o ranking do endpoint como fonte da verdade.
       server.to(sessionId).emit("session:finalized", {
         sessionId,
-        ranking: final.ranking,
+        ranking,
       });
     }
 

@@ -43,7 +43,7 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
   useEffect(() => {
     setIsMounted(true); // Indica que o código agora roda 100% no cliente
 
-    const savedData = typeof window !== "undefined" ? localStorage.getItem("player_data") : null;
+    const savedData = typeof window !== "undefined" ? sessionStorage.getItem("player_data") : null;
     if (!savedData) {
       router.push("/pages/registro-do-usuario");
       return;
@@ -108,7 +108,7 @@ export const useLobbySocket = (API_URL: string): UseLobbySocketReturn => {
         window.dispatchEvent(new Event("round_config_max_stock_updated"));
       }
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "round_data",
         JSON.stringify({
           roundId: data.roundId,

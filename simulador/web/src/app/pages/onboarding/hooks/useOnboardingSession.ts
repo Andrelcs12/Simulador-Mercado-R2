@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { useOnboarding } from "../context/OnboardingContext";
 
 const normalizeEndTime = (raw: any): number | null => {
@@ -82,12 +83,19 @@ export function useOnboardingSession(API_URL: string) {
     setMaxStockConfig,
   } = useOnboarding();
 
+  const router = useRouter();
+
   const socketRef = useRef<Socket | null>(null);
   const joinedRef = useRef(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // Trava síncrona contra envio duplicado: não depende do ciclo de render do React
+  const submittingRef = useRef(false);
 
   const [categoryMap, setCategoryMap] = useState<Record<string, string>>({});
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+  // Indica que o onboarding já carregou o estado da rodada atual e limpou resíduos.
+  // Os redirects da página só podem agir depois disso (evita pular a rodada).
+  const [initialized, setInitialized] = useState(false);
 
   const applyMaxStockConfig = useCallback(
     (maxStock?: {
@@ -171,13 +179,19 @@ export function useOnboardingSession(API_URL: string) {
 
   // Inicialização do socket
   useEffect(() => {
-    const saved = localStorage.getItem("player_data");
+    const saved = sessionStorage.getItem("player_data");
     if (!saved) return;
 
     const p = JSON.parse(saved);
     setPlayer(p);
 
-    const savedRound = localStorage.getItem("round_data");
+    // Clean slate ao entrar no onboarding: limpa estado de envio/cronômetro residual
+    // da rodada anterior ANTES de marcar como inicializado (tudo no mesmo tick → batched).
+    setSubmitted(false);
+    setSubmitting(false);
+    setTimeLeft(0);
+
+    const savedRound = sessionStorage.getItem("round_data");
     if (savedRound) {
       try {
         const parsed = JSON.parse(savedRound);
@@ -197,6 +211,9 @@ export function useOnboardingSession(API_URL: string) {
         console.error("Erro ao recuperar cache da rodada", e);
       }
     }
+
+    // Libera os redirects da página somente após o estado da rodada estar consistente.
+    setInitialized(true);
 
     const socket = io(`${API_URL}/simulation`, {
       reconnection: true,
@@ -229,7 +246,7 @@ export function useOnboardingSession(API_URL: string) {
       setSubmitted(false);
       setSubmitting(false);
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         "round_data",
         JSON.stringify({ ...normalized, maxStock: data.maxStock })
       );
@@ -260,12 +277,34 @@ export function useOnboardingSession(API_URL: string) {
 
     socket.on("player:submit_error", (data: { message: string }) => {
       setSubmitting(false);
-      toast.error(data.message || "Erro ao salvar configurações.");
+      const msg = data.message || "Erro ao salvar configurações.";
+      // "Config já enviada nesta rodada" não é falha: a config já está salva.
+      if (/j[áa]\s*enviad/i.test(msg)) {
+        setSubmitted(true);
+        toast.success("Configurações já registradas nesta rodada.");
+        return;
+      }
+      toast.error(msg);
     });
 
     socket.on("round:finished", () => {
       if (timerRef.current) clearInterval(timerRef.current);
       setTimeLeft(0);
+    });
+
+    // Fim NATURAL (todas as rodadas) → tela de resultado final (pódio).
+    socket.on("session:finalized", () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      router.push("/pages/dashboard/final");
+    });
+
+    // Encerramento pelo facilitador → notifica e volta à página inicial.
+    socket.on("session:finished", () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      toast("A sessão foi encerrada pelo facilitador.", { icon: "🏁", duration: 4000 });
+      sessionStorage.removeItem("player_data");
+      sessionStorage.removeItem("round_data");
+      setTimeout(() => router.push("/"), 1500);
     });
 
     return () => {
@@ -281,6 +320,7 @@ export function useOnboardingSession(API_URL: string) {
     setSubmitted,
     setTimeLeft,
     startTimer,
+    router,
   ]);
 
   
@@ -294,64 +334,103 @@ const submit = useCallback(
     storeId?: string;
   }): Promise<void> => {
     if (!socketRef.current) throw new Error("Socket não conectado.");
-    if (submitting || submitted) return;
+    // Trava síncrona: barra um segundo disparo antes do estado React refletir
+    if (submittingRef.current || submitting || submitted) return;
     if (!categoriesLoaded) throw new Error("Categorias ainda não carregadas.");
 
+    submittingRef.current = true;
+
     // Mapeamento de chaves amigáveis (UI) para Slugs reais (Banco/Seed)
-const CAPEX_SLUG_MAP: Record<string, string> = {
-  "seguranca": "seguranca",
-  "equipamentos": "freezer", // 👈 Adicione esta linha (ou altere "freezer" para o slug exato do banco, ex: "balanca")
-  "freezer": "freezer",
-  "balanca": "freezer", 
-  "redes": "redes",
-  "selfcheckout": "self-checkout",
-  "self-checkout": "self-checkout",
-  "site": "site",
-  "bi": "bi",
-  "melhoria": "bi", // 👈 Mapeia também a chave "melhoria" usada na UI do seu SetupStep
-  "melhoriacontinua": "bi"
-};
+    const CAPEX_SLUG_MAP: Record<string, string> = {
+      "seguranca": "seguranca",
+      "equipamentos": "freezer", // 👈 Adicione esta linha (ou altere "freezer" para o slug exato do banco, ex: "balanca")
+      "freezer": "freezer",
+      "balanca": "freezer",
+      "redes": "redes",
+      "selfcheckout": "self-checkout",
+      "self-checkout": "self-checkout",
+      "site": "site",
+      "bi": "bi",
+      "melhoria": "bi", // 👈 Mapeia também a chave "melhoria" usada na UI do seu SetupStep
+      "melhoriacontinua": "bi"
+    };
 
-    // 1. Processar Estoque
-    const stockInputs = Object.entries(config.comercial).map(([key, val]) => {
-      const categoryId = categoryMap[key];
-      if (!categoryId) {
-        console.error(`[submit] Categoria "${key}" não encontrada no mapa.`, categoryMap);
-        throw new Error(`Categoria "${key}" não mapeada.`);
-      }
-      return {
-        categoryId,
-        buyQty: val.estoque,
-        commercialMargin: val.margem,
-        expectedSellPrice: 0,
-      };
-    });
+    let stockInputs: {
+      categoryId: string;
+      buyQty: number;
+      commercialMargin: number;
+      expectedSellPrice: number;
+    }[];
+    let capexSelections: { capexId: string }[];
 
-    // 2. Processar CAPEX com conversão de Slug
-    const capexSelections = Object.entries(config.capex)
-      .filter(([, v]) => (v ?? 0) > 0)
-      .map(([key]) => ({
-        // Converte a chave da UI para o slug técnico do banco
-        capexId: CAPEX_SLUG_MAP[key.toLowerCase()] || key.toLowerCase()
-      }));
+    try {
+      // 1. Processar Estoque
+      stockInputs = Object.entries(config.comercial).map(([key, val]) => {
+        const categoryId = categoryMap[key];
+        if (!categoryId) {
+          console.error(`[submit] Categoria "${key}" não encontrada no mapa.`, categoryMap);
+          throw new Error(`Categoria "${key}" não mapeada.`);
+        }
+        return {
+          categoryId,
+          buyQty: val.estoque,
+          commercialMargin: val.margem,
+          expectedSellPrice: 0,
+        };
+      });
+
+      // 2. Processar CAPEX com conversão de Slug
+      capexSelections = Object.entries(config.capex)
+        .filter(([, v]) => (v ?? 0) > 0)
+        .map(([key]) => ({
+          // Converte a chave da UI para o slug técnico do banco
+          capexId: CAPEX_SLUG_MAP[key.toLowerCase()] || key.toLowerCase()
+        }));
+    } catch (err) {
+      // Falha na montagem do payload: libera a trava para permitir nova tentativa
+      submittingRef.current = false;
+      throw err;
+    }
 
     // 3. Envio via Socket
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
+      const socket = socketRef.current!;
+
+      const cleanup = () => {
+        clearTimeout(timeout);
+        socket.off("player:config_submitted", onSuccess);
+        socket.off("player:submit_error", onError);
+        submittingRef.current = false;
+      };
+
+      const onSuccess = () => {
+        cleanup();
+        setSubmitted(true);
+        resolve();
+      };
+
+      const onError = (data: { message?: string }) => {
+        cleanup();
+        const msg = data?.message || "Erro no envio das configurações.";
+        // Idempotência: se o servidor diz que a config já existe nesta rodada,
+        // o objetivo do usuário já foi atingido — trata como sucesso.
+        if (/j[áa]\s*enviad/i.test(msg)) {
+          setSubmitted(true);
+          resolve();
+          return;
+        }
+        reject(new Error(msg));
+      };
+
       const timeout = setTimeout(() => {
+        cleanup();
         reject(new Error("Timeout: servidor não confirmou o envio."));
       }, 10000);
 
-      socketRef.current!.once("player:config_submitted", () => {
-        clearTimeout(timeout);
-        resolve();
-      });
+      socket.once("player:config_submitted", onSuccess);
+      socket.once("player:submit_error", onError);
 
-      socketRef.current!.once("player:submit_error", (data: { message: string }) => {
-        clearTimeout(timeout);
-        reject(new Error(data.message || "Erro no envio das configurações."));
-      });
-
-      socketRef.current!.emit("player:submit_config", {
+      socket.emit("player:submit_config", {
         ...payload,
         operatorsQty: config.operadoresCaixa,
         serviceOperatorsQty: config.operadoresAtendimento,
@@ -361,7 +440,7 @@ const CAPEX_SLUG_MAP: Record<string, string> = {
       });
     });
   },
-  [categoryMap, categoriesLoaded, submitting, submitted, config]
+  [categoryMap, categoriesLoaded, submitting, submitted, config, setSubmitted]
 );
 
 
@@ -369,5 +448,5 @@ const CAPEX_SLUG_MAP: Record<string, string> = {
   const timeUp =
     (round?.endTime ?? 0) > 0 ? Date.now() >= (round?.endTime ?? 0) : false;
 
-  return { submit, categoriesLoaded, timeUp };
+  return { submit, categoriesLoaded, timeUp, initialized };
 }
