@@ -31,7 +31,9 @@ const RegistroUsuario = () => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Erro ao entrar na sala");
-      localStorage.setItem("player_data", JSON.stringify(data));
+      // sessionStorage isola a identidade por ABA — evita que duas contas
+      // abertas em abas diferentes do mesmo navegador sobrescrevam uma à outra.
+      sessionStorage.setItem("player_data", JSON.stringify(data));
       router.push("/pages/lobby");
     } catch (err: any) {
       alert(err.message || "Erro na conexão");

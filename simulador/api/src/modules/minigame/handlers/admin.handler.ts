@@ -28,15 +28,17 @@ export class AdminHandler {
     return result;
   }
 
-  // 3. MANTIDO: Finalizar a sessão completa
+  // 3. Encerrar a sessão manualmente (abort do facilitador).
+  // Emite session:finished → todos recebem notificação e voltam à página inicial.
+  // (O pódio/ranking final é exibido no fim NATURAL do jogo, via session:finalized.)
   async handleFinishSession(server: Server, data: { sessionId: string }) {
     await this.minigameService.finishRound(data.sessionId, "MANUAL");
     const session = await this.minigameService.finishSession(data.sessionId);
 
-    server.to(data.sessionId).emit("session:finished", { 
-      sessionId: data.sessionId, 
-      status: "FINISHED", 
-      session 
+    server.to(data.sessionId).emit("session:finished", {
+      sessionId: data.sessionId,
+      status: "FINISHED",
+      session
     });
     return session;
   }

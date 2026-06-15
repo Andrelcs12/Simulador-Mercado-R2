@@ -128,7 +128,7 @@ export class DashboardService {
     const [ranking, myResult, myConfig] = await Promise.all([
       this.prisma.roundRanking.findMany({
         where: { sessionId, roundId },
-        include: { store: true },
+        include: { store: { include: { players: true } } },
         orderBy: { position: "asc" },
         take: 50,
       }),
@@ -158,6 +158,33 @@ export class DashboardService {
           where: { sessionId_roundId_storeId: { sessionId, roundId, storeId } },
         })
       : null;
+
+    // EBITDA por loja para o "Comparativo de Mercado".
+    // Usa o resultado real da rodada quando existe; senão, projeta a partir da configuração.
+    const [allResults, allConfigs] = await Promise.all([
+      this.prisma.roundResult.findMany({
+        where: { sessionId, roundId },
+        select: { storeId: true, ebitdaValue: true },
+      }),
+      this.prisma.configuration.findMany({
+        where: { sessionId, roundId },
+        include: {
+          store: true,
+          stockInputs: { include: { category: true } },
+          capexSelections: { include: { capex: true } },
+        },
+      }),
+    ]);
+
+    const ebitdaByStore = new Map<string, number>();
+    for (const res of allResults) {
+      ebitdaByStore.set(res.storeId, res.ebitdaValue ?? 0);
+    }
+    for (const cfg of allConfigs) {
+      if (!ebitdaByStore.has(cfg.storeId)) {
+        ebitdaByStore.set(cfg.storeId, this.buildProjectedKpis(cfg).ebitda);
+      }
+    }
 
     const commercialBreakdown = this.buildCommercialBreakdown(myConfig);
     const capexSelections = this.buildCapexSelections(myConfig);
@@ -201,8 +228,10 @@ export class DashboardService {
           ? {
               storeId: myConfig.storeId,
               name: myConfig.store?.name ?? "Minha Loja",
-              position: null,
-              marketShare: 0,
+              // Mesmo antes da rodada ser simulada, o ranking (score/disponibilidade/CSAT)
+              // já existe pós-submissão — usa-o para manter consistência com a tela do admin.
+              position: myRanking?.position ?? null,
+              marketShare: (myRanking?.marketShare ?? 0) * 100,
               kpis: this.buildProjectedKpis(myConfig),
               comercialBreakdown: commercialBreakdown,
               capexSelections,
@@ -212,11 +241,15 @@ export class DashboardService {
           : this.emptyMyStore(),
 
       ranking: ranking.map((r) => ({
+        roundId: r.roundId,
+        playerId: r.store.players?.[0]?.id ?? "",
+        playerName: r.store.players?.[0]?.name ?? r.store.name,
         storeId: r.storeId,
         name: r.store.name,
+        score: r.finalScore,
         position: r.position,
-        finalScore: r.finalScore,
         marketShare: (r.marketShare ?? 0) * 100,
+        ebitda: ebitdaByStore.get(r.storeId) ?? 0,
       })),
     };
   }
@@ -238,6 +271,75 @@ async getHistory(sessionId: string, storeId?: string) {
     marketShare: r.marketShare
   }));
 }
+
+  async getRoundRankingBoard(sessionId: string) {
+    const rankings = await this.prisma.roundRanking.findMany({
+      where: { sessionId },
+      include: {
+        round: {
+          select: {
+            id: true,
+            roundNumber: true,
+          },
+        },
+        store: {
+          include: {
+            players: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        { round: { roundNumber: "asc" } },
+        { position: "asc" },
+      ],
+    });
+
+    const grouped = new Map<string, {
+      roundId: string;
+      roundNumber: number;
+      rankings: Array<{
+        position: number;
+        playerId: string;
+        playerName: string;
+        storeId: string;
+        score: number;
+        marketShare: number;
+      }>;
+    }>();
+
+    for (const item of rankings) {
+      const roundId = item.roundId;
+      const roundNumber = item.round?.roundNumber ?? 0;
+      const player = item.store.players?.[0];
+
+      if (!grouped.has(roundId)) {
+        grouped.set(roundId, {
+          roundId,
+          roundNumber,
+          rankings: [],
+        });
+      }
+
+      grouped.get(roundId)!.rankings.push({
+        position: item.position,
+        playerId: player?.id ?? "",
+        playerName: player?.name ?? item.store.name,
+        storeId: item.storeId,
+        score: item.finalScore,
+        // marketShare é fração (0–1) no banco → entrega em % para o front
+        marketShare: (item.marketShare ?? 0) * 100,
+      });
+    }
+
+    return Array.from(grouped.values()).sort(
+      (a, b) => a.roundNumber - b.roundNumber,
+    );
+  }
 
   // ======================================================
   // DASHBOARD AUTOMÁTICO (SEM ROUND ID)

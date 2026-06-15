@@ -6,10 +6,14 @@ import {
 
 import { PrismaService } from "@/prisma.service";
 import { PlayerConfigurationInput } from "../contracts/simulation-input";
+import { RankingService } from "./ranking.service";
 
 @Injectable()
 export class SubmissionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly ranking: RankingService,
+  ) {}
 
   private readyPlayers = new Map<string, Set<string>>();
 
@@ -89,6 +93,9 @@ export class SubmissionService {
       });
 
       this.logger.log(`CONFIGURAÇÃO CRIADA COM SUCESSO: ${config.id}`);
+
+      // Atualiza ranking da rodada sempre que uma submissão é processada.
+      await this.ranking.computeRoundRanking(data.sessionId, data.roundId);
 
       return {
         success: true,

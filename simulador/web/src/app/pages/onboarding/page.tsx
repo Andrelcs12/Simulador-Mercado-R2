@@ -51,7 +51,7 @@ export default function OnboardingPage() {
     setSubmitting,
   } = useOnboarding();
 
-  const { submit, categoriesLoaded } = useOnboardingSession(
+  const { submit, categoriesLoaded, initialized } = useOnboardingSession(
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
   );
 
@@ -86,6 +86,7 @@ export default function OnboardingPage() {
 
   // Redirecionamento por estouro de tempo
   useEffect(() => {
+    if (!initialized) return; // espera o onboarding carregar o estado da rodada atual
     if (!round?.roundId) return;
     if (timeLeft > 0) return;
     if (redirectedRef.current) return;
@@ -94,16 +95,17 @@ export default function OnboardingPage() {
     router.replace(
       submitted ? "/pages/dashboard" : "/pages/onboarding/processing"
     );
-  }, [timeLeft, submitted, round, router]);
+  }, [initialized, timeLeft, submitted, round, router]);
 
   // Redirecionamento por sucesso no envio
   useEffect(() => {
+    if (!initialized) return; // ignora "submitted" residual da rodada anterior
     if (!submitted) return;
     if (redirectedRef.current) return;
 
     redirectedRef.current = true;
     router.replace("/pages/dashboard");
-  }, [submitted, router]);
+  }, [initialized, submitted, router]);
 
   // timeLeft em segundos, round.duration em segundos
   const pct = round?.duration

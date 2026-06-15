@@ -15,6 +15,13 @@ export default function RankingPanel({ ranking = [], myStoreId }: { ranking: any
       <div className="space-y-2">
         {ranking.map((r: any, idx: number) => {
           const isMe = r.storeId === myStoreId;
+          // EBITDA pode vir ausente/inválido → evita "NaNk"
+          const ebitda = Number(r.ebitda);
+          const ebitdaK = Number.isFinite(ebitda) ? (ebitda / 1000).toFixed(0) : "0";
+          // marketShare já chega do backend como percentual (0–100). Não multiplicar de novo.
+          const share = Number(r.marketShare);
+          const sharePct = Number.isFinite(share) ? share : 0;
+          const barWidth = Math.min(Math.max(sharePct, 0), 100);
           return (
             <div key={r.storeId} className={`p-4 rounded-xl border ${isMe ? "bg-orange-500/10 border-orange-500/30" : "bg-white/[0.02] border-white/5"}`}>
               <div className="flex items-center justify-between mb-3">
@@ -28,16 +35,16 @@ export default function RankingPanel({ ranking = [], myStoreId }: { ranking: any
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] text-slate-500 uppercase font-black">EBITDA</p>
-                  <p className="font-mono font-black text-white">R$ {(r.ebitda / 1000).toFixed(0)}k</p>
+                  <p className="font-mono font-black text-white">R$ {ebitdaK}k</p>
                 </div>
               </div>
 
               {/* Comparativo de Share */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-1.5 bg-black/30 rounded-full overflow-hidden">
-                  <div className={`h-full ${isMe ? "bg-orange-500" : "bg-sky-500"}`} style={{ width: `${(r.marketShare || 0) * 100}%` }} />
+                  <div className={`h-full ${isMe ? "bg-orange-500" : "bg-sky-500"}`} style={{ width: `${barWidth}%` }} />
                 </div>
-                <span className="text-[10px] font-black font-mono text-slate-400">{(r.marketShare * 100).toFixed(1)}%</span>
+                <span className="text-[10px] font-black font-mono text-slate-400">{sharePct.toFixed(1)}%</span>
               </div>
             </div>
           );

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Toaster } from "react-hot-toast";
 import DashboardHeader from "./components/DashboardHeader";
 import KPISection from "./components/KPISection";
@@ -14,6 +15,7 @@ import WaitingStatus from "./components/WaitingStatus";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { currentData, history, activeRound, setActiveRound, loading } = useDashboard(API_URL);
 
   // Descobre qual é a maior rodada presente no histórico para saber se o usuário está na mais recente
@@ -32,16 +34,24 @@ export default function DashboardPage() {
 
   const isLatestRound = activeRound === latestRoundInHistory;
 
+  // "Ver ranking" só após TODAS as rodadas: última rodada já com resultados (não projetada).
+  const gameFinished =
+    !!currentData.totalRounds &&
+    currentData.roundNumber >= currentData.totalRounds &&
+    currentData.myStore?.isProjected === false;
+
   return (
     <div className="min-h-screen bg-[#080D17] text-white">
       <Toaster />
       
       {/* 🌟 CORREÇÃO: Propriedades repassadas em conformidade com a interface Props do Header */}
-      <DashboardHeader 
-        roundNumber={activeRound} 
-        totalRounds={currentData.totalRounds} 
+      <DashboardHeader
+        roundNumber={activeRound}
+        totalRounds={currentData.totalRounds}
         isLatestRound={isLatestRound}
-        myStore={currentData.myStore} 
+        myStore={currentData.myStore}
+        showRanking={gameFinished}
+        onViewRanking={() => router.push("/pages/dashboard/final")}
       />
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
@@ -65,10 +75,12 @@ export default function DashboardPage() {
           
           {/* Lado Esquerdo - Visibilidade de Mercado e Performance Comercial */}
           <div className="xl:col-span-8 space-y-8">
-            <RankingPanel 
-              ranking={currentData.ranking || []} 
-              myStoreId={currentData.myStore?.storeId} 
-            />
+            <div id="ranking-comparativo" className="scroll-mt-28">
+              <RankingPanel
+                ranking={currentData.ranking || []}
+                myStoreId={currentData.myStore?.storeId}
+              />
+            </div>
             
             <ComercialDetails 
               comercialBreakdown={currentData.myStore?.comercialBreakdown || []} 

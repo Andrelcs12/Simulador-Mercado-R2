@@ -1,339 +1,328 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Trophy, Medal, TrendingUp, DollarSign,
-  ArrowRight, RotateCcw, Star, BarChart2, Crown
-} from 'lucide-react';
-import { io, Socket } from 'socket.io-client';
-import toast, { Toaster } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Crown, Medal, Trophy, TrendingUp, ArrowLeft, BarChart3 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-interface RankEntry {
+interface FinalRankEntry {
   position: number;
-  playerId: string;
+  storeId: string;
   storeName: string;
   playerName: string;
-  ebitda: number;
-  netProfit: number;
-  marketShare?: number;
-  nps?: number;
+  playerId: string;
+  finalEbitda: number;
+  finalEbitdaMargin: number; // %
+  finalMarketShare: number; // %
+  finalCash: number;
+  totalRevenue: number;
+  totalExpenses: number;
 }
 
-const PODIUM_COLORS = [
-  { bg: 'bg-yellow-400', border: 'border-yellow-500', text: 'text-yellow-900', shadow: 'shadow-yellow-400/40', label: '1º Lugar', icon: <Crown size={28} /> },
-  { bg: 'bg-slate-300',  border: 'border-slate-400',  text: 'text-slate-900',  shadow: 'shadow-slate-300/40',  label: '2º Lugar', icon: <Medal size={28} /> },
-  { bg: 'bg-amber-600',  border: 'border-amber-700',  text: 'text-amber-100',  shadow: 'shadow-amber-600/40',  label: '3º Lugar', icon: <Medal size={28} /> },
-];
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-const AdminResultsPage = () => {
+const fmtBRL = (v: number) =>
+  `R$ ${Math.round(v ?? 0).toLocaleString("pt-BR")}`;
+
+// Estilos por colocação alinhados ao restante do programa
+const POS_STYLE: Record<number, { ring: string; chip: string; text: string; bar: string; Icon: any }> = {
+  1: { ring: "ring-amber-400/40", chip: "bg-amber-500/20 text-amber-400 border-amber-500/30", text: "text-amber-400", bar: "from-amber-500/30 to-amber-500/5", Icon: Crown },
+  2: { ring: "ring-slate-300/30", chip: "bg-slate-400/20 text-slate-300 border-slate-400/30", text: "text-slate-300", bar: "from-slate-400/25 to-slate-400/5", Icon: Medal },
+  3: { ring: "ring-orange-700/30", chip: "bg-orange-700/20 text-orange-400 border-orange-700/30", text: "text-orange-400", bar: "from-orange-700/25 to-orange-700/5", Icon: Medal },
+};
+
+export default function AdminResultsPage() {
   const router = useRouter();
-  const socketRef = useRef<Socket | null>(null);
-  const [rankData, setRankData] = useState<RankEntry[]>([]);
+  const [ranking, setRanking] = useState<FinalRankEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<any>(null);
-
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    // 1. Tenta pegar dados do localStorage (enviados pelo socket simulation:finished)
-    const saved = localStorage.getItem('rank_data');
-    if (saved) {
-      try {
-        const parsed: RankEntry[] = JSON.parse(saved);
-        const sorted = [...parsed].sort((a, b) => b.ebitda - a.ebitda).map((e, i) => ({ ...e, position: i + 1 }));
-        setRankData(sorted);
-      } catch { /* ignora */ }
-    }
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
 
-    const sessionId = localStorage.getItem('admin_session_id');
-    const adminName = localStorage.getItem('admin_name') ?? 'Admin';
-
-    if (sessionId) {
-      // 2. Também busca do backend para garantir dados atualizados
-      fetch(`${API_URL}/minigame/session/${sessionId}`)
-        .then(r => r.json())
-        .then(data => setSession(data))
-        .catch(() => {});
-
-      fetch(`${API_URL}/minigame/results/${sessionId}`)
-        .then(r => r.json())
-        .then((data: RankEntry[]) => {
-          if (Array.isArray(data) && data.length > 0) {
-            const sorted = [...data].sort((a, b) => b.ebitda - a.ebitda).map((e, i) => ({ ...e, position: i + 1 }));
-            setRankData(sorted);
-          }
-        })
-        .catch(() => {})
-        .finally(() => setLoading(false));
-
-      // 3. Conecta socket para ouvir eventos de próxima rodada
-      const socket = io(`${API_URL}/simulation`, { reconnection: true });
-      socketRef.current = socket;
-      socket.emit('join_session', { sessionId, name: adminName, isAdmin: true });
-    } else {
-      setLoading(false);
-    }
-
-    return () => { socketRef.current?.disconnect(); };
-  }, [API_URL]);
-
-  // ── Próxima rodada ──────────────────────────────────────────────────────────
-  const proximaRodada = async () => {
-    if (!session) return;
-
+    // 1) Fallback instantâneo: payload salvo pelo socket session:finalized
     try {
-      await fetch(`${API_URL}/minigame/next-round`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId: session.id }),
-      });
-
-      // Limpa dados de ranking para a nova rodada
-      localStorage.removeItem('rank_data');
-
-      toast('🔄 Nova rodada preparada! Voltando ao lobby...', {
-        style: { background: '#002350', color: '#fff', fontWeight: 'bold' },
-        duration: 2000,
-      });
-
-      setTimeout(() => router.push('/pages/admin/dashboard'), 2200);
+      const cached = sessionStorage.getItem("final_ranking");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length) setRanking(parsed);
+      }
     } catch {
-      toast.error('Erro ao avançar para a próxima rodada.');
+      /* ignora */
     }
-  };
 
-  // ── Loading ─────────────────────────────────────────────────────────────────
-  if (loading) return (
-    <div className="min-h-screen bg-[#002350] flex flex-col items-center justify-center gap-4">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-        className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full"
-      />
-      <span className="text-white font-black tracking-widest text-xs uppercase italic">Calculando ranking final...</span>
-    </div>
+    // 2) Fonte da verdade: endpoint do backend
+    const sessionId =
+      typeof window !== "undefined" ? localStorage.getItem("admin_session_id") : null;
+
+    if (!sessionId) {
+      setLoading(false);
+      return;
+    }
+
+    fetch(`${API_URL}/minigame/session/${sessionId}/final-ranking`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: FinalRankEntry[]) => {
+        if (Array.isArray(data) && data.length) {
+          setRanking([...data].sort((a, b) => a.position - b.position));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const top3 = useMemo(() => ranking.slice(0, 3), [ranking]);
+  const rest = useMemo(() => ranking.slice(3), [ranking]);
+
+  // Ordem de exibição do pódio: 2º, 1º, 3º (centro = campeão)
+  const podiumOrder = useMemo(() => {
+    const byPos = (p: number) => top3.find((e) => e.position === p);
+    return [byPos(2), byPos(1), byPos(3)].filter(Boolean) as FinalRankEntry[];
+  }, [top3]);
+
+  // Pior colocação do pódio — usada para revelar do último ao campeão (suspense).
+  const lastPodiumPos = useMemo(
+    () => (top3.length ? Math.max(...top3.map((e) => e.position)) : 1),
+    [top3]
   );
 
-  const top3 = rankData.slice(0, 3);
-  const rest = rankData.slice(3);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#080D17] flex flex-col items-center justify-center gap-4">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="w-14 h-14 border-4 border-orange-500 border-t-transparent rounded-full"
+        />
+        <span className="text-slate-400 font-black tracking-[0.25em] text-[11px] uppercase">
+          Calculando ranking final...
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#002350] font-sans overflow-x-hidden">
-      <Toaster position="top-right" />
-
+    <div className="min-h-screen bg-[#080D17] text-white font-sans">
       {/* HEADER */}
-      <header className="w-full px-6 md:px-12 py-6 flex justify-between items-center border-b border-white/10">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center font-black text-white text-lg">C</div>
-          <div>
-            <h1 className="text-white font-black text-sm uppercase italic tracking-tight">
-              SIMULADOR <span className="text-orange-500">CENCOSUD</span>
-            </h1>
-            <p className="text-blue-300 text-[9px] font-black uppercase tracking-widest">Ranking Final de Simulação</p>
+      <header className="sticky top-0 z-40 bg-[#080D17]/90 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+              <Trophy size={20} className="text-orange-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tight">Resultado Final</h1>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 font-bold mt-0.5">
+                Classificação por % de EBITDA
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* BOTÃO PRÓXIMA RODADA */}
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={proximaRodada}
-          className="flex items-center gap-3 bg-orange-500 hover:bg-orange-400 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase italic tracking-widest shadow-xl shadow-orange-500/20 transition-colors border-b-4 border-orange-700"
-        >
-          <RotateCcw size={16} /> Próxima Rodada
-          <ArrowRight size={16} />
-        </motion.button>
+          <button
+            onClick={() => router.push("/pages/admin/dashboard")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-slate-200 hover:bg-white/10 transition cursor-pointer"
+          >
+            <ArrowLeft size={16} /> Voltar ao Painel
+          </button>
+        </div>
       </header>
 
-      <main className="max-w-6xl mx-auto p-6 md:p-10 space-y-12">
-
-        {/* TÍTULO */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-3"
-        >
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <Trophy size={40} className="text-yellow-400" />
-            <h2 className="text-5xl font-black text-white uppercase italic tracking-tighter">
-              Ranking <span className="text-orange-500">Final</span>
-            </h2>
-            <Trophy size={40} className="text-yellow-400" />
-          </div>
-          <p className="text-blue-300 font-black text-xs uppercase tracking-[0.3em]">
-            Classificação por EBITDA Operacional • Sessão {session?.code ?? '---'}
-          </p>
-        </motion.div>
-
-        {/* ── PÓDIO (TOP 3) ── */}
-        {top3.length > 0 && (
-          <div className="flex items-end justify-center gap-4 md:gap-8">
-            {/* Reordena para exibição: 2º → 1º → 3º */}
-            {[top3[1], top3[0], top3[2]].filter(Boolean).map((entry, displayIdx) => {
-              const actualPos = entry.position - 1; // índice 0-based
-              const color = PODIUM_COLORS[actualPos];
-              const heights = ['h-40', 'h-52', 'h-32']; // 2º, 1º, 3º
-              const podiumHeight = displayIdx === 0 ? heights[0] : displayIdx === 1 ? heights[1] : heights[2];
-
-              return (
-                <motion.div
-                  key={entry.playerId}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: displayIdx * 0.15, type: 'spring', stiffness: 120 }}
-                  className="flex flex-col items-center gap-3 flex-1 max-w-[200px]"
-                >
-                  {/* Card do player */}
-                  <div className={`w-full bg-white/10 border border-white/20 rounded-[2rem] p-5 text-center backdrop-blur-sm ${displayIdx === 1 ? 'ring-2 ring-yellow-400 ring-offset-2 ring-offset-[#002350]' : ''}`}>
-                    <div className={`w-14 h-14 ${color.bg} rounded-full flex items-center justify-center mx-auto mb-3 shadow-xl ${color.shadow} text-white`}>
-                      {color.icon}
-                    </div>
-                    <p className="text-white font-black text-sm uppercase italic tracking-tight leading-tight mb-1">
-                      {entry.storeName}
-                    </p>
-                    <p className="text-blue-300 text-[9px] font-bold uppercase">{entry.playerName}</p>
-                    <div className="mt-3 pt-3 border-t border-white/10">
-                      <p className="text-[9px] text-blue-300 font-black uppercase tracking-widest">EBITDA</p>
-                      <p className="text-yellow-400 font-black text-lg">
-                        R$ {entry.ebitda.toLocaleString('pt-BR')}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Base do pódio */}
-                  <div className={`w-full ${podiumHeight} ${color.bg} rounded-t-2xl flex items-center justify-center shadow-2xl ${color.shadow} relative overflow-hidden`}>
-                    <span className={`text-4xl font-black ${color.text} relative z-10`}>{entry.position}º</span>
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* ── TABELA COMPLETA ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-sm"
-        >
-          <div className="p-6 border-b border-white/10 flex items-center gap-3">
-            <BarChart2 size={20} className="text-orange-500" />
-            <h3 className="text-white font-black uppercase italic tracking-widest text-sm">Classificação Completa</h3>
-          </div>
-
-          {rankData.length === 0 ? (
-            <div className="py-20 text-center text-white/30 font-black uppercase tracking-widest text-sm">
+      <main className="max-w-6xl mx-auto px-6 py-10 space-y-12">
+        {ranking.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-16 text-center">
+            <Trophy size={36} className="mx-auto text-slate-700 mb-4" />
+            <h3 className="text-sm font-black uppercase tracking-widest text-slate-300">
               Nenhum resultado disponível
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="px-6 py-4 text-left text-[9px] font-black text-blue-300 uppercase tracking-widest">Pos.</th>
-                    <th className="px-6 py-4 text-left text-[9px] font-black text-blue-300 uppercase tracking-widest">Loja</th>
-                    <th className="px-6 py-4 text-left text-[9px] font-black text-blue-300 uppercase tracking-widest">Jogador</th>
-                    <th className="px-6 py-4 text-right text-[9px] font-black text-blue-300 uppercase tracking-widest">EBITDA</th>
-                    <th className="px-6 py-4 text-right text-[9px] font-black text-blue-300 uppercase tracking-widest">Lucro Líquido</th>
-                    {rankData[0]?.marketShare !== undefined && (
-                      <th className="px-6 py-4 text-right text-[9px] font-black text-blue-300 uppercase tracking-widest">Market Share</th>
-                    )}
-                    {rankData[0]?.nps !== undefined && (
-                      <th className="px-6 py-4 text-right text-[9px] font-black text-blue-300 uppercase tracking-widest">NPS</th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  <AnimatePresence>
-                    {rankData.map((entry, idx) => {
-                      const isTop3 = entry.position <= 3;
-                      const posColor = entry.position === 1 ? 'text-yellow-400' : entry.position === 2 ? 'text-slate-300' : entry.position === 3 ? 'text-amber-500' : 'text-white/50';
+            </h3>
+            <p className="text-xs text-slate-600 mt-2">
+              O ranking final aparece aqui quando a última rodada é finalizada.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* ===== PÓDIO (TOP 3) ===== */}
+            <section>
+              <div className="flex items-center gap-2 mb-8 justify-center">
+                <Crown size={18} className="text-amber-400" />
+                <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-300">
+                  Pódio
+                </h2>
+              </div>
 
-                      return (
+              <div className="flex items-end justify-center gap-3 md:gap-6">
+                {podiumOrder.map((entry) => {
+                  const style = POS_STYLE[entry.position] ?? POS_STYLE[3];
+                  const Icon = style.Icon;
+                  const isChamp = entry.position === 1;
+                  // alturas: 2º, 1º, 3º
+                  const barHeight = isChamp ? "h-44" : entry.position === 2 ? "h-32" : "h-24";
+                  // Revela do pior colocado ao campeão (campeão por último).
+                  const revealDelay = (lastPodiumPos - entry.position) * 0.7;
+
+                  return (
+                    <motion.div
+                      key={entry.storeId}
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: revealDelay, duration: 0.6, type: "spring", stiffness: 90, damping: 15 }}
+                      className="flex flex-col items-center gap-3 flex-1 max-w-[230px]"
+                    >
+                      {/* Card do colocado */}
+                      <div
+                        className={`w-full rounded-3xl border border-white/10 bg-white/5 p-5 text-center ${
+                          isChamp ? `ring-2 ${style.ring} ring-offset-2 ring-offset-[#080D17]` : ""
+                        }`}
+                      >
+                        <div className="flex justify-center -mt-10 mb-2">
+                          <div
+                            className={`w-14 h-14 rounded-2xl bg-[#0B1220] border border-white/10 flex items-center justify-center ${style.text}`}
+                          >
+                            <Icon size={24} />
+                          </div>
+                        </div>
+
+                        <span
+                          className={`inline-block px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-[0.15em] border ${style.chip}`}
+                        >
+                          {entry.position}º Lugar
+                        </span>
+
+                        <p className="text-white font-black text-base mt-3 truncate">
+                          {entry.storeName}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider truncate">
+                          {entry.playerName}
+                        </p>
+
+                        <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
+                          <div>
+                            <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">
+                              % EBITDA
+                            </p>
+                            <p className={`font-black text-xl ${style.text}`}>
+                              {entry.finalEbitdaMargin.toFixed(1)}%
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-center gap-1 text-emerald-400">
+                            <TrendingUp size={12} />
+                            <span className="font-mono font-black text-sm">
+                              {fmtBRL(entry.finalEbitda)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => router.push(`/pages/admin/results/${entry.storeId}`)}
+                          className="mt-4 w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-wide text-slate-200 hover:bg-white/10 transition cursor-pointer"
+                        >
+                          Ver detalhes
+                        </button>
+                      </div>
+
+                      {/* Base do pódio */}
+                      <div
+                        className={`w-full ${barHeight} rounded-t-2xl border-x border-t border-white/10 bg-gradient-to-b ${style.bar} flex items-start justify-center pt-4`}
+                      >
+                        <span className={`text-5xl font-black ${style.text}`}>
+                          {entry.position}
+                        </span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* ===== DEMAIS COLOCADOS (4º+) ===== */}
+            {rest.length > 0 && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: lastPodiumPos * 0.7 + 0.5, duration: 0.5 }}
+                className="rounded-3xl border border-white/10 bg-white/[0.02] overflow-hidden"
+              >
+                <div className="px-6 py-5 border-b border-white/10 bg-white/[0.02] flex items-center gap-3">
+                  <BarChart3 size={18} className="text-orange-400" />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-300">
+                    Demais Colocados
+                  </h3>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[640px]">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="px-6 py-4 text-left text-[9px] font-black text-slate-500 uppercase tracking-widest">Pos.</th>
+                        <th className="px-6 py-4 text-left text-[9px] font-black text-slate-500 uppercase tracking-widest">Loja</th>
+                        <th className="px-6 py-4 text-left text-[9px] font-black text-slate-500 uppercase tracking-widest">Gerente</th>
+                        <th className="px-6 py-4 text-right text-[9px] font-black text-slate-500 uppercase tracking-widest">% EBITDA</th>
+                        <th className="px-6 py-4 text-right text-[9px] font-black text-slate-500 uppercase tracking-widest">EBITDA</th>
+                        <th className="px-6 py-4 text-right text-[9px] font-black text-slate-500 uppercase tracking-widest">Market Share</th>
+                        <th className="px-6 py-4 text-right text-[9px] font-black text-slate-500 uppercase tracking-widest">Caixa Final</th>
+                        <th className="px-6 py-4 text-right text-[9px] font-black text-slate-500 uppercase tracking-widest">Detalhes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rest.map((entry, idx) => (
                         <motion.tr
-                          key={entry.playerId}
-                          initial={{ opacity: 0, x: -20 }}
+                          key={entry.storeId}
+                          initial={{ opacity: 0, x: -16 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.6 + idx * 0.05 }}
-                          className={`border-b border-white/5 transition-colors ${isTop3 ? 'bg-white/5' : 'hover:bg-white/5'}`}
+                          transition={{ delay: lastPodiumPos * 0.7 + 0.7 + idx * 0.12, duration: 0.4 }}
+                          className="border-b border-white/5 hover:bg-white/[0.03] transition-colors"
                         >
                           <td className="px-6 py-4">
-                            <span className={`font-black text-xl ${posColor}`}>{entry.position}º</span>
+                            <span className="font-black text-lg text-slate-400">{entry.position}º</span>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              {isTop3 && (
-                                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${PODIUM_COLORS[entry.position - 1].bg}`}>
-                                  <Star size={14} className="text-white" />
-                                </div>
-                              )}
-                              <span className="text-white font-black text-sm uppercase italic">{entry.storeName}</span>
-                            </div>
+                            <span className="text-white font-black text-sm">{entry.storeName}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-blue-300 font-bold text-sm">{entry.playerName}</span>
+                            <span className="text-slate-400 font-bold text-sm">{entry.playerName}</span>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <TrendingUp size={12} className="text-emerald-400" />
-                              <span className="text-emerald-400 font-black text-sm">
-                                R$ {entry.ebitda.toLocaleString('pt-BR')}
-                              </span>
-                            </div>
+                            <span className="text-white font-black text-sm tabular-nums">
+                              {entry.finalEbitdaMargin.toFixed(1)}%
+                            </span>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <DollarSign size={12} className="text-orange-400" />
-                              <span className="text-orange-400 font-black text-sm">
-                                R$ {entry.netProfit.toLocaleString('pt-BR')}
-                              </span>
-                            </div>
+                            <span
+                              className={`font-mono font-black text-sm ${
+                                entry.finalEbitda >= 0 ? "text-emerald-400" : "text-red-400"
+                              }`}
+                            >
+                              {fmtBRL(entry.finalEbitda)}
+                            </span>
                           </td>
-                          {entry.marketShare !== undefined && (
-                            <td className="px-6 py-4 text-right">
-                              <span className="text-white/70 font-black text-sm">{entry.marketShare}%</span>
-                            </td>
-                          )}
-                          {entry.nps !== undefined && (
-                            <td className="px-6 py-4 text-right">
-                              <span className={`font-black text-sm ${entry.nps >= 80 ? 'text-emerald-400' : entry.nps >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>
-                                {entry.nps}
-                              </span>
-                            </td>
-                          )}
+                          <td className="px-6 py-4 text-right">
+                            <span className="text-slate-300 font-black text-sm tabular-nums">
+                              {entry.finalMarketShare.toFixed(1)}%
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <span className="text-slate-300 font-mono font-black text-sm">
+                              {fmtBRL(entry.finalCash)}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <button
+                              onClick={() => router.push(`/pages/admin/results/${entry.storeId}`)}
+                              className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-wide text-slate-200 hover:bg-white/10 transition cursor-pointer whitespace-nowrap"
+                            >
+                              Ver detalhes
+                            </button>
+                          </td>
                         </motion.tr>
-                      );
-                    })}
-                  </AnimatePresence>
-                </tbody>
-              </table>
-            </div>
-          )}
-        </motion.div>
-
-        {/* BOTÃO INFERIOR PRÓXIMA RODADA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="flex justify-center pb-8"
-        >
-          <button
-            onClick={proximaRodada}
-            className="flex items-center gap-4 bg-orange-500 hover:bg-orange-400 text-white px-14 py-6 rounded-[2rem] font-black text-base uppercase italic tracking-widest shadow-2xl shadow-orange-500/20 transition-all hover:scale-[1.02] active:scale-95 border-b-8 border-orange-700"
-          >
-            <RotateCcw size={22} />
-            Próxima Rodada
-            <ArrowRight size={22} />
-          </button>
-        </motion.div>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.section>
+            )}
+          </>
+        )}
       </main>
     </div>
   );
-};
-
-export default AdminResultsPage;
+}

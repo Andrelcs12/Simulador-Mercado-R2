@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Trophy,
   Medal,
@@ -11,6 +11,7 @@ import {
   Store,
   BarChart3,
   Users,
+  ChevronDown,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,6 +77,16 @@ export default function AdminRoundRanking({
   ranking,
   roundNumber,
 }: RankingProps) {
+  const [expandedStoreIds, setExpandedStoreIds] = useState<string[]>([]);
+
+  const toggleExpanded = (storeId: string) => {
+    setExpandedStoreIds((current) =>
+      current.includes(storeId)
+        ? current.filter((id) => id !== storeId)
+        : [...current, storeId]
+    );
+  };
+
   return (
     <section className="rounded-3xl border border-white/[0.06] bg-[#111827] overflow-hidden">
 
@@ -215,45 +226,45 @@ export default function AdminRoundRanking({
                       </div>
 
                       {/* RIGHT */}
-                      <div className="grid grid-cols-2 gap-3 w-full xl:w-auto xl:min-w-[320px]">
+                      <div className="grid grid-cols-2 gap-3 w-full xl:w-auto xl:min-w-[260px]">
 
-                        <div className="rounded-2xl border border-white/[0.05] bg-[#0B1220] p-4">
+                        <div className="rounded-2xl border border-white/[0.05] bg-[#0B1220] p-3">
 
-                          <div className="flex items-center gap-2 mb-3">
+                          <div className="flex items-center gap-2 mb-2">
 
                             <BarChart3
                               size={14}
                               className="text-orange-400"
                             />
 
-                            <span className="text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
+                            <span className="text-[9px] uppercase tracking-[0.18em] text-slate-500 font-black">
                               Market Share
                             </span>
 
                           </div>
 
-                          <div className="text-3xl font-black text-white tabular-nums">
+                          <div className="text-2xl font-black text-white tabular-nums">
                             {team.marketShare.toFixed(1)}%
                           </div>
 
                         </div>
 
-                        <div className="rounded-2xl border border-white/[0.05] bg-[#0B1220] p-4">
+                        <div className="rounded-2xl border border-white/[0.05] bg-[#0B1220] p-3">
 
-                          <div className="flex items-center gap-2 mb-3">
+                          <div className="flex items-center gap-2 mb-2">
 
                             <TrendingUp
                               size={14}
                               className="text-emerald-400"
                             />
 
-                            <span className="text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
+                            <span className="text-[9px] uppercase tracking-[0.18em] text-slate-500 font-black">
                               Score Final
                             </span>
 
                           </div>
 
-                          <div className="text-3xl font-black text-white tabular-nums">
+                          <div className="text-2xl font-black text-white tabular-nums">
                             {team.finalScore.toFixed(0)}
                           </div>
 
@@ -261,107 +272,115 @@ export default function AdminRoundRanking({
 
                       </div>
 
+                      <button
+                        type="button"
+                        onClick={() => toggleExpanded(team.storeId)}
+                        className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-bold text-slate-200 transition hover:border-white/[0.12] hover:bg-white/[0.06]"
+                      >
+                        <ChevronDown
+                          size={18}
+                          className={`transition-transform ${expandedStoreIds.includes(team.storeId) ? "rotate-180" : "rotate-0"}`}
+                        />
+                        {expandedStoreIds.includes(team.storeId)
+                          ? "Ocultar detalhes das rodadas"
+                          : "Ver detalhes das rodadas"}
+                      </button>
+
                     </div>
 
                   </div>
 
-                  {/* TABLE */}
-                  <div className="p-5 overflow-x-auto">
+                  {expandedStoreIds.includes(team.storeId) && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden px-5 pb-5"
+                    >
+                      <div className="rounded-3xl border border-white/[0.05] bg-[#0B1220] overflow-hidden">
+                        <div className="px-5 py-4 border-b border-white/[0.06] bg-[#0F172A]">
+                          <h4 className="text-sm font-black uppercase tracking-[0.18em] text-white">
+                            Detalhes por rodada
+                          </h4>
+                        </div>
+                        <div className="p-4 overflow-x-auto">
+                          <table className="w-full min-w-[640px]">
+                            <thead>
+                              <tr className="border-b border-white/[0.05]">
+                                <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
+                                  Rodada
+                                </th>
+                                <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
+                                  Score
+                                </th>
+                                <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
+                                  Market Share
+                                </th>
+                                <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
+                                  Status
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {team.rounds?.length ? (
+                                team.rounds
+                                  .slice()
+                                  .sort((a, b) => a.round - b.round)
+                                  .map((round) => {
+                                    const hasData =
+                                      (round.score ?? 0) > 0 ||
+                                      (round.marketShare ?? 0) > 0;
 
-                    <table className="w-full min-w-[640px]">
-
-                      <thead>
-
-                        <tr className="border-b border-white/[0.05]">
-
-                          <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
-                            Rodada
-                          </th>
-
-                          <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
-                            Score
-                          </th>
-
-                          <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
-                            Market Share
-                          </th>
-
-                          <th className="text-left py-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 font-black">
-                            Status
-                          </th>
-
-                        </tr>
-
-                      </thead>
-
-                      <tbody>
-
-                        {[1, 2, 3, 4].map((round) => {
-                          const data = team.rounds?.find(
-                            (r) => r.round === round
-                          );
-
-                          const hasData =
-                            (data?.score ?? 0) > 0 ||
-                            (data?.marketShare ?? 0) > 0;
-
-                          return (
-                            <tr
-                              key={round}
-                              className="border-b border-white/[0.03]"
-                            >
-
-                              <td className="py-4">
-
-                                <div className="flex items-center gap-3">
-
-                                  <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center">
-
-                                    <span className="text-xs font-black text-orange-400">
-                                      {round}
-                                    </span>
-
-                                  </div>
-
-                                  <span className="text-sm font-bold text-white">
-                                    Rodada {round}
-                                  </span>
-
-                                </div>
-
-                              </td>
-
-                              <td className="py-4 text-white font-black text-lg tabular-nums">
-                                {data?.score?.toFixed(0) ?? "0"}
-                              </td>
-
-                              <td className="py-4 text-white font-black text-lg tabular-nums">
-                                {data?.marketShare?.toFixed(1) ?? "0.0"}%
-                              </td>
-
-                              <td className="py-4">
-
-                                {hasData ? (
-                                  <span className="px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[10px] uppercase tracking-[0.18em] font-black text-emerald-400">
-                                    concluída
-                                  </span>
-                                ) : (
-                                  <span className="px-3 py-1 rounded-xl bg-white/[0.03] border border-white/[0.05] text-[10px] uppercase tracking-[0.18em] font-black text-slate-500">
-                                    aguardando
-                                  </span>
-                                )}
-
-                              </td>
-
-                            </tr>
-                          );
-                        })}
-
-                      </tbody>
-
-                    </table>
-
-                  </div>
+                                    return (
+                                      <tr
+                                        key={round.round}
+                                        className="border-b border-white/[0.03]"
+                                      >
+                                        <td className="py-4">
+                                          <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center">
+                                              <span className="text-xs font-black text-orange-400">
+                                                {round.round}
+                                              </span>
+                                            </div>
+                                            <span className="text-sm font-bold text-white">
+                                              Rodada {round.round}
+                                            </span>
+                                          </div>
+                                        </td>
+                                        <td className="py-4 text-white font-black text-lg tabular-nums">
+                                          {round.score?.toFixed(0) ?? "0"}
+                                        </td>
+                                        <td className="py-4 text-white font-black text-lg tabular-nums">
+                                          {round.marketShare?.toFixed(1) ?? "0.0"}%
+                                        </td>
+                                        <td className="py-4">
+                                          {hasData ? (
+                                            <span className="px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[10px] uppercase tracking-[0.18em] font-black text-emerald-400">
+                                              concluída
+                                            </span>
+                                          ) : (
+                                            <span className="px-3 py-1 rounded-xl bg-white/[0.03] border border-white/[0.05] text-[10px] uppercase tracking-[0.18em] font-black text-slate-500">
+                                              aguardando
+                                            </span>
+                                          )}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
+                              ) : (
+                                <tr>
+                                  <td colSpan={4} className="py-10 text-center text-sm text-slate-400">
+                                    Nenhum detalhe de rodada disponível.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
 
                 </motion.div>
               );
