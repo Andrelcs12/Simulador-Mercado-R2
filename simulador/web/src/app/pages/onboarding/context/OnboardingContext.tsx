@@ -136,7 +136,10 @@ type OnboardingContextType = {
   performanceMetrics: {
     csat: number;
     sla: number;
+    // ✅ FIX: margemMedia agora considera apenas categorias com estoque > 0
     margemMedia: number;
+    margemMediaAtiva: number;   // alias semântico explícito
+    categoriasAtivasCount: number;
     opexEstimado: number;
     custoFinanceiroExcedente: number;
   };
@@ -386,9 +389,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   //       + Manutenção padrão balança  (sempre inclusa na base)
   //
   // Custo Financeiro = juros de 12%/mês sobre o valor que excedeu o orçamento
+  //
+  // ✅ FIX: margemMedia agora considera apenas categorias com estoque > 0.
+  //         Categorias zeradas não devem puxar a média para baixo —
+  //         o jogador não está operando aquelas gôndolas.
   // ============================================================================
   const performanceMetrics = useMemo(() => {
-    const opCaixa      = config.operadoresCaixa      ?? 5;
+    const opCaixa       = config.operadoresCaixa      ?? 5;
     const opAtendimento = config.operadoresAtendimento ?? 3;
     const quiz          = config.quizScore             ?? 100;
 
@@ -410,16 +417,27 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     else if (opAtendimento === 2) sla = 40;
     else if (opAtendimento === 1) sla = 30;
 
-    // Margem média simples entre as quatro categorias
-    const categoriasKeys = ["pereciveis", "mercearia", "eletro", "hipel"];
-    const margemMedia = categoriasKeys.reduce(
-      (acc, key) => acc + (config.comercial?.[key as keyof typeof config.comercial]?.margem ?? 0),
-      0,
-    ) / categoriasKeys.length;
+    // ✅ FIX: Margem média ponderada — considera apenas categorias com estoque > 0.
+    //    Antes: dividia sempre por 4, mesmo com 3 categorias zeradas → média distorcida.
+    //    Agora: divide pelo número de categorias efetivamente operadas (estoque > 0).
+    //    Se nenhuma categoria tiver estoque, retorna 0 para evitar NaN.
+    const categoriasKeys = ["pereciveis", "mercearia", "eletro", "hipel"] as const;
+
+    const categoriasAtivas = categoriasKeys.filter(
+      (key) => (config.comercial?.[key]?.estoque ?? 0) > 0
+    );
+
+    const margemMedia =
+      categoriasAtivas.length > 0
+        ? categoriasAtivas.reduce(
+            (acc, key) => acc + (config.comercial?.[key]?.margem ?? 0),
+            0
+          ) / categoriasAtivas.length
+        : 0;
 
     // Folha salarial
-    const custoFolhaCaixa   = opCaixa      * GAME_RULES.salarioOperadorCaixa;
-    const custoFolhaServico  = opAtendimento * GAME_RULES.salarioOperadorServico;
+    const custoFolhaCaixa  = opCaixa      * GAME_RULES.salarioOperadorCaixa;
+    const custoFolhaServico = opAtendimento * GAME_RULES.salarioOperadorServico;
 
     // Licenças e manutenção (OPEX recorrente)
     const licencaSeguranca = (config.capex?.seguranca ?? 0) > 0
@@ -449,7 +467,15 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         ? Math.abs(remainingBudget) * GAME_RULES.taxaJurosExcedente
         : 0;
 
-    return { csat, sla, margemMedia, opexEstimado, custoFinanceiroExcedente };
+    return {
+      csat,
+      sla,
+      margemMedia,
+      margemMediaAtiva: margemMedia,   // alias semântico
+      categoriasAtivasCount: categoriasAtivas.length,
+      opexEstimado,
+      custoFinanceiroExcedente,
+    };
   }, [
     config.operadoresCaixa,
     config.operadoresAtendimento,
@@ -487,7 +513,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   // CAMADA 8: RISCOS E CONSEQUÊNCIAS
   // ============================================================================
   const riscosEConsequencias = useMemo(() => {
-    const checkSeguranca   = !(config.capex?.seguranca    && config.capex.seguranca    > 0);
+    const checkSeguranca    = !(config.capex?.seguranca    && config.capex.seguranca    > 0);
     const checkEquipamentos = !(config.capex?.equipamentos && config.capex.equipamentos > 0);
     const checkRedes        = !(config.capex?.redes        && config.capex.redes        > 0);
     const checkSite         = !(config.capex?.site         && config.capex.site         > 0);

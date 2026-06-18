@@ -53,9 +53,14 @@ export default function SummaryStep() {
     estoqueAnalysis,
     faturamentoAnalysis,
     lucroAnalysis,
+    // ✅ FIX: na tabela usamos lucroBrutoTotal (Faturamento Bruto − CMV, sem imposto)
+    //         pois o subtotal da coluna "Lucro Bruto" deve fechar com as linhas acima.
+    //         lucroPrevistoTotal (pós-imposto) aparece no "Modelo Financeiro" como
+    //         "Lucro Líquido Comercial".
+    lucroBrutoTotal,
     lucroPrevistoTotal,
-    faturamentoBrutoTotal, // Usando a propriedade correta de soma do Contexto
-    ebitdaPrevistoProjecao, // Usando a propriedade correta de soma do Contexto
+    faturamentoBrutoTotal,
+    ebitdaPrevistoProjecao,
     performanceMetrics,
   } = useOnboarding();
 
@@ -81,11 +86,18 @@ export default function SummaryStep() {
     return <div className="p-8 text-slate-400 text-sm">Carregando resumo da simulação...</div>;
   }
 
-  const csatColor = performanceMetrics.csat >= 80 
-    ? "text-emerald-400" 
-    : performanceMetrics.csat >= 60 
-      ? "text-amber-400" 
+  const csatColor = performanceMetrics.csat >= 80
+    ? "text-emerald-400"
+    : performanceMetrics.csat >= 60
+      ? "text-amber-400"
       : "text-rose-400";
+
+  // ✅ FIX: label de margem média mostra quantas categorias estão ativas,
+  //         deixando claro ao jogador que a média é sobre gôndolas em operação.
+  const margemLabel =
+    performanceMetrics.categoriasAtivasCount > 0
+      ? `Margem Média (${performanceMetrics.categoriasAtivasCount} gôndola${performanceMetrics.categoriasAtivasCount > 1 ? "s" : ""})`
+      : "Margem Média";
 
   return (
     <div className="space-y-8">
@@ -131,8 +143,19 @@ export default function SummaryStep() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPI label="CSAT" value={`${performanceMetrics.csat}%`} icon={<Users size={14} />} color={csatColor} />
         <KPI label="SLA" value={`${performanceMetrics.sla}%`} icon={<Target size={14} />} color="text-sky-400" />
-        <KPI label="Margem Média" value={`${performanceMetrics.margemMedia.toFixed(1)}%`} icon={<TrendingUp size={14} />} color="text-amber-400" />
-        <KPI label="EBITDA Previsto" value={`R$ ${ebitdaPrevistoProjecao.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} icon={<DollarSign size={14} />} color={ebitdaPrevistoProjecao >= 0 ? "text-emerald-400" : "text-rose-400"} />
+        {/* ✅ FIX: label dinâmico mostra número de gôndolas ativas na média */}
+        <KPI
+          label={margemLabel}
+          value={`${performanceMetrics.margemMedia.toFixed(1)}%`}
+          icon={<TrendingUp size={14} />}
+          color="text-amber-400"
+        />
+        <KPI
+          label="EBITDA Previsto"
+          value={`R$ ${ebitdaPrevistoProjecao.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`}
+          icon={<DollarSign size={14} />}
+          color={ebitdaPrevistoProjecao >= 0 ? "text-emerald-400" : "text-rose-400"}
+        />
       </div>
 
       {/* BREAKDOWN FINANCEIRO */}
@@ -145,7 +168,7 @@ export default function SummaryStep() {
               Detalhamento Comercial por Categoria de Gôndola
             </p>
           </div>
-          
+
           <table className="w-full text-left border-collapse min-w-[620px]">
             <thead>
               <tr className="border-b border-white/10 text-[10px] uppercase font-black text-slate-400 tracking-wider">
@@ -153,20 +176,21 @@ export default function SummaryStep() {
                 <th className="py-3 px-4 text-center">Qtd / Máx</th>
                 <th className="py-3 px-4 text-right">Investido (Custo)</th>
                 <th className="py-3 px-4 text-right">Margem</th>
-                <th className="py-3 px-4 text-right">Faturamento Ideal</th>
+                <th className="py-3 px-4 text-right">Faturamento Bruto</th>
                 <th className="py-3 pl-4 text-right">Lucro Bruto</th>
               </tr>
             </thead>
             <tbody className="text-xs font-medium text-slate-300 divide-y divide-white/5">
               {CATEGORIAS.map((c) => {
-                const qtd = config?.comercial?.[c.id]?.estoque ?? 0;
-                const maxEstoque = maxStockByCategory[c.id];
-                const margem = config?.comercial?.[c.id]?.margem ?? 0;
-                
-                const investido = estoqueAnalysis[c.id]?.custoTotal ?? 0;
-                // 🔴 Correção aqui: acessando a propriedade numérica interna do objeto
-                const faturamento = faturamentoAnalysis[c.id]?.faturamentoBruto ?? 0;
-                const lucroBruto = lucroAnalysis[c.id]?.lucroBruto ?? 0;
+                const qtd         = config?.comercial?.[c.id]?.estoque ?? 0;
+                const maxEstoque  = maxStockByCategory[c.id];
+                const margem      = config?.comercial?.[c.id]?.margem  ?? 0;
+
+                const investido    = estoqueAnalysis[c.id]?.custoTotal           ?? 0;
+                // Faturamento Bruto = qtd × precoVenda (sem deduzir imposto)
+                const faturamento  = faturamentoAnalysis[c.id]?.faturamentoBruto ?? 0;
+                // Lucro Bruto = Faturamento Bruto − CMV (sem deduzir imposto)
+                const lucroBruto   = lucroAnalysis[c.id]?.lucroBruto             ?? 0;
 
                 return (
                   <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
@@ -185,6 +209,7 @@ export default function SummaryStep() {
                   </tr>
                 );
               })}
+              {/* ✅ FIX: subtotal usa lucroBrutoTotal (fecha com as linhas acima) */}
               <tr className="bg-white/[0.02] font-black text-white text-xs">
                 <td className="py-4 pr-4" colSpan={2}>Subtotal Comercial</td>
                 <td className="py-4 px-4 text-right text-slate-300">
@@ -195,7 +220,7 @@ export default function SummaryStep() {
                   R$ {faturamentoBrutoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </td>
                 <td className="py-4 px-4 text-right text-emerald-400">
-                  R$ {lucroPrevistoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  R$ {lucroBrutoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </td>
               </tr>
             </tbody>
@@ -234,8 +259,27 @@ export default function SummaryStep() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <MiniStat label="Investimento Total" value={`R$ ${investimentoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
           <MiniStat label="Faturamento Bruto" value={`R$ ${faturamentoBrutoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
+          {/* ✅ FIX: "Lucro Líquido Comercial" usa lucroPrevistoTotal (pós-imposto, pré-OPEX)
+                      — nome correto para este nível de resultado */}
           <MiniStat label="Lucro Líquido Comercial" value={`R$ ${lucroPrevistoTotal.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}`} />
-          <MiniStat label="Margem Média" value={`${performanceMetrics.margemMedia.toFixed(1)}%`} />
+          <MiniStat label={margemLabel} value={`${performanceMetrics.margemMedia.toFixed(1)}%`} />
+        </div>
+
+        {/* ✅ NOVO: breakdown do EBITDA para transparência ao jogador */}
+        <div className="mt-5 pt-4 border-t border-white/10 space-y-2">
+          <p className="text-[10px] uppercase font-black text-slate-500 tracking-wider mb-3">Composição do EBITDA</p>
+          <EbitdaRow label="(+) Receita Líquida (após impostos)" value={faturamentoBrutoTotal - (faturamentoBrutoTotal - (faturamentoBrutoTotal * (1 - 0.18)))} positive />
+          <EbitdaRow label="(−) CMV (custo do estoque)" value={comercialTotal} />
+          <EbitdaRow label="(−) OPEX (folha + licenças)" value={performanceMetrics.opexEstimado} />
+          {performanceMetrics.custoFinanceiroExcedente > 0 && (
+            <EbitdaRow label="(−) Custo financeiro (juros 12%)" value={performanceMetrics.custoFinanceiroExcedente} danger />
+          )}
+          <div className="flex justify-between items-center pt-2 border-t border-white/10 text-xs font-black">
+            <span className="text-white uppercase tracking-wider">= EBITDA Previsto</span>
+            <span className={ebitdaPrevistoProjecao >= 0 ? "text-emerald-400" : "text-rose-400"}>
+              R$ {ebitdaPrevistoProjecao.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -326,6 +370,31 @@ function MiniStat({ label, value }: MiniStatProps) {
       <p className="text-base font-black text-white mt-1 tracking-tight">
         {value}
       </p>
+    </div>
+  );
+}
+
+// ✅ NOVO: componente auxiliar para linha do breakdown do EBITDA
+interface EbitdaRowProps {
+  label: string;
+  value: number;
+  positive?: boolean;
+  danger?: boolean;
+}
+
+function EbitdaRow({ label, value, positive, danger }: EbitdaRowProps) {
+  const color = danger
+    ? "text-rose-400"
+    : positive
+    ? "text-emerald-400"
+    : "text-slate-400";
+
+  return (
+    <div className="flex justify-between items-center text-xs">
+      <span className="text-slate-500">{label}</span>
+      <span className={`font-bold font-mono ${color}`}>
+        R$ {value.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}
+      </span>
     </div>
   );
 }
